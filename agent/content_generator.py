@@ -198,7 +198,8 @@ HTML BODY FORMATTING SPECIFICATIONS:
             "generationConfig": {
                 "temperature": 0.7,
                 "topP": 0.95,
-                "maxOutputTokens": 8192
+                "maxOutputTokens": 8192,
+                "responseMimeType": "application/json"
             }
         }
 
@@ -208,7 +209,6 @@ HTML BODY FORMATTING SPECIFICATIONS:
             "gemini-2.5-flash",
             "gemini-2.5-flash-lite"
         ]
-
 
         last_error = ""
         for model in models_to_try:
@@ -230,18 +230,71 @@ HTML BODY FORMATTING SPECIFICATIONS:
 
     def _parse_json_response(self, text):
         cleaned = text.strip()
-        # Remove ```json ... ``` wrapper if present
         if cleaned.startswith("```"):
             cleaned = re.sub(r"^```(?:json)?\n?", "", cleaned)
             cleaned = re.sub(r"\n?```$", "", cleaned)
             cleaned = cleaned.strip()
 
+        # 1. Direct JSON parse with strict=False (allows unescaped control characters)
         try:
-            return json.loads(cleaned)
-        except json.JSONDecodeError as e:
-            logger.error(f"Failed to parse Gemini output as JSON. Raw text preview: {cleaned[:300]}")
-            # Try regex extraction of JSON object
-            match = re.search(r"\{[\s\S]*\}", cleaned)
-            if match:
-                return json.loads(match.group(0))
-            raise e
+            return json.loads(cleaned, strict=False)
+        except json.JSONDecodeError:
+            pass
+
+        # 2. Extract outermost JSON object
+        match = re.search(r"\{[\s\S]*\}", cleaned)
+        if match:
+            try:
+                return json.loads(match.group(0), strict=False)
+            except json.JSONDecodeError:
+                pass
+
+        # 3. Robust Regex Fallback Parser for long HTML articles
+        logger.warning("Standard JSON parsing encountered delimiter error. Using resilient regex field recovery...")
+        fallback = {}
+
+        title_m = re.search(r'"title"\s*:\s*"([^"\\]*(?:\\.[^"\\]*)*)"', cleaned)
+        if title_m:
+            try:
+                fallback["title"] = title_m.group(1).encode().decode('unicode-escape', errors='replace')
+            except Exception:
+                fallback["title"] = title_m.group(1)
+        else:
+            fallback["title"] = "Mastering Touch Typing Speed And Accuracy"
+
+        desc_m = re.search(r'"meta_description"\s*:\s*"([^"\\]*(?:\\.[^"\\]*)*)"', cleaned)
+        if desc_m:
+            try:
+                fallback["meta_description"] = desc_m.group(1).encode().decode('unicode-escape', errors='replace')
+            except Exception:
+                fallback["meta_description"] = desc_m.group(1)
+        else:
+            fallback["meta_description"] = "Comprehensive guide to mastering touch typing on GPT-TYPE."
+
+        labels_m = re.search(r'"labels"\s*:\s*\[(.*?)\]', cleaned, re.DOTALL)
+        if labels_m:
+            labels_raw = labels_m.group(1)
+            fallback["labels"] = [l.strip().strip('"').strip("'") for l in labels_raw.split(",") if l.strip()]
+        else:
+            fallback["labels"] = ["Typing Tutorials", "GPT-TYPE", "Touch Typing"]
+
+        # Extract html_content
+        html_m = re.search(r'"html_content"\s*:\s*"([\s\S]*?)(?:",\s*"(?:social_posts|social)"|\s*\}\s*$)', cleaned)
+        if html_m:
+            raw_html = html_m.group(1)
+            raw_html = raw_html.replace('\\"', '"').replace('\\n', '\n').replace('\\t', '\t').replace('\\/', '/')
+            fallback["html_content"] = raw_html
+        else:
+            fallback["html_content"] = f"<p>{cleaned[:1000]}</p>"
+
+        # Extract social_posts block
+        social_m = re.search(r'"social_posts"\s*:\s*(\{[\s\S]*?\})', cleaned)
+        if social_m:
+            try:
+                fallback["social_posts"] = json.loads(social_m.group(1), strict=False)
+            except Exception:
+                fallback["social_posts"] = {}
+        else:
+            fallback["social_posts"] = {}
+
+        return fallback
