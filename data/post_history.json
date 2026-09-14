@@ -1,6 +1,6 @@
 {
-  "total_posts_published": 1,
-  "last_run_timestamp": "2026-09-14T01:27:19.822859+00:00",
+  "total_posts_published": 2,
+  "last_run_timestamp": "2026-09-14T05:15:29.918996+00:00",
   "published_posts": [
     {
       "id": "6385972940209506963",
@@ -25,7 +25,47 @@
           "reason": "Credentials missing"
         }
       }
+    },
+    {
+      "id": "1176900986533336959",
+      "title": "Mastering Global Touch Typing Across 122 Plus Languages",
+      "url": "https://gpttype.blogspot.com/2026/09/mastering-global-touch-typing-across.html",
+      "status": "LIVE",
+      "primary_keyword": "free online typing test supporting 122 plus languages",
+      "cluster_id": "global_multilingual_typing",
+      "cluster_name": "Global Multilingual Typing (122+ Languages)",
+      "published_at": "2026-09-14T05:15:29.918996+00:00",
+      "social_broadcast": {
+        "telegram": {
+          "status": "skipped",
+          "reason": "Credentials missing"
+        },
+        "twitter": {
+          "status": "skipped",
+          "reason": "Credentials missing"
+        },
+        "facebook": {
+          "status": "skipped",
+          "reason": "Credentials missing"
+        },
+        "linkedin": {
+          "status": "skipped",
+          "reason": "Credentials missing"
+        },
+        "reddit": {
+          "status": "skipped",
+          "reason": "Credentials missing"
+        },
+        "instagram": {
+          "status": "skipped",
+          "reason": "Credentials missing"
+        },
+        "universal_webhook": {
+          "status": "skipped",
+          "reason": "No webhook URL configured"
+        }
+      }
     }
   ],
-  "cluster_rotation_index": 3
+  "cluster_rotation_index": 4
 }
