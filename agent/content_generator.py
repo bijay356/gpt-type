@@ -152,9 +152,38 @@ HTML BODY FORMATTING SPECIFICATIONS:
      <strong>Quick Summary:</strong> [Direct, actionable 2-3 sentence answer explaining the core takeaway of {primary_kw}]
    </div>
 
-2. Structured Educational Subheadings:
-   - Use semantic <h2> and <h3> tags.
-   - Include comparison <table> elements (e.g., WPM tiers, finger allocation charts, or exam standards) with inline styling.
+2. Interactive Table of Contents (TOC Box):
+   Include an elegant Table of Contents box right under the Quick Summary:
+   <div style="background: #1e293b; border: 1px solid #334155; border-radius: 8px; padding: 18px 22px; margin: 25px 0; color: #f8fafc;">
+     <strong style="color: #38bdf8; font-size: 1.15rem; display: block; margin-bottom: 10px;">📑 Table of Contents</strong>
+     <ul style="margin: 0; padding-left: 20px; color: #94a3b8; line-height: 1.8; font-size: 0.95rem;">
+       [List 4-5 key sections with clean anchor links: <li><a href="#section-id" style="color: #38bdf8; text-decoration: underline;">Section Title</a></li>]
+     </ul>
+   </div>
+
+3. Structured Educational Subheadings & High-Contrast Tables:
+   - Use semantic <h2 id="section-id"> and <h3> tags matching the Table of Contents anchor links.
+   - STRICT TABLE STYLING (CRITICAL: NEVER USE WHITE-ON-WHITE TEXT):
+     Every <table> MUST have explicit dark high-contrast styling matching the GPT-TYPE theme:
+     <table style="width: 100%; border-collapse: collapse; margin: 25px 0; background: #0f172a; color: #f8fafc; border-radius: 8px; overflow: hidden; border: 1px solid #334155; font-size: 0.95rem;">
+       <thead>
+         <tr style="background: #0ea5e9; color: #ffffff;">
+           <th style="padding: 12px; text-align: left; border: 1px solid #334155; color: #ffffff; font-weight: 700;">Column 1</th>
+           <th style="padding: 12px; text-align: left; border: 1px solid #334155; color: #ffffff; font-weight: 700;">Column 2</th>
+         </tr>
+       </thead>
+       <tbody>
+         <tr style="background: #1e293b;">
+           <td style="padding: 12px; border: 1px solid #334155; color: #f8fafc; font-weight: 600;">Row text</td>
+           <td style="padding: 12px; border: 1px solid #334155; color: #38bdf8;">Data value</td>
+         </tr>
+         <tr style="background: #0f172a;">
+           <td style="padding: 12px; border: 1px solid #334155; color: #f8fafc; font-weight: 600;">Row text</td>
+           <td style="padding: 12px; border: 1px solid #334155; color: #4ade80;">Data value</td>
+         </tr>
+       </tbody>
+     </table>
+     Every <td> and <th> MUST have an explicit color style (e.g. color: #f8fafc, color: #38bdf8, color: #ffffff) so it is 100% crystal-clear and readable against the dark background.
    - Use numbered lists (<ol>) and bullet points (<ul>).
 
 3. Embedded Interactive Practice Drill Card:
