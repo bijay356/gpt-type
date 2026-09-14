@@ -262,6 +262,26 @@
           "secondary": ["two finger typing bad habit", "transition from two fingers to ten fingers", "how long to learn touch typing"]
         },
         {
+          "primary": "online typing game archery battle for speed",
+          "intent": "gamified practice",
+          "secondary": ["ramayan archery typing game", "retro typing arcade game", "speed typing shooter game"]
+        },
+        {
+          "primary": "typing speed test with mechanical switch clicking sounds",
+          "intent": "interactive tool",
+          "secondary": ["mechanical keyboard sound simulator", "typing test with thock and click sounds", "auditory feedback typing practice"]
+        },
+        {
+          "primary": "customizable typing test with dark mode and 7 color themes",
+          "intent": "aesthetic tool",
+          "secondary": ["minimalist typing test themes", "cyberpunk typing test", "reduce eye strain typing practice"]
+        },
+        {
+          "primary": "typeshala nepali typing practice with dynamic finger guides",
+          "intent": "nepali education",
+          "secondary": ["preeti font typing tutor", "nepali unicode typing test", "traditional nepali typeshala online"]
+        },
+        {
           "primary": "best free online typing practice tools without ads",
           "intent": "tool review",
           "secondary": ["clean typing speed test", "minimalist typing tutor online", "fastest browser typing test"]
@@ -270,3 +290,4 @@
     }
   ]
 }
+
