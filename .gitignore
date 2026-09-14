@@ -1,0 +1,55 @@
+# ==============================================================================
+# SECURITY & SECRETS (CRITICAL: NEVER COMMIT SECRETS TO GIT)
+# ==============================================================================
+.env
+.env.*
+!.env.example
+*.env
+client_secret*.json
+credentials*.json
+token*.json
+tokens*.json
+*.token
+*.key
+*.pem
+*.pfx
+*.p12
+*.cer
+*.crt
+*.secret
+*.session
+*.session-journal
+
+# Logs and runtime traces
+*.log
+*.sqlite3
+*.tmp
+*.bak
+*.swp
+
+# Python Cache & Environments
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+venv/
+env/
+.venv/
+
+# Node.js & Desktop Builds & Heavy Binaries
+node_modules/
+dist/
+build/
+*.exe
+*.zip
+GPT-TYPE-Downloads/
+windows-app/node_modules/
+windows-app/dist/
+
+# IDE & OS System Files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+desktop.ini
+

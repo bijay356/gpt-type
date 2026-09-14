@@ -1,0 +1,272 @@
+{
+  "clusters": [
+    {
+      "id": "speed_boosters",
+      "name": "Speed Boosters & WPM Milestones",
+      "target_test_mode": "60s",
+      "keywords": [
+        {
+          "primary": "how to type 100 wpm consistently",
+          "intent": "informational/guide",
+          "secondary": ["100 words per minute typing tips", "fast typing muscle memory", "break 100 wpm milestone"]
+        },
+        {
+          "primary": "how to break through 60 wpm typing plateau",
+          "intent": "guide/actionable",
+          "secondary": ["stuck at 60 wpm", "typing speed plateau solution", "increase typing speed beyond 60 wpm"]
+        },
+        {
+          "primary": "1 minute vs 5 minute typing test difference",
+          "intent": "comparison/guide",
+          "secondary": ["short burst vs endurance typing", "standard typing test duration", "accurate wpm measurement"]
+        },
+        {
+          "primary": "how to improve typing accuracy without losing speed",
+          "intent": "guide/training",
+          "secondary": ["typing accuracy vs wpm", "stop making typing mistakes", "typing accuracy exercises"]
+        },
+        {
+          "primary": "average typing speed by age and profession",
+          "intent": "informational/benchmark",
+          "secondary": ["good wpm for office worker", "how fast can average person type", "typing speed percentiles"]
+        },
+        {
+          "primary": "speed typing drills for fast fingers",
+          "intent": "practice/drills",
+          "secondary": ["daily 10 minute typing workout", "finger dexterity exercises for typing", "wpm sprint training"]
+        },
+        {
+          "primary": "how to type without looking at the keyboard",
+          "intent": "beginner/touch typing",
+          "secondary": ["blind typing technique", "muscle memory keyboard guide", "home row finger placement"]
+        },
+        {
+          "primary": "words per minute to keystrokes per hour calculator",
+          "intent": "utility/informational",
+          "secondary": ["kph to wpm conversion", "data entry speed test requirements", "keystroke typing benchmark"]
+        }
+      ]
+    },
+    {
+      "id": "programming_typing",
+      "name": "Coding & Developer Typing Skills",
+      "target_test_mode": "code",
+      "keywords": [
+        {
+          "primary": "typing speed test for programmers and coders",
+          "intent": "niche tool/practice",
+          "secondary": ["code syntax typing practice", "typing test for python developers", "bracket and symbol typing speed"]
+        },
+        {
+          "primary": "does typing speed matter for software engineers",
+          "intent": "opinion/guide",
+          "secondary": ["programmer wpm average", "coding speed vs thinking speed", "how fast should a developer type"]
+        },
+        {
+          "primary": "how to type special characters and symbols faster",
+          "intent": "technical guide",
+          "secondary": ["curly braces typing speed", "programming symbols muscle memory", "touch typing number row and symbols"]
+        },
+        {
+          "primary": "python syntax typing practice exercises",
+          "intent": "code practice",
+          "secondary": ["python code typing test", "learn python keywords by typing", "speed typing for python learners"]
+        },
+        {
+          "primary": "javascript code typing speed test",
+          "intent": "code practice",
+          "secondary": ["js syntax typing practice", "front-end developer typing drills", "react and typescript typing test"]
+        },
+        {
+          "primary": "best keyboard shortcuts to code twice as fast",
+          "intent": "productivity/guide",
+          "secondary": ["vscode typing productivity", "vim navigation typing speed", "developer keyboard efficiency"]
+        }
+      ]
+    },
+    {
+      "id": "exam_and_job_prep",
+      "name": "Job & Exam Typing Preparation",
+      "target_test_mode": "300s",
+      "keywords": [
+        {
+          "primary": "typing speed test for government jobs preparation",
+          "intent": "exam preparation",
+          "secondary": ["civil service typing test requirement", "ssc cgl typing test speed", "court clerk typing examination"]
+        },
+        {
+          "primary": "data entry typing test wpm requirements and tips",
+          "intent": "career guide",
+          "secondary": ["how to pass data entry typing test", "alphanumeric typing test practice", "remote data entry speed score"]
+        },
+        {
+          "primary": "court reporter and legal transcriptionist typing speed",
+          "intent": "career benchmark",
+          "secondary": ["stenography vs qwerty typing speed", "legal transcription wpm test", "high speed typing requirements"]
+        },
+        {
+          "primary": "medical transcription typing test guidelines",
+          "intent": "career guide",
+          "secondary": ["medical terminology typing speed", "audio to text typing accuracy", "healthcare data entry test"]
+        },
+        {
+          "primary": "how to prepare for a 10 minute employment typing test",
+          "intent": "endurance training",
+          "secondary": ["10 min typing test endurance", "maintain accuracy in long typing tests", "pre-employment typing assessment"]
+        },
+        {
+          "primary": "typing certificate online free practice and benchmarks",
+          "intent": "certification/practice",
+          "secondary": ["official typing test benchmark", "free typing speed score card", "job application typing proof"]
+        }
+      ]
+    },
+    {
+      "id": "global_multilingual_typing",
+      "name": "Global Multilingual Typing (122+ Languages)",
+      "target_test_mode": "multilingual",
+      "keywords": [
+        {
+          "primary": "free online typing test supporting 122 plus languages",
+          "intent": "global tool/high intent",
+          "secondary": ["multilingual speed typing test", "practice typing in any language", "global touch typing platform"]
+        },
+        {
+          "primary": "spanish typing speed test with accents and special characters",
+          "intent": "spanish global",
+          "secondary": ["prueba de mecanografia en linea gratis", "test de velocidad de mecanografia espanol", "practicar mecanografia acentos"]
+        },
+        {
+          "primary": "french touch typing speed test with accents and cedilla",
+          "intent": "french global",
+          "secondary": ["test de vitesse de frappe en ligne gratuit", "clavier azerty entrainement dactylo", "dactylographie en francais"]
+        },
+        {
+          "primary": "german typing speed test with umlauts and eszett",
+          "intent": "german global",
+          "secondary": ["tipptest online kostenlos 10 finger system", "schreibmaschinenkurs online kostenlos", "deutsche tastatur wpm test"]
+        },
+        {
+          "primary": "portuguese typing speed test with tilde and cedilla",
+          "intent": "portuguese global",
+          "secondary": ["teste de digitacao online gratis wpm", "treino de digitacao teclado abnt2", "aprender a digitar rapido portugues"]
+        },
+        {
+          "primary": "arabic touch typing speed test and keyboard layout",
+          "intent": "arabic global",
+          "secondary": ["اختبار سرعة الطباعة باللغة العربية", "arabic typing tutor online free", "learn arabic touch typing"]
+        },
+        {
+          "primary": "russian cyrillic touch typing speed test online",
+          "intent": "russian global",
+          "secondary": ["тест скорости печати онлайн на русском", "клавиатурный тренажер онлайн", "слепая печать на русском"]
+        },
+        {
+          "primary": "hindi typing speed test inscript and remington layout",
+          "intent": "hindi global",
+          "secondary": ["hindi mangal font typing test", "online hindi speed typing test", "hindi typing tutor for government jobs"]
+        },
+        {
+          "primary": "bengali typing speed test and keyboard practice",
+          "intent": "bengali global",
+          "secondary": ["bangla typing test online", "avro vs probhat keyboard typing test", "bengali touch typing practice"]
+        },
+        {
+          "primary": "japanese typing speed test romaji to kanji practice",
+          "intent": "japanese global",
+          "secondary": ["japanese romaji typing test", "japanese keyboard wpm score", "touch typing practice japanese"]
+        },
+        {
+          "primary": "chinese pinyin typing speed test online",
+          "intent": "chinese global",
+          "secondary": ["chinese pinyin wpm test", "simplified chinese typing practice", "pinyin keyboard typing speed"]
+        },
+        {
+          "primary": "korean typing speed test with 2-set hangul layout",
+          "intent": "korean global",
+          "secondary": ["korean hangul typing test", "korean keyboard speed practice", "2-set hangul touch typing tutor"]
+        },
+        {
+          "primary": "indonesian touch typing test online free",
+          "intent": "indonesian global",
+          "secondary": ["tes kecepatan mengetik online gratis", "belajar mengetik 10 jari online", "latihan mengetik cepat bahasa indonesia"]
+        },
+        {
+          "primary": "vietnamese telex and vni typing speed test",
+          "intent": "vietnamese global",
+          "secondary": ["kiem tra toc do danh may online", "luyen go 10 ngon tieng viet", "telex typing test online free"]
+        },
+        {
+          "primary": "turkish touch typing speed test with special characters",
+          "intent": "turkish global",
+          "secondary": ["f klavye ve q klavye hiz testi", "on parmak klavye calisma", "turkce klavye hiz testi online"]
+        },
+        {
+          "primary": "typeshala online typing test for nepali and english",
+          "intent": "nepali regional",
+          "secondary": ["nepali typeshala practice online", "nepali unicode typing test", "traditional typeshala tutor"]
+        }
+      ]
+    },
+
+    {
+      "id": "ergonomics_and_hardware",
+      "name": "Ergonomics, Posture & Mechanical Keyboards",
+      "target_test_mode": "120s",
+      "keywords": [
+        {
+          "primary": "best mechanical keyboard switches for fast typing",
+          "intent": "hardware guide",
+          "secondary": ["linear vs tactile switches for typing", "cherry mx red vs brown typing speed", "low profile switches wpm"]
+        },
+        {
+          "primary": "proper hand placement and posture for touch typing",
+          "intent": "ergonomics guide",
+          "secondary": ["home row finger positions", "wrist pain while typing fast", "ergonomic keyboard for speed typing"]
+        },
+        {
+          "primary": "qwerty vs dvorak vs colemak typing speed comparison",
+          "intent": "layout comparison",
+          "secondary": ["is dvorak faster than qwerty", "should you switch to colemak", "best keyboard layout for speed"]
+        },
+        {
+          "primary": "how to prevent wrist fatigue and carpal tunnel while typing",
+          "intent": "health/ergonomics",
+          "secondary": ["wrist stretches for typists", "ergonomic posture typing desk setup", "typing wrist rests benefits"]
+        },
+        {
+          "primary": "laptop keyboard vs external mechanical keyboard typing speed",
+          "intent": "hardware comparison",
+          "secondary": ["can you type faster on a mechanical keyboard", "scissor switch vs mechanical switches typing test"]
+        }
+      ]
+    },
+    {
+      "id": "beginner_and_students",
+      "name": "Beginners, Kids & Touch Typing Basics",
+      "target_test_mode": "30s",
+      "keywords": [
+        {
+          "primary": "free touch typing tutorial for complete beginners",
+          "intent": "beginner course",
+          "secondary": ["learn touch typing step by step", "how to start touch typing today", "home row keys practice"]
+        },
+        {
+          "primary": "how to teach kids to type fast and accurately",
+          "intent": "education/parents",
+          "secondary": ["fun typing games for kids", "typing practice for elementary students", "safe typing tool for school"]
+        },
+        {
+          "primary": "stop hunt and peck typing: how to transition to touch typing",
+          "intent": "technique transition",
+          "secondary": ["two finger typing bad habit", "transition from two fingers to ten fingers", "how long to learn touch typing"]
+        },
+        {
+          "primary": "best free online typing practice tools without ads",
+          "intent": "tool review",
+          "secondary": ["clean typing speed test", "minimalist typing tutor online", "fastest browser typing test"]
+        }
+      ]
+    }
+  ]
+}
