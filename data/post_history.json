@@ -1,6 +1,6 @@
 {
-  "total_posts_published": 3,
-  "last_run_timestamp": "2026-09-14T05:31:04.451151+00:00",
+  "total_posts_published": 4,
+  "last_run_timestamp": "2026-09-14T05:52:33.182964+00:00",
   "published_posts": [
     {
       "id": "6385972940209506963",
@@ -105,7 +105,45 @@
           "reason": "No webhook URL configured"
         }
       }
+    },
+    {
+      "id": "8837786118127008829",
+      "title": "How To Type 100 Wpm Consistently And Master Keyboard Muscle Memory",
+      "url": "https://gpttype.blogspot.com/2026/09/how-to-type-100-wpm-consistently-and.html",
+      "status": "LIVE",
+      "primary_keyword": "how to type 100 wpm consistently",
+      "cluster_id": "speed_boosters",
+      "cluster_name": "Speed Boosters & WPM Milestones",
+      "published_at": "2026-09-14T05:52:33.182964+00:00",
+      "social_broadcast": {
+        "telegram": {
+          "status": "success"
+        },
+        "twitter": {
+          "status": "skipped",
+          "reason": "Credentials missing"
+        },
+        "facebook": {
+          "status": "skipped",
+          "reason": "Credentials missing"
+        },
+        "linkedin": {
+          "status": "success"
+        },
+        "reddit": {
+          "status": "skipped",
+          "reason": "Credentials missing"
+        },
+        "instagram": {
+          "status": "skipped",
+          "reason": "Credentials missing"
+        },
+        "universal_webhook": {
+          "status": "skipped",
+          "reason": "No webhook URL configured"
+        }
+      }
     }
   ],
-  "cluster_rotation_index": 0
+  "cluster_rotation_index": 1
 }
