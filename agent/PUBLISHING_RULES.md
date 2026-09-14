@@ -99,11 +99,15 @@ To guarantee high search rankings and AdSense safety:
    - Must include realistic WPM target tiers, finger placement coordinates, and ergonomic degree angles.
 2. **SEO-Friendly Permalinks**:
    - Article title must be clean (50–60 characters).
-   - **NO colons (`:`), NO question marks (`?`), NO quotation marks (`"`, `'`), and NO emojis** in titles to allow Blogger to generate clean, short permalinks.
-3. **Search Description**:
-   - 145–155 character compelling search description for Google SERP snippet preview.
+   - **NO colons (`:`), NO question marks (`?`), NO quotation marks (`"`, `'`), and NO emojis** in titles.
+   - When published, Blogger's permalink engine automatically generates a clean, keyword-matched slug directly from the title (e.g., `/2026/09/how-to-type-100-wpm-consistently-and.html`).
+3. **Search Description & Rich Snippets**:
+   - Every article includes a 145–155 character compelling search description.
+   - Because the Blogger API does not expose the internal dashboard "Search Description" field, our engine enforces this directly in the content:
+     * **Executive Summary Box**: Placed at the very top so Google's crawler uses it as the SERP featured snippet.
+     * **Schema.org JSON-LD**: Embedded at the bottom with `"@type": "BlogPosting"` containing `"description"` and `"headline"` so search engines read the exact meta description.
 4. **Structured Data**:
-   - Every article must include Schema.org `FAQPage` JSON-LD at the end.
+   - Every article includes Schema.org `BlogPosting` and `FAQPage` JSON-LD for rich snippets and question carousels in Google Search.
 5. **Interactive Practice Drill Card**:
    - Contains a 60–80 word practice passage, WPM/accuracy targets, and a direct CTA link to practice on `gpttype.blogspot.com`.
 6. **E-E-A-T Footer**:

@@ -25,8 +25,13 @@ class ContentGenerator:
         raw_response = self._call_gemini(prompt)
         parsed = self._parse_json_response(raw_response)
 
-        # Enforce unbreakable quality rules (Table contrast, TOC presence, Human voice)
-        parsed["html_content"] = self._enforce_quality_rules(parsed.get("html_content", ""), topic)
+        # Enforce unbreakable quality rules (Table contrast, TOC presence, Human voice, SEO Schema)
+        parsed["html_content"] = self._enforce_quality_rules(
+            parsed.get("html_content", ""),
+            topic,
+            meta_description=parsed.get("meta_description", ""),
+            title=parsed.get("title", "")
+        )
         parsed = self._enforce_human_voice(parsed)
 
         return parsed
@@ -336,11 +341,13 @@ HTML BODY FORMATTING SPECIFICATIONS:
 
         return fallback
 
-    def _enforce_quality_rules(self, html, topic):
+    def _enforce_quality_rules(self, html, topic, meta_description="", title=""):
         """
         Guarantees that every article strictly complies with:
         1. Dark high-contrast styling on all tables (no white-on-white text).
         2. Fully interactive Table of Contents (TOC) with working anchor IDs.
+        3. High-contrast dark theme typography across all headings and paragraphs.
+        4. Schema.org BlogPosting metadata with explicit search description.
         """
         if not html:
             return html
@@ -473,6 +480,22 @@ HTML BODY FORMATTING SPECIFICATIONS:
         # Wrap in high-contrast styling container if not already present
         if 'gpttype-article-container' not in html:
             html = f'<div class="gpttype-article-container" style="color: #e2e8f0; font-size: 1.05rem; line-height: 1.8;">\n{html}\n</div>'
+
+        # 4. Inject Schema.org BlogPosting with explicit Search Description for Google SERP
+        if meta_description and '"BlogPosting"' not in html:
+            clean_title = re.sub(r'[:?"\'`<>*|#]', '', title).strip() if title else topic.get("primary_keyword", "").title()
+            clean_desc = meta_description.replace('"', '\\"')
+            deep_link = topic.get("deep_link", BLOG_URL)
+            blog_schema = f'''\n<script type="application/ld+json">
+{{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "{clean_title}",
+  "description": "{clean_desc}",
+  "url": "{deep_link}"
+}}
+</script>'''
+            html = html + blog_schema
 
         return html
 
