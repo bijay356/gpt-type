@@ -62,14 +62,12 @@ class AnalyticsReporter:
             return
 
         digest = (
-            f"🤖 <b>GPT-TYPE 24/7 Agent Report</b>\n\n"
-            f"✅ <b>New Post Published:</b>\n"
-            f"📰 <i>{record['title']}</i>\n\n"
-            f"🎯 <b>Target Keyword:</b> <code>{record['primary_keyword']}</code>\n"
-            f"📂 <b>Cluster:</b> {record['cluster_name']}\n"
-            f"🌐 <b>URL:</b> <a href=\"{record['url']}\">{record['url']}</a>\n\n"
-            f"📊 <b>Total Articles Published:</b> {self.history.get('total_posts_published', 1)}\n"
-            f"⏰ <b>Timestamp:</b> {record['published_at']}"
+            f"📰 <b>New Guide Published on GPT-TYPE</b>\n\n"
+            f"<b>Title:</b> <i>{record['title']}</i>\n"
+            f"<b>Topic:</b> {record['primary_keyword'].title()}\n"
+            f"<b>Category:</b> {record['cluster_name']}\n\n"
+            f"🔗 <b>Read & Practice:</b> <a href=\"{record['url']}\">{record['url']}</a>\n\n"
+            f"📈 <b>Total Published Guides:</b> {self.history.get('total_posts_published', 1)}"
         )
 
         try:
