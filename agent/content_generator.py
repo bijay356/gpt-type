@@ -152,9 +152,9 @@ Respond ONLY with a valid JSON object (no extra commentary, valid JSON):
 
 HTML BODY FORMATTING SPECIFICATIONS:
 1. Executive Summary Box (Top of article):
-   Start immediately with a search-description callout box for Google Featured Snippets:
-   <div style="background: #f1f5f9; border-left: 5px solid #0ea5e9; padding: 18px 22px; border-radius: 6px; margin-bottom: 25px; color: #1e293b; font-size: 1.05rem; line-height: 1.6;">
-     <strong>Quick Summary:</strong> [Direct, actionable 2-3 sentence answer explaining the core takeaway of {primary_kw}]
+   Start immediately with a search-description callout box for Google Featured Snippets (Dark Theme):
+   <div style="background: #1e293b; border-left: 5px solid #0ea5e9; border: 1px solid #334155; padding: 18px 22px; border-radius: 8px; margin-bottom: 25px; color: #f8fafc; font-size: 1.05rem; line-height: 1.7;">
+     <strong style="color: #38bdf8;">Quick Summary:</strong> [Direct, actionable 2-3 sentence answer explaining the core takeaway of {primary_kw}]
    </div>
 
 2. Interactive Table of Contents (TOC Box):
@@ -166,8 +166,13 @@ HTML BODY FORMATTING SPECIFICATIONS:
      </ul>
    </div>
 
-3. Structured Educational Subheadings & High-Contrast Tables:
-   - Use semantic <h2 id="section-id"> and <h3> tags matching the Table of Contents anchor links.
+3. Strict Dark-Theme Typography & Subheadings:
+   - CRITICAL TEXT CONTRAST RULE (NEVER USE DARK TEXT):
+     The blog uses a sleek dark theme (#0b0f19 / #0f172a). All text MUST have high contrast:
+     * Headings (<h2 id="section-id">, <h3>): MUST use style="color: #38bdf8; margin-top: 35px; font-weight: 700;" or style="color: #ffffff;". NEVER use #0f172a, #1e293b, #334155, or dark colors!
+     * Paragraphs (<p>): MUST use style="line-height: 1.8; color: #e2e8f0; font-size: 1.05rem; margin-bottom: 20px;". NEVER use #334155, #475569, #64748b, or dark grey!
+     * Lists (<ul>, <ol>, <li>): MUST use style="line-height: 1.8; color: #e2e8f0; font-size: 1.05rem;".
+     * Bold text (<strong>): MUST use style="color: #ffffff;" or style="color: #38bdf8;".
    - STRICT TABLE STYLING (CRITICAL: NEVER USE WHITE-ON-WHITE TEXT):
      Every <table> MUST have explicit dark high-contrast styling matching the GPT-TYPE theme:
      <table style="width: 100%; border-collapse: collapse; margin: 25px 0; background: #0f172a; color: #f8fafc; border-radius: 8px; overflow: hidden; border: 1px solid #334155; font-size: 0.95rem;">
@@ -188,10 +193,8 @@ HTML BODY FORMATTING SPECIFICATIONS:
          </tr>
        </tbody>
      </table>
-     Every <td> and <th> MUST have an explicit color style (e.g. color: #f8fafc, color: #38bdf8, color: #ffffff) so it is 100% crystal-clear and readable against the dark background.
-   - Use numbered lists (<ol>) and bullet points (<ul>).
 
-3. Embedded Interactive Practice Drill Card:
+4. Embedded Interactive Practice Drill Card:
    <div style="background: #1e293b; color: #f8fafc; border-radius: 12px; padding: 24px; margin: 35px 0; border: 1px solid #334155; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
      <h3 style="color: #38bdf8; margin-top: 0; font-size: 1.3rem;">Interactive Speed Drill for {primary_kw.title()}</h3>
      <p style="color: #cbd5e1; font-size: 0.95rem;">Practice typing the target passage below directly into <strong>GPT-TYPE</strong> to test your real-time muscle memory:</p>
@@ -199,21 +202,21 @@ HTML BODY FORMATTING SPECIFICATIONS:
        [Provide a 60-80 word engaging practice text snippet relevant to the article topic]
      </div>
      <div style="display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 18px;">
-       <span style="background: #334155; padding: 6px 12px; border-radius: 6px; font-size: 0.85rem;">Target Speed: 70+ WPM</span>
-       <span style="background: #334155; padding: 6px 12px; border-radius: 6px; font-size: 0.85rem;">Target Accuracy: 98%+</span>
-       <span style="background: #334155; padding: 6px 12px; border-radius: 6px; font-size: 0.85rem;">Test Mode: {test_mode}</span>
+       <span style="background: #334155; padding: 6px 12px; border-radius: 6px; font-size: 0.85rem; color: #f8fafc;">Target Speed: 70+ WPM</span>
+       <span style="background: #334155; padding: 6px 12px; border-radius: 6px; font-size: 0.85rem; color: #f8fafc;">Target Accuracy: 98%+</span>
+       <span style="background: #334155; padding: 6px 12px; border-radius: 6px; font-size: 0.85rem; color: #f8fafc;">Test Mode: {test_mode}</span>
      </div>
      <a href="{deep_link}" style="display: inline-block; background: linear-gradient(135deg, #0ea5e9, #6366f1); color: #ffffff; text-decoration: none; font-weight: 700; padding: 14px 28px; border-radius: 8px; font-size: 1.05rem; box-shadow: 0 4px 10px rgba(14, 165, 233, 0.4);">{cta_text}</a>
    </div>
 
-4. In-Body FAQ Section & Schema.org JSON-LD:
-   - Provide 3 to 4 detailed FAQs under <h2>Frequently Asked Questions</h2>.
+5. In-Body FAQ Section & Schema.org JSON-LD:
+   - Provide 3 to 4 detailed FAQs under <h2 id="faq" style="color: #38bdf8;">Frequently Asked Questions</h2>.
    - At the bottom, include a valid Schema.org "FAQPage" <script type="application/ld+json">.
 
-5. Editorial Transparency & Community Feedback (E-E-A-T):
-   End with a professional note linking to the official contact form:
-   <div style="margin-top: 40px; padding: 20px; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0; font-size: 0.9rem; color: #64748b;">
-     <strong>About the GPT-TYPE Research Team:</strong> Published by the educators and developers behind GPT-TYPE. We build accessible, privacy-friendly typing speed tests, classic typing tutors, and multilingual drills across 122+ languages with zero registration required. Have feedback or want to request a new language? Reach us via our <a href="https://docs.google.com/forms/d/e/1FAIpQLSfm_Aj4LAzlewK3C-cJ6e8SPoUofwsonO-qRpwXP0nR0y_luw/viewform?usp=header" style="color: #0ea5e9; text-decoration: underline;" target="_blank" rel="noopener">Official Feedback Form</a>.
+6. Editorial Transparency & Community Feedback (E-E-A-T):
+   End with a professional note linking to the official contact form (Dark Theme):
+   <div style="margin-top: 40px; padding: 20px; background: #1e293b; border-radius: 8px; border: 1px solid #334155; font-size: 0.95rem; color: #94a3b8; line-height: 1.6;">
+     <strong style="color: #38bdf8;">About the GPT-TYPE Research Team:</strong> Published by the educators and developers behind GPT-TYPE. We build accessible, privacy-friendly typing speed tests, classic typing tutors, and multilingual drills across 122+ languages with zero registration required. Have feedback or want to request a new language? Reach us via our <a href="https://docs.google.com/forms/d/e/1FAIpQLSfm_Aj4LAzlewK3C-cJ6e8SPoUofwsonO-qRpwXP0nR0y_luw/viewform?usp=header" style="color: #38bdf8; text-decoration: underline;" target="_blank" rel="noopener">Official Feedback Form</a>.
    </div>
 
 """
@@ -422,6 +425,54 @@ HTML BODY FORMATTING SPECIFICATIONS:
                 html = html[:summary_idx] + '\n' + toc_box + html[summary_idx:]
             else:
                 html = toc_box + '\n' + html
+
+        # 3. Enforce Strict High-Contrast Dark-Theme Typography (Never dark-on-dark)
+        dark_colors_pattern = re.compile(
+            r'color\s*:\s*(?:#0f172a|#1e293b|#334155|#475569|#64748b|#000000|#111827|#1f2937|black|#000)\b',
+            re.IGNORECASE
+        )
+
+        # Headings (h2, h3): Force high-contrast sky blue #38bdf8
+        def fix_heading(match):
+            tag = match.group(0)
+            tag = dark_colors_pattern.sub('color: #38bdf8', tag)
+            if 'color:' not in tag:
+                tag = re.sub(r'<(h[23])', r'<\1 style="color: #38bdf8;"', tag, count=1)
+            return tag
+        html = re.sub(r'<h[23][^>]*>', fix_heading, html, flags=re.IGNORECASE)
+
+        # Paragraphs, lists, spans: Force crisp light slate #e2e8f0
+        def fix_text_tag(match):
+            tag = match.group(0)
+            tag = dark_colors_pattern.sub('color: #e2e8f0', tag)
+            return tag
+        html = re.sub(r'<(?:p|ul|ol|li|span|strong)[^>]*>', fix_text_tag, html, flags=re.IGNORECASE)
+
+        # Quick summary box: Replace light background with dark slate
+        html = re.sub(
+            r'background\s*:\s*#f1f5f9;?',
+            'background: #1e293b; border: 1px solid #334155;',
+            html,
+            flags=re.IGNORECASE
+        )
+        html = re.sub(
+            r'(<div[^>]*background:\s*#1e293b[^>]*color:\s*)#1e293b',
+            r'\g<1>#f8fafc',
+            html,
+            flags=re.IGNORECASE
+        )
+
+        # Footer box: Replace light background with dark container
+        html = re.sub(
+            r'background\s*:\s*#f8fafc;?',
+            'background: #1e293b; border: 1px solid #334155;',
+            html,
+            flags=re.IGNORECASE
+        )
+
+        # Wrap in high-contrast styling container if not already present
+        if 'gpttype-article-container' not in html:
+            html = f'<div class="gpttype-article-container" style="color: #e2e8f0; font-size: 1.05rem; line-height: 1.8;">\n{html}\n</div>'
 
         return html
 

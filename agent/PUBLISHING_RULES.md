@@ -1,4 +1,4 @@
-﻿# 📜 GPT-TYPE Official Publishing & Editorial Quality Standards
+# 📜 GPT-TYPE Official Publishing & Editorial Quality Standards
 
 This document defines the **unbreakable quality, formatting, design, and editorial rules** for all articles, social posts, and community updates published across **GPT-TYPE** (https://gpttype.blogspot.com).
 
@@ -53,6 +53,21 @@ Every published guide must include a jump-to **Table of Contents** directly bene
    - Data cells: Explicit `color: #f8fafc;` with `1px solid #334155` border.
 4. **Programmatic Safeguard**:
    - `_enforce_quality_rules()` regex-parses all `<table>` elements, strips any white background overrides, and enforces the full high-contrast styling suite prior to publication.
+
+---
+
+## 3.1 🔆 Strict High-Contrast Dark-Theme Typography (Never Dark-on-Dark Text)
+
+> **CRITICAL RULE**: Because the website template uses a modern dark theme background (`#0b0f19` / `#0f172a`), no text element can ever use dark grey, slate, or black text (`#0f172a`, `#1e293b`, `#334155`, `#475569`, `#64748b`).
+
+1. **Headings (`<h2>`, `<h3>`)**:
+   - Must use high-contrast Sky Blue (`color: #38bdf8;`) or Pure White (`color: #ffffff;`).
+2. **Body Text (`<p>`, `<li>`, `<span>`)**:
+   - Must use high-contrast Crisp Light Slate (`color: #e2e8f0;`) with `line-height: 1.8;`.
+3. **Callout & Executive Summary Boxes**:
+   - Must use dark containers (`background: #1e293b; border: 1px solid #334155; color: #f8fafc;`).
+4. **Programmatic Safeguard**:
+   - `_enforce_quality_rules()` automatically inspects all tags in Python, strips any dark colors, enforces high-contrast hex values, and wraps the entire article in a `.gpttype-article-container` with `#e2e8f0` text.
 
 ---
 
