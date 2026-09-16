@@ -1581,6 +1581,7 @@
       });
     }
 
+    window.addEventListener('resize', () => { if (state.currentView === 'speedtest') updateCaretPosition(); });
     window.addEventListener('keydown', (e) => {
       if (state.currentView === 'speedtest' && !isAnyModalOpen()) {
         if (e.target.tagName !== 'INPUT' && e.target.tagName !== 'TEXTAREA') {
@@ -1910,7 +1911,7 @@
       return;
     }
     // Always keep a rolling buffer of at least 30 upcoming words for truly unlimited typing
-    if (sp.wordIndex >= sp.words.length - 30) {
+    if (sp.wordIndex >= sp.words.length - 40) {
       appendMoreSpeedtestWords(50);
     }
   }
@@ -1920,6 +1921,7 @@
     if (!container) return;
 
     container.innerHTML = '';
+    container.style.transform = 'translateY(0px)';
     const activeLang = state.speedtest.activeLang || LANGUAGES_DATA[0];
     const isPreeti = (activeLang.id === 'nepali_preeti' || !!activeLang.isPreeti);
     const isDevanagari = (['nepali_unicode', 'nepali_romanized', 'hindi', 'sanskrit', 'marathi', 'maithili', 'bhojpuri', 'newari', 'tharu', 'tamang', 'gurung', 'magar', 'sherpa', 'rai', 'limbu', 'quotes_nepali', 'quotes_hindi', 'quotes_sanskrit'].includes(activeLang.id) || (activeLang.words && activeLang.words[0] && /[\u0900-\u097F]/.test(activeLang.words[0])));
@@ -1954,6 +1956,7 @@
     sp.wordIndex = 0;
     sp.charIndex = 0;
     sp.status = 'ready';
+    const stContent = document.getElementById('stWordsContent'); if (stContent) stContent.style.transform = 'translateY(0px)';
     sp.timeLeft = sp.timeLimit;
     sp.elapsedSeconds = 0;
     sp.correctChars = 0;
@@ -2417,6 +2420,7 @@
   }
 
   function updateCaretPosition() {
+    scrollWordsIfNeeded();
     const caret = document.getElementById('stCaret');
     const keyHint = document.getElementById('stKeyHint');
     const wIdx = state.speedtest.wordIndex;
@@ -2485,11 +2489,29 @@
   function scrollWordsIfNeeded() {
     const wIdx = state.speedtest.wordIndex;
     const wordEl = document.getElementById('st-word-' + wIdx);
-    const wrapper = document.getElementById('stWordsWrapper');
-    if (!wordEl || !wrapper) return;
+    const content = document.getElementById('stWordsContent');
+    const word0 = document.getElementById('st-word-0');
+    if (!wordEl || !content) return;
 
-    if (wordEl.offsetTop > 44) {
-      wrapper.scrollTop = wordEl.offsetTop - 8;
+    if (!word0 || wIdx === 0) {
+      content.style.transform = 'translateY(0px)';
+      return;
+    }
+
+    const baseTop = word0.offsetTop;
+    const currentOffset = wordEl.offsetTop - baseTop;
+
+    // Detect line height dynamically from rendered words
+    const lineHeight = (word0.offsetHeight > 20) ? word0.offsetHeight : ((wordEl.offsetHeight > 20) ? wordEl.offsetHeight : 44);
+
+    // If active word has moved past Line 1:
+    // Shift content up so that the active word is always centered on Line 2!
+    // (Line 1 above is the previously typed line; Line 2 in the middle is active; Line 3 below is next line!)
+    if (currentOffset > lineHeight * 1.1) {
+      const shiftY = Math.max(0, currentOffset - lineHeight);
+      content.style.transform = `translateY(-${shiftY}px)`;
+    } else {
+      content.style.transform = 'translateY(0px)';
     }
   }
 
