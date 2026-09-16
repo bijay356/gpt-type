@@ -698,24 +698,35 @@ html, body {
 }
 
 .st-word {
-  display: inline-flex;
+  display: inline-block;
   position: relative;
-  font-size: 1.65rem;
-  font-family: var(--font-mono), 'Segoe UI', 'Noto Sans Devanagari', 'Noto Sans', -apple-system, sans-serif;
+  font-size: 1.7rem;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Noto Sans', 'Noto Sans Devanagari', 'Mangal', 'Kalimati', 'Nirmala UI', 'Noto Sans Arabic', 'Noto Sans Bengali', sans-serif;
   white-space: nowrap;
+  letter-spacing: normal;
+  line-height: 2.3rem;
 }
 
 .st-word.preeti-font {
   font-family: var(--font-preeti);
   font-size: 2rem;
+  line-height: 2.3rem;
 }
 
 .st-word.devanagari-font {
-  font-family: 'Segoe UI', 'Noto Sans Devanagari', 'Mangal', 'Kalimati', sans-serif !important;
+  font-family: 'Segoe UI', 'Noto Sans Devanagari', 'Mangal', 'Kalimati', 'Nirmala UI', sans-serif !important;
   font-size: 1.85rem;
+  line-height: 2.3rem;
+}
+
+.st-word.arabic-font {
+  font-family: 'Segoe UI', 'Noto Sans Arabic', 'Tahoma', sans-serif !important;
+  font-size: 1.85rem;
+  line-height: 2.4rem;
 }
 
 .st-char {
+  display: inline;
   position: relative;
   color: var(--char-pending);
   transition: color var(--transition-fast);
@@ -4965,8 +4976,9 @@ input:checked + .slider:before {
     const sourceWords = (lang.words && lang.words.length > 0) ? lang.words : ['typing', 'speed', 'test'];
     const container = document.getElementById('stWordsContent');
     const isPreeti = (lang.id === 'nepali_preeti' || !!lang.isPreeti);
-    const isDevanagari = (['nepali_unicode', 'nepali_romanized', 'hindi', 'sanskrit', 'marathi', 'maithili', 'bhojpuri', 'newari'].includes(lang.id));
-    const fontClass = isPreeti ? ' preeti-font' : (isDevanagari ? ' devanagari-font' : '');
+    const isDevanagari = (['nepali_unicode', 'nepali_romanized', 'hindi', 'sanskrit', 'marathi', 'maithili', 'bhojpuri', 'newari', 'tharu', 'tamang', 'gurung', 'magar', 'sherpa', 'rai', 'limbu', 'quotes_nepali', 'quotes_hindi', 'quotes_sanskrit'].includes(lang.id) || (lang.words && lang.words[0] && /[\u0900-\u097F]/.test(lang.words[0])));
+    const isRtl = (['arabic', 'urdu', 'persian', 'hebrew', 'pashto', 'sindhi', 'uyghur', 'yiddish'].includes(lang.id) || lang.dir === 'rtl' || !!lang.rtl);
+    const fontClass = isPreeti ? ' preeti-font' : (isDevanagari ? ' devanagari-font' : (isRtl ? ' arabic-font' : ''));
     const startIdx = state.speedtest.words.length;
     let lastWord = state.speedtest.words.length > 0 ? state.speedtest.words[state.speedtest.words.length - 1] : '';
 
@@ -5064,8 +5076,13 @@ input:checked + .slider:before {
     container.innerHTML = '';
     const activeLang = state.speedtest.activeLang || LANGUAGES_DATA[0];
     const isPreeti = (activeLang.id === 'nepali_preeti' || !!activeLang.isPreeti);
-    const isDevanagari = (['nepali_unicode', 'nepali_romanized', 'hindi', 'sanskrit', 'marathi', 'maithili', 'bhojpuri', 'newari'].includes(activeLang.id));
-    const fontClass = isPreeti ? ' preeti-font' : (isDevanagari ? ' devanagari-font' : '');
+    const isDevanagari = (['nepali_unicode', 'nepali_romanized', 'hindi', 'sanskrit', 'marathi', 'maithili', 'bhojpuri', 'newari', 'tharu', 'tamang', 'gurung', 'magar', 'sherpa', 'rai', 'limbu', 'quotes_nepali', 'quotes_hindi', 'quotes_sanskrit'].includes(activeLang.id) || (activeLang.words && activeLang.words[0] && /[\u0900-\u097F]/.test(activeLang.words[0])));
+    const isRtl = (['arabic', 'urdu', 'persian', 'hebrew', 'pashto', 'sindhi', 'uyghur', 'yiddish'].includes(activeLang.id) || activeLang.dir === 'rtl' || !!activeLang.rtl);
+    const fontClass = isPreeti ? ' preeti-font' : (isDevanagari ? ' devanagari-font' : (isRtl ? ' arabic-font' : ''));
+
+    if (container) {
+      container.dir = isRtl ? 'rtl' : 'ltr';
+    }
 
     state.speedtest.words.forEach((word, wIdx) => {
       const wordSpan = document.createElement('span');
