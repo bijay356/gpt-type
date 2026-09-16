@@ -1,6 +1,6 @@
 {
-  "total_posts_published": 9,
-  "last_run_timestamp": "2026-09-16T10:49:11.613601+00:00",
+  "total_posts_published": 10,
+  "last_run_timestamp": "2026-09-16T20:51:39.288325+00:00",
   "published_posts": [
     {
       "id": "6385972940209506963",
@@ -331,7 +331,45 @@
           "reason": "No webhook URL configured"
         }
       }
+    },
+    {
+      "id": "6601439983881496369",
+      "title": "How To Break Through The 60 Wpm Typing Plateau",
+      "url": "https://gpttype.blogspot.com/2026/09/how-to-break-through-60-wpm-typing.html",
+      "status": "LIVE",
+      "primary_keyword": "how to break through 60 wpm typing plateau",
+      "cluster_id": "speed_boosters",
+      "cluster_name": "Speed Boosters & WPM Milestones",
+      "published_at": "2026-09-16T20:51:39.288325+00:00",
+      "social_broadcast": {
+        "telegram": {
+          "status": "success"
+        },
+        "twitter": {
+          "status": "skipped",
+          "reason": "Credentials missing"
+        },
+        "facebook": {
+          "status": "skipped",
+          "reason": "Credentials missing"
+        },
+        "linkedin": {
+          "status": "success"
+        },
+        "reddit": {
+          "status": "skipped",
+          "reason": "Credentials missing"
+        },
+        "instagram": {
+          "status": "skipped",
+          "reason": "Credentials missing"
+        },
+        "universal_webhook": {
+          "status": "skipped",
+          "reason": "No webhook URL configured"
+        }
+      }
     }
   ],
-  "cluster_rotation_index": 0
+  "cluster_rotation_index": 1
 }
