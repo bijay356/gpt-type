@@ -1,6 +1,6 @@
 {
-  "total_posts_published": 8,
-  "last_run_timestamp": "2026-09-15T20:52:27.034668+00:00",
+  "total_posts_published": 9,
+  "last_run_timestamp": "2026-09-16T10:49:11.613601+00:00",
   "published_posts": [
     {
       "id": "6385972940209506963",
@@ -293,7 +293,45 @@
           "reason": "No webhook URL configured"
         }
       }
+    },
+    {
+      "id": "3680656272209531812",
+      "title": "How To Teach Kids To Type Fast And Accurately",
+      "url": "https://gpttype.blogspot.com/2026/09/how-to-teach-kids-to-type-fast-and.html",
+      "status": "LIVE",
+      "primary_keyword": "how to teach kids to type fast and accurately",
+      "cluster_id": "beginner_and_students",
+      "cluster_name": "Beginners, Kids & Touch Typing Basics",
+      "published_at": "2026-09-16T10:49:11.613601+00:00",
+      "social_broadcast": {
+        "telegram": {
+          "status": "success"
+        },
+        "twitter": {
+          "status": "skipped",
+          "reason": "Credentials missing"
+        },
+        "facebook": {
+          "status": "skipped",
+          "reason": "Credentials missing"
+        },
+        "linkedin": {
+          "status": "success"
+        },
+        "reddit": {
+          "status": "skipped",
+          "reason": "Credentials missing"
+        },
+        "instagram": {
+          "status": "skipped",
+          "reason": "Credentials missing"
+        },
+        "universal_webhook": {
+          "status": "skipped",
+          "reason": "No webhook URL configured"
+        }
+      }
     }
   ],
-  "cluster_rotation_index": 5
+  "cluster_rotation_index": 0
 }
