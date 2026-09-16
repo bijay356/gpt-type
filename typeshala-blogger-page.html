@@ -5248,7 +5248,12 @@ input:checked + .slider:before {
   }
 
   function handleSpeedtestKeydown(e) {
-    if (state.currentView !== 'speedtest') return;
+    if (state.currentView !== 'speedtest' || isAnyModalOpen()) return;
+
+    // Allow normal typing in search inputs, modal inputs, etc.
+    if (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') && e.target.id !== 'stHiddenInput') {
+      return;
+    }
 
     if (e.key === 'Tab') {
       e.preventDefault();
@@ -5257,6 +5262,7 @@ input:checked + .slider:before {
     }
 
     if (e.key === 'Backspace') {
+      e.preventDefault();
       handleBackspace();
       return;
     }
@@ -5264,6 +5270,20 @@ input:checked + .slider:before {
     if (e.key === ' ' || e.code === 'Space') {
       e.preventDefault();
       handleSpace();
+      return;
+    }
+
+    // Direct synchronous key handling (identical to Ramayan Game & Classic Tutor)
+    // Intercepts character keys directly, preventing browser IME double-composition or skipped hijai!
+    const isModifier = e.ctrlKey || e.altKey || e.metaKey;
+    const isFunctionKey = /^F\d+$/.test(e.key);
+    if (!isModifier && !isFunctionKey && e.key && e.key.length === 1 && !e.isComposing && e.key !== 'Process') {
+      e.preventDefault();
+      if (state.speedtest.status === 'finished') return;
+      if (state.speedtest.status === 'ready') {
+        startSpeedtest();
+      }
+      processSpeedtestChar(e.key);
       return;
     }
   }
