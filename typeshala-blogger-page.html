@@ -756,27 +756,115 @@ html, body {
 
 /* Smooth Caret */
 
+/* Active Character Symbol Hint: Glowing Vertical Red Marker Above Active Letter (No Underline) */
 .st-char.char-current {
   position: relative;
-  border-bottom: 2.5px solid var(--char-cursor, #eab308);
-  box-shadow: 0 3px 8px -1px rgba(234, 179, 8, 0.55);
+  border-bottom: none !important;
+  box-shadow: none !important;
+}
+
+.st-char.char-current::before {
+  content: '';
+  position: absolute;
+  top: -14px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 3.5px;
+  height: 13px;
+  background: #ef4444;
+  border-radius: 2px;
+  box-shadow: 0 0 8px rgba(239, 68, 68, 0.9), 0 0 16px rgba(239, 68, 68, 0.6);
+  pointer-events: none;
+  z-index: 20;
+  animation: redMarkerPulse 1.1s ease-in-out infinite alternate;
+}
+
+@keyframes redMarkerPulse {
+  0% {
+    opacity: 0.82;
+    transform: translateX(-50%) scaleY(0.92);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(-50%) scaleY(1.08);
+  }
 }
 
 .st-caret {
-  position: absolute;
-  width: 3px;
-  height: 2rem;
-  background-color: var(--char-cursor);
-  border-radius: 2px;
-  transition: left 0.08s ease-out, top 0.08s ease-out;
-  animation: caretBlink 1s infinite;
-  pointer-events: none;
-  z-index: 10;
+  display: none !important;
 }
 
-@keyframes caretBlink {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0; }
+/* Classic Tutor Level Jump Box */
+.level-jump-wrapper {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: rgba(15, 23, 42, 0.65);
+  border: 1px solid var(--border-color, rgba(255, 255, 255, 0.15));
+  border-radius: var(--radius-sm, 6px);
+  padding: 2px 6px;
+  margin: 0 4px;
+}
+
+[data-theme="light"] .level-jump-wrapper {
+  background: rgba(241, 245, 249, 0.95);
+  border-color: #cbd5e1;
+}
+
+.level-jump-lbl {
+  font-size: 0.76rem;
+  font-weight: 700;
+  color: var(--text-muted, #94a3b8);
+  user-select: none;
+}
+
+.input-level-jump {
+  width: 65px;
+  height: 26px;
+  background: var(--bg-surface, #1e293b);
+  border: 1px solid var(--accent, #3b82f6);
+  border-radius: 4px;
+  color: var(--text-main, #f8fafc);
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-align: center;
+  outline: none;
+  padding: 0 4px;
+  transition: all 0.2s ease;
+}
+
+[data-theme="light"] .input-level-jump {
+  background: #ffffff;
+  color: #0f172a;
+  border-color: #3b82f6;
+}
+
+.input-level-jump:focus {
+  border-color: var(--accent-cyan, #38bdf8);
+  box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.35);
+}
+
+.input-level-jump::-webkit-inner-spin-button,
+.input-level-jump::-webkit-outer-spin-button {
+  opacity: 0.7;
+}
+
+.btn-level-go {
+  height: 26px !important;
+  padding: 0 8px !important;
+  font-size: 0.76rem !important;
+  font-weight: 700 !important;
+  background: var(--accent, #3b82f6) !important;
+  color: #ffffff !important;
+  border: none !important;
+  border-radius: 4px !important;
+  cursor: pointer !important;
+  transition: background 0.15s ease !important;
+}
+
+.btn-level-go:hover {
+  background: #2563eb !important;
+}  50% { opacity: 0; }
 }
 
 .st-caret.typing {
@@ -3674,6 +3762,11 @@ input:checked + .slider:before {
           <button class="btn-ctrl-sm" id="btnPrevLesson" title="Previous Lesson">◀ Prev</button>
           <span class="lesson-badge" id="lblLessonNumber">Lesson 1 of 40</span>
           <button class="btn-ctrl-sm" id="btnNextLesson" title="Next Lesson">Next ▶</button>
+          <div class="level-jump-wrapper" title="Jump directly to any level (1-1000)">
+            <label for="inputLevelJump" class="level-jump-lbl">Level:</label>
+            <input type="number" id="inputLevelJump" class="input-level-jump" min="1" max="1000" placeholder="1-1000" title="Type level 1-1000 and press Enter" />
+            <button class="btn-ctrl-sm btn-level-go" id="btnGoLevel" title="Jump to entered level">Go ➔</button>
+          </div>
           <button class="btn-ctrl-sm" id="btnRestartLesson" title="Restart Lesson">↺ Restart</button>
         </div>
       </div>
@@ -4746,10 +4839,19 @@ input:checked + .slider:before {
     const hiddenInput = document.getElementById('stHiddenInput');
     const arena = document.getElementById('stArenaContainer');
     
+    const isTouchDevice = ('ontouchstart' in window) || (typeof navigator !== 'undefined' && navigator.maxTouchPoints > 0);
     if (arena && hiddenInput) {
       arena.addEventListener('click', () => {
-        hiddenInput.focus();
-        document.getElementById('stFocusNotice').classList.remove('visible');
+        if (isTouchDevice) {
+          hiddenInput.focus();
+        } else {
+          // On desktop, keep inputs blurred so raw keystrokes are intercepted directly (identical to Ramayan Game)
+          if (document.activeElement && document.activeElement !== document.body && !isAnyModalOpen()) {
+            if (document.activeElement.id !== 'inputLevelJump') document.activeElement.blur();
+          }
+        }
+        const notice = document.getElementById('stFocusNotice');
+        if (notice) notice.classList.remove('visible');
       });
       
       hiddenInput.addEventListener('input', handleSpeedtestInput);
@@ -5250,9 +5352,15 @@ input:checked + .slider:before {
   function handleSpeedtestKeydown(e) {
     if (state.currentView !== 'speedtest' || isAnyModalOpen()) return;
 
-    // Allow normal typing in search inputs, modal inputs, etc.
+    // Allow normal typing in search inputs, modal inputs, level jump, etc.
     if (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') && e.target.id !== 'stHiddenInput') {
       return;
+    }
+
+    // On desktop, keep hidden input or other focused elements blurred (identical to Ramayan Game)
+    if (document.activeElement && document.activeElement !== document.body && document.activeElement.id === 'stHiddenInput') {
+      const isTouch = ('ontouchstart' in window) || (typeof navigator !== 'undefined' && navigator.maxTouchPoints > 0);
+      if (!isTouch) document.activeElement.blur();
     }
 
     if (e.key === 'Tab') {
@@ -5289,6 +5397,7 @@ input:checked + .slider:before {
   }
 
   // UNIFIED STRICT HIJAI & CASE-SENSITIVE CHARACTER MATCHER (Speed Test, Ramayan Game & Classic Tutor)
+  // UNIFIED STRICT HIJAI & CASE-SENSITIVE CHARACTER MATCHER (Speed Test, Ramayan Game & Classic Tutor)
   function isKeyMatchingTargetChar(pressedKey, targetChar, activeLang, pressedCode, nativeChar) {
     if (!pressedKey || !targetChar) return false;
 
@@ -5321,7 +5430,93 @@ input:checked + .slider:before {
       return false;
     }
 
-    // 5. Script / Layout resolution via getCharInfo
+    // 5. UNIFIED DEVANAGARI & INDIC ROMANIZED SCRIPT MATCHER (All 70 Words & Full Alphabet)
+    const isDevanagari = (activeLang && (
+      activeLang.id === 'nepali_romanized' ||
+      activeLang.id === 'nepali_unicode' ||
+      /^(hindi|sanskrit|marathi|maithili|bhojpuri|newari|tharu|tamang|gurung|magar|sherpa|rai|limbu|quotes_nepali|quotes_hindi|quotes_sanskrit)$/.test(activeLang.id)
+    )) || /[\u0900-\u097F]/.test(targetChar);
+
+    if (isDevanagari) {
+      const k = pressedKey;
+      // 5a. Consonants
+      if (targetChar === 'क' && (k === 'k' || k === 'K')) return true;
+      if (targetChar === 'ख' && (k === 'K' || k === 'k')) return true;
+      if (targetChar === 'ग' && (k === 'g' || k === 'G')) return true;
+      if (targetChar === 'घ' && (k === 'G' || k === 'g')) return true;
+      if (targetChar === 'ङ' && (k === '<' || k === 'G' || k === 'g' || k === ',')) return true;
+      if (targetChar === 'च' && (k === 'c' || k === 'C')) return true;
+      if (targetChar === 'छ' && (k === 'C' || k === 'c')) return true;
+      if (targetChar === 'ज' && (k === 'j' || k === 'J')) return true;
+      if (targetChar === 'झ' && (k === 'J' || k === 'j')) return true;
+      if (targetChar === 'ञ' && (k === 'Y' || k === 'y')) return true;
+      if (targetChar === 'ट' && (k === 'q' || k === 'Q')) return true;
+      if (targetChar === 'ठ' && (k === 'Q' || k === 'q' || k === 'T' || k === 't')) return true;
+      if (targetChar === 'ड' && (k === 'x' || k === 'X' || k === 'd' || k === 'D')) return true;
+      if (targetChar === 'ढ' && (k === 'X' || k === 'x')) return true;
+      if (targetChar === 'ण' && (k === 'N' || k === 'n')) return true;
+      if (targetChar === 'त' && (k === 't' || k === 'T')) return true;
+      if (targetChar === 'थ' && (k === 'T' || k === 't' || k === 'Q' || k === 'q')) return true;
+      if (targetChar === 'द' && (k === 'd' || k === 'D')) return true;
+      if (targetChar === 'ध' && (k === 'D' || k === 'd')) return true;
+      if (targetChar === 'न' && (k === 'n' || k === 'N')) return true;
+      if (targetChar === 'प' && (k === 'p' || k === 'P')) return true;
+      if (targetChar === 'फ' && (k === 'P' || k === 'p' || k === 'F' || k === 'f')) return true;
+      if (targetChar === 'ब' && (k === 'b' || k === 'B')) return true;
+      if (targetChar === 'भ' && (k === 'B' || k === 'b')) return true;
+      if (targetChar === 'म' && (k === 'm' || k === 'M')) return true;
+      if (targetChar === 'य' && (k === 'y' || k === 'Y')) return true;
+      if (targetChar === 'र' && (k === 'r' || k === 'R')) return true;
+      if (targetChar === 'ल' && (k === 'l' || k === 'L')) return true;
+      if (targetChar === 'व' && (k === 'v' || k === 'V' || k === 'w' || k === 'W')) return true;
+      if (targetChar === 'श' && (k === 'S' || k === 's')) return true;
+      if (targetChar === 'ष' && (k === 'R' || k === 'r' || k === 'Z' || k === 'z')) return true;
+      if (targetChar === 'स' && (k === 's' || k === 'S')) return true;
+      if (targetChar === 'ह' && (k === 'h' || k === 'H')) return true;
+      if (targetChar === 'ळ' && (k === 'L' || k === 'l')) return true;
+
+      // 5b. Matras (Vowel signs)
+      if (targetChar === 'ा' && (k === 'a' || k === 'A')) return true;
+      if (targetChar === 'ि' && (k === 'i' || k === 'I')) return true;
+      if (targetChar === 'ी' && (k === 'I' || k === 'i')) return true;
+      if (targetChar === 'ु' && (k === 'u' || k === 'U')) return true;
+      if (targetChar === 'ू' && (k === 'U' || k === 'u')) return true;
+      if (targetChar === 'ृ' && (k === 'R' || k === 'r' || k === 'Z' || k === 'z')) return true;
+      if (targetChar === 'े' && (k === 'e' || k === 'E')) return true;
+      if (targetChar === 'ै' && (k === 'E' || k === 'e')) return true;
+      if (targetChar === 'ो' && (k === 'o' || k === 'O')) return true;
+      if (targetChar === 'ौ' && (k === 'W' || k === 'w')) return true;
+      if (targetChar === '्' && (k === '/' || k === 'd' || k === 'D' || k === '\\')) return true;
+      if (targetChar === 'ं' && (k === 'M' || k === 'm')) return true;
+      if (targetChar === 'ँ' && (k === 'V' || k === 'v' || k === '~')) return true;
+      if (targetChar === 'ः' && (k === ':' || k === '|' || k === '\\')) return true;
+      if (targetChar === '़' && (k === '~' || k === '`')) return true;
+
+      // 5c. Independent Vowels
+      if (targetChar === 'अ' && (k === 'H' || k === 'h' || k === 'a' || k === 'A')) return true;
+      if (targetChar === 'आ' && (k === 'A' || k === 'a')) return true;
+      if (targetChar === 'इ' && (k === '[' || k === 'i' || k === 'I')) return true;
+      if (targetChar === 'ई' && (k === '{' || k === 'I' || k === 'i')) return true;
+      if (targetChar === 'उ' && (k === 'f' || k === 'u' || k === 'U')) return true;
+      if (targetChar === 'ऊ' && (k === 'F' || k === 'U' || k === 'u')) return true;
+      if (targetChar === 'ऋ' && (k === 'Z' || k === 'z' || k === 'R' || k === 'r')) return true;
+      if (targetChar === 'ए' && (k === ']' || k === 'e' || k === 'E')) return true;
+      if (targetChar === 'ऐ' && (k === '}' || k === 'E' || k === 'e')) return true;
+      if (targetChar === 'ओ' && (k === 'O' || k === 'o')) return true;
+      if (targetChar === 'औ' && (k === 'W' || k === 'w')) return true;
+
+      // 5d. Punctuation & Symbols
+      if (targetChar === '।' && (k === '.' || k === '|')) return true;
+      if (targetChar === '॥' && (k === '>' || k === '|' || k === '.')) return true;
+      if (targetChar === 'ॐ' && (k === '\\' || k === 'o' || k === 'O')) return true;
+      if (targetChar === 'ऽ' && (k === '`' || k === "'")) return true;
+
+      // 5e. Devanagari Digits
+      const devDigits = {'०':'0','१':'1','२':'2','३':'3','४':'4','५':'5','६':'6','७':'7','८':'8','९':'9'};
+      if (devDigits[targetChar] && devDigits[targetChar] === k) return true;
+    }
+
+    // 6. Script / Layout resolution via getCharInfo (for other languages and scripts)
     const charInfo = getCharInfo(targetChar, activeLang);
     if (!charInfo) return false;
 
@@ -5330,98 +5525,18 @@ input:checked + .slider:before {
     const targetLower = (charInfo.keyCode && typeof charInfo.keyCode === 'string') ? charInfo.keyCode.toLowerCase() : '';
 
     if (isShiftRequired) {
-      // STRICT SHIFT MATCHING:
-      // If target has uppercase/lowercase distinction, pressedKey MUST be uppercase!
       if (targetUpper && targetUpper !== targetLower) {
         if (pressedKey === targetUpper) return true;
       }
       if (charInfo.fallbackKey && pressedKey.toUpperCase() === charInfo.fallbackKey.toUpperCase()) return true;
-
-      // Specific Indic Romanized shifted keystroke mappings
-      const langId = activeLang ? activeLang.id : '';
-      if (langId === 'nepali_romanized' || langId === 'nepali_unicode' || /^(hindi|sanskrit|marathi|maithili|bhojpuri|newari|tharu|tamang|gurung|magar|sherpa|rai|limbu)$/.test(langId)) {
-        if (targetChar === 'ख' && (pressedKey === 'K' || pressedKey === 'k')) return true;
-        if (targetChar === 'घ' && (pressedKey === 'G' || pressedKey === 'g')) return true;
-        if (targetChar === 'छ' && (pressedKey === 'C' || pressedKey === 'c')) return true;
-        if (targetChar === 'झ' && (pressedKey === 'J' || pressedKey === 'j')) return true;
-        if (targetChar === 'ठ' && (pressedKey === 'Q' || pressedKey === 'q')) return true;
-        if (targetChar === 'ढ' && (pressedKey === 'X' || pressedKey === 'x')) return true;
-        if (targetChar === 'ण' && (pressedKey === 'N' || pressedKey === 'n')) return true;
-        if (targetChar === 'थ' && (pressedKey === 'T' || pressedKey === 't')) return true;
-        if (targetChar === 'ध' && (pressedKey === 'D' || pressedKey === 'd')) return true;
-        if (targetChar === 'फ' && (pressedKey === 'P' || pressedKey === 'F' || pressedKey === 'p' || pressedKey === 'f')) return true;
-        if (targetChar === 'भ' && (pressedKey === 'B' || pressedKey === 'b')) return true;
-        if (targetChar === 'श' && (pressedKey === 'S' || pressedKey === 's')) return true;
-        if (targetChar === 'ष' && (pressedKey === 'R' || pressedKey === 'r' || pressedKey === 'Z' || pressedKey === 'z')) return true;
-        if (targetChar === 'ी' && (pressedKey === 'I' || pressedKey === 'i')) return true;
-        if (targetChar === 'ू' && (pressedKey === 'U' || pressedKey === 'u')) return true;
-        if (targetChar === 'ै' && (pressedKey === 'E' || pressedKey === 'e')) return true;
-        if (targetChar === 'ौ' && (pressedKey === 'W' || pressedKey === 'w')) return true;
-        if (targetChar === 'आ' && (pressedKey === 'A' || pressedKey === 'a')) return true;
-        if (targetChar === 'अ' && (pressedKey === 'H' || pressedKey === 'h' || pressedKey === 'a')) return true;
-        if (targetChar === 'इ' && (pressedKey === '[' || pressedKey === 'i')) return true;
-        if (targetChar === 'ई' && (pressedKey === '{' || pressedKey === 'I')) return true;
-        if (targetChar === 'उ' && (pressedKey === 'f' || pressedKey === 'u')) return true;
-        if (targetChar === 'ऊ' && (pressedKey === 'F' || pressedKey === 'U')) return true;
-        if (targetChar === 'ए' && (pressedKey === ']' || pressedKey === 'e')) return true;
-        if (targetChar === 'ऐ' && (pressedKey === '}' || pressedKey === 'E')) return true;
-        if (targetChar === 'ओ' && (pressedKey === 'O' || pressedKey === 'o')) return true;
-        if (targetChar === 'औ' && (pressedKey === 'W' || pressedKey === 'w')) return true;
-        if (targetChar === 'ञ' && (pressedKey === 'Y' || pressedKey === 'y')) return true;
-        if (targetChar === 'ँ' && (pressedKey === 'V' || pressedKey === 'v' || pressedKey === '~')) return true;
-        if (targetChar === 'ं' && (pressedKey === 'M' || pressedKey === 'm')) return true;
-        if (targetChar === '॥' && (pressedKey === '>' || pressedKey === '|' || pressedKey === '.')) return true;
-        if (targetChar === 'ङ' && (pressedKey === '<' || pressedKey === 'G' || pressedKey === 'g' || pressedKey === ',')) return true;
-        if (targetChar === 'ळ' && (pressedKey === 'L' || pressedKey === 'l')) return true;
-        if (targetChar === 'ः' && (pressedKey === ':' || pressedKey === '|' || pressedKey === '\\')) return true;
-        if (targetChar === '़' && (pressedKey === '~' || pressedKey === '`')) return true;
-        if ((targetChar === 'ऋ' || targetChar === 'ृ') && (pressedKey === 'Z' || pressedKey === 'z' || pressedKey === 'R' || pressedKey === 'r')) return true;
-      }
       return false;
     } else {
-      // STRICT UNSHIFTED MATCHING:
-      // If target has uppercase/lowercase distinction, pressedKey MUST be lowercase!
       if (targetLower && targetUpper !== targetLower) {
         if (pressedKey === targetLower) return true;
       } else {
-        // Unshifted symbol (e.g. '.', ',', '/', '\', etc.)
         if (charInfo.keyCode && pressedKey === charInfo.keyCode) return true;
       }
       if (charInfo.fallbackKey && pressedKey.toLowerCase() === charInfo.fallbackKey.toLowerCase()) return true;
-
-      // Specific Indic Romanized unshifted keystroke mappings
-      const langId = activeLang ? activeLang.id : '';
-      if (langId === 'nepali_romanized' || langId === 'nepali_unicode' || /^(hindi|sanskrit|marathi|maithili|bhojpuri|newari|tharu|tamang|gurung|magar|sherpa|rai|limbu)$/.test(langId)) {
-        if (targetChar === 'क' && (pressedKey === 'k' || pressedKey === 'K')) return true;
-        if (targetChar === 'ग' && (pressedKey === 'g' || pressedKey === 'G')) return true;
-        if (targetChar === 'च' && (pressedKey === 'c' || pressedKey === 'C')) return true;
-        if (targetChar === 'ज' && (pressedKey === 'j' || pressedKey === 'J')) return true;
-        if (targetChar === 'ट' && (pressedKey === 'q' || pressedKey === 'Q')) return true;
-        if (targetChar === 'ड' && (pressedKey === 'x' || pressedKey === 'X' || pressedKey === 'd')) return true;
-        if (targetChar === 'त' && (pressedKey === 't' || pressedKey === 'T')) return true;
-        if (targetChar === 'द' && (pressedKey === 'd' || pressedKey === 'D')) return true;
-        if (targetChar === 'न' && (pressedKey === 'n' || pressedKey === 'N')) return true;
-        if (targetChar === 'प' && (pressedKey === 'p' || pressedKey === 'P')) return true;
-        if (targetChar === 'ब' && (pressedKey === 'b' || pressedKey === 'B')) return true;
-        if (targetChar === 'म' && (pressedKey === 'm' || pressedKey === 'M')) return true;
-        if (targetChar === 'य' && (pressedKey === 'y' || pressedKey === 'Y')) return true;
-        if (targetChar === 'र' && (pressedKey === 'r' || pressedKey === 'R')) return true;
-        if (targetChar === 'ल' && (pressedKey === 'l' || pressedKey === 'L')) return true;
-        if (targetChar === 'व' && (pressedKey === 'v' || pressedKey === 'V')) return true;
-        if (targetChar === 'स' && (pressedKey === 's' || pressedKey === 'S')) return true;
-        if (targetChar === 'ह' && (pressedKey === 'h' || pressedKey === 'H')) return true;
-        if (targetChar === 'ि' && (pressedKey === 'i' || pressedKey === 'I')) return true;
-        if (targetChar === 'ु' && (pressedKey === 'u' || pressedKey === 'U')) return true;
-        if (targetChar === 'े' && (pressedKey === 'e' || pressedKey === 'E')) return true;
-        if (targetChar === 'ो' && (pressedKey === 'o' || pressedKey === 'O')) return true;
-        if (targetChar === 'ा' && (pressedKey === 'a' || pressedKey === 'A')) return true;
-        if (targetChar === '्' && (pressedKey === '/' || pressedKey === 'd' || pressedKey === '\\')) return true;
-        if (targetChar === '।' && (pressedKey === '.' || pressedKey === '|')) return true;
-        if (targetChar === ',' && pressedKey === ',') return true;
-        if (targetChar === 'ॐ' && (pressedKey === '\\' || pressedKey === 'o' || pressedKey === 'O')) return true;
-        if (targetChar === 'ऽ' && (pressedKey === '`' || pressedKey === "'")) return true;
-        if ((targetChar === 'ऋ' || targetChar === 'ृ') && (pressedKey === 'z' || pressedKey === 'r' || pressedKey === 'Z' || pressedKey === 'R')) return true;
-      }
       return false;
     }
   }
@@ -6420,6 +6535,45 @@ input:checked + .slider:before {
       });
     });
 
+    // 5. Level Jump Box Input & Go Button
+    const inputJump = document.getElementById('inputLevelJump');
+    const btnGo = document.getElementById('btnGoLevel');
+
+    function executeLevelJump() {
+      if (!inputJump) return;
+      const val = parseInt(inputJump.value, 10);
+      const cl = state.classic;
+      const total = cl.totalLessons || 1000;
+      if (!isNaN(val) && val >= 1 && val <= total) {
+        cl.lessonIndex = val - 1;
+        loadClassicLesson();
+        inputJump.value = val;
+        inputJump.blur();
+      } else if (isNaN(val) || val < 1) {
+        cl.lessonIndex = 0;
+        loadClassicLesson();
+        inputJump.value = 1;
+        inputJump.blur();
+      } else if (val > total) {
+        cl.lessonIndex = total - 1;
+        loadClassicLesson();
+        inputJump.value = total;
+        inputJump.blur();
+      }
+    }
+
+    if (btnGo) {
+      btnGo.addEventListener('click', executeLevelJump);
+    }
+    if (inputJump) {
+      inputJump.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          executeLevelJump();
+        }
+      });
+    }
+
     // 4. Single / Multi Mode Buttons
     const modeBtns = document.querySelectorAll('#classicModeGroup .pill-btn');
     modeBtns.forEach(btn => {
@@ -6681,6 +6835,11 @@ input:checked + .slider:before {
     const lblLesson = document.getElementById('lblLessonNumber');
     if (lblLesson) {
       lblLesson.textContent = `Lesson ${currentLessonNum} of ${lessonPool.length}`;
+    }
+    const inputJump = document.getElementById('inputLevelJump');
+    if (inputJump) {
+      inputJump.value = currentLessonNum;
+      inputJump.max = lessonPool.length;
     }
 
     const statTime = document.getElementById('statTime');
@@ -7147,7 +7306,7 @@ input:checked + .slider:before {
 
   function handleClassicKeydown(e) {
     if (state.currentView !== 'classic' || isAnyModalOpen()) return;
-    if (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA')) return;
+    if (e.target && (e.target.id === 'inputLevelJump' || e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA')) return;
 
     // Remove focus from any button, link or dropdown so Space/Enter never triggers them
     if (document.activeElement && document.activeElement !== document.body && typeof document.activeElement.blur === 'function') {
