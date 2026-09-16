@@ -4772,6 +4772,7 @@ input:checked + .slider:before {
       
       hiddenInput.addEventListener('input', handleSpeedtestInput);
       hiddenInput.addEventListener('keydown', handleSpeedtestKeydown);
+      hiddenInput.addEventListener('paste', (e) => e.preventDefault());
       
       hiddenInput.addEventListener('blur', () => {
         if (state.currentView === 'speedtest' && state.speedtest.status === 'running') {
@@ -5288,6 +5289,131 @@ input:checked + .slider:before {
     }
   }
 
+  // UNIFIED STRICT HIJAI & CASE-SENSITIVE CHARACTER MATCHER (Speed Test, Ramayan Game & Classic Tutor)
+  function isKeyMatchingTargetChar(pressedKey, targetChar, activeLang, pressedCode, nativeChar) {
+    if (!pressedKey || !targetChar) return false;
+
+    // 1. Direct native character match (e.g. Indic keyboard typing directly, or identical Latin character)
+    if (pressedKey === targetChar || (nativeChar && nativeChar === targetChar)) return true;
+
+    // 2. Special control keys
+    if (targetChar === '\n' || targetChar === '\r') {
+      return (pressedKey === 'Enter' || pressedCode === 'Enter');
+    }
+    if (targetChar === ' ') {
+      return (pressedKey === ' ' || pressedKey === 'Space' || pressedCode === 'Space');
+    }
+
+    // 3. Preeti (Traditional Nepali) layout
+    const isPreeti = (activeLang && (activeLang.id === 'nepali_preeti' || !!activeLang.isPreeti));
+    if (isPreeti) {
+      const validChars = PREETI_UNICODE_MAP[pressedKey] || [pressedKey];
+      return (pressedKey === targetChar || validChars.includes(targetChar) || (nativeChar && nativeChar === targetChar));
+    }
+
+    // 4. Latin and case-sensitive scripts
+    const isLatinChar = /^[a-zA-Z0-9\s.,!?:;'"~@#$%^&*()_+\-=\[\]{}|<>\/\\]$/.test(targetChar);
+    if (isLatinChar) {
+      if (pressedKey === targetChar) return true;
+      try {
+        const normTarget = targetChar.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+        if (pressedKey === normTarget) return true;
+      } catch (e) {}
+      return false;
+    }
+
+    // 5. Script / Layout resolution via getCharInfo
+    const charInfo = getCharInfo(targetChar, activeLang);
+    if (!charInfo) return false;
+
+    const isShiftRequired = !!charInfo.shift || '!@#$%^&*()_+{}|:"<>?~'.includes(targetChar);
+    const targetUpper = (charInfo.keyCode && typeof charInfo.keyCode === 'string') ? charInfo.keyCode.toUpperCase() : '';
+    const targetLower = (charInfo.keyCode && typeof charInfo.keyCode === 'string') ? charInfo.keyCode.toLowerCase() : '';
+
+    if (isShiftRequired) {
+      // STRICT SHIFT MATCHING:
+      // If target has uppercase/lowercase distinction, pressedKey MUST be uppercase!
+      if (targetUpper && targetUpper !== targetLower) {
+        if (pressedKey === targetUpper) return true;
+      }
+      if (charInfo.fallbackKey && pressedKey.toUpperCase() === charInfo.fallbackKey.toUpperCase()) return true;
+
+      // Specific Indic Romanized shifted keystroke mappings
+      const langId = activeLang ? activeLang.id : '';
+      if (langId === 'nepali_romanized' || langId === 'nepali_unicode' || /^(hindi|sanskrit|marathi|maithili|bhojpuri|newari|tharu|tamang|gurung|magar|sherpa|rai|limbu)$/.test(langId)) {
+        if (targetChar === 'ख' && pressedKey === 'K') return true;
+        if (targetChar === 'घ' && pressedKey === 'G') return true;
+        if (targetChar === 'छ' && pressedKey === 'C') return true;
+        if (targetChar === 'झ' && pressedKey === 'J') return true;
+        if (targetChar === 'ठ' && pressedKey === 'Q') return true;
+        if (targetChar === 'ढ' && pressedKey === 'X') return true;
+        if (targetChar === 'ण' && pressedKey === 'N') return true;
+        if (targetChar === 'थ' && pressedKey === 'T') return true;
+        if (targetChar === 'ध' && pressedKey === 'D') return true;
+        if (targetChar === 'फ' && (pressedKey === 'P' || pressedKey === 'F')) return true;
+        if (targetChar === 'भ' && pressedKey === 'B') return true;
+        if (targetChar === 'श' && pressedKey === 'S') return true;
+        if (targetChar === 'ष' && pressedKey === 'R') return true;
+        if (targetChar === 'ी' && pressedKey === 'I') return true;
+        if (targetChar === 'ू' && pressedKey === 'U') return true;
+        if (targetChar === 'ै' && pressedKey === 'E') return true;
+        if (targetChar === 'ौ' && pressedKey === 'W') return true;
+        if (targetChar === 'आ' && pressedKey === 'A') return true;
+        if (targetChar === '॥' && (pressedKey === '>' || pressedKey === '|')) return true;
+        if (targetChar === 'ङ' && (pressedKey === '<' || pressedKey === 'G')) return true;
+        if (targetChar === 'ळ' && pressedKey === 'L') return true;
+        if (targetChar === 'ः' && (pressedKey === ':' || pressedKey === '|')) return true;
+        if (targetChar === '़' && (pressedKey === '~' || pressedKey === '`')) return true;
+      }
+      return false;
+    } else {
+      // STRICT UNSHIFTED MATCHING:
+      // If target has uppercase/lowercase distinction, pressedKey MUST be lowercase!
+      if (targetLower && targetUpper !== targetLower) {
+        if (pressedKey === targetLower) return true;
+      } else {
+        // Unshifted symbol (e.g. '.', ',', '/', '\\', etc.)
+        if (charInfo.keyCode && pressedKey === charInfo.keyCode) return true;
+      }
+      if (charInfo.fallbackKey && pressedKey.toLowerCase() === charInfo.fallbackKey.toLowerCase()) return true;
+
+      // Specific Indic Romanized unshifted keystroke mappings
+      const langId = activeLang ? activeLang.id : '';
+      if (langId === 'nepali_romanized' || langId === 'nepali_unicode' || /^(hindi|sanskrit|marathi|maithili|bhojpuri|newari|tharu|tamang|gurung|magar|sherpa|rai|limbu)$/.test(langId)) {
+        if (targetChar === 'क' && pressedKey === 'k') return true;
+        if (targetChar === 'ग' && pressedKey === 'g') return true;
+        if (targetChar === 'च' && pressedKey === 'c') return true;
+        if (targetChar === 'ज' && pressedKey === 'j') return true;
+        if (targetChar === 'ट' && pressedKey === 'q') return true;
+        if (targetChar === 'ड' && pressedKey === 'x') return true;
+        if (targetChar === 'त' && pressedKey === 't') return true;
+        if (targetChar === 'द' && pressedKey === 'd') return true;
+        if (targetChar === 'न' && pressedKey === 'n') return true;
+        if (targetChar === 'प' && pressedKey === 'p') return true;
+        if (targetChar === 'ब' && pressedKey === 'b') return true;
+        if (targetChar === 'म' && pressedKey === 'm') return true;
+        if (targetChar === 'य' && pressedKey === 'y') return true;
+        if (targetChar === 'र' && pressedKey === 'r') return true;
+        if (targetChar === 'ल' && pressedKey === 'l') return true;
+        if (targetChar === 'व' && pressedKey === 'v') return true;
+        if (targetChar === 'स' && pressedKey === 's') return true;
+        if (targetChar === 'ह' && pressedKey === 'h') return true;
+        if (targetChar === 'ि' && pressedKey === 'i') return true;
+        if (targetChar === 'ु' && pressedKey === 'u') return true;
+        if (targetChar === 'े' && pressedKey === 'e') return true;
+        if (targetChar === 'ो' && pressedKey === 'o') return true;
+        if (targetChar === 'ा' && pressedKey === 'a') return true;
+        if (targetChar === '्' && (pressedKey === '/' || pressedKey === 'd')) return true;
+        if (targetChar === '।' && pressedKey === '.') return true;
+        if (targetChar === ',' && pressedKey === ',') return true;
+        if (targetChar === 'ॐ' && (pressedKey === '\\' || pressedKey === 'o')) return true;
+        if (targetChar === 'ऽ' && (pressedKey === '`' || pressedKey === "'")) return true;
+        if ((targetChar === 'ऋ' || targetChar === 'ृ') && (pressedKey === 'z' || pressedKey === 'r')) return true;
+      }
+      return false;
+    }
+  }
+
   function handleSpeedtestInput(e) {
     const sp = state.speedtest;
     if (sp.status === 'finished') return;
@@ -5302,18 +5428,19 @@ input:checked + .slider:before {
     if (!val) return;
 
     // Handle space characters smoothly (supports mobile keyboards, IMEs & touch)
-    if (val === ' ' || val === ' ') {
+    if (val === ' ' || val === '\u00A0') {
       handleSpace();
       return;
     }
 
-    for (let i = 0; i < val.length; i++) {
-      const char = val[i];
-      if (char === ' ' || char === ' ') {
-        handleSpace();
-      } else {
-        processSpeedtestChar(char);
-      }
+    // Direct word prevention: each keystroke must type one hijai character
+    // If a multi-character string was entered at once (e.g. from transliteration autocomplete or paste),
+    // only take the first character so the user must type each hijai letter/matra!
+    const char = val[0];
+    if (char === ' ' || char === '\u00A0') {
+      handleSpace();
+    } else {
+      processSpeedtestChar(char);
     }
   }
 
@@ -5340,81 +5467,34 @@ input:checked + .slider:before {
 
     if (sp.charIndex < currentWord.length) {
       const targetChar = currentWord[sp.charIndex];
+      const activeLang = sp.activeLang || LANGUAGES_DATA[0];
 
-      let isMatch = (char === targetChar);
-      if (!isMatch) {
-        const activeLang = sp.activeLang || LANGUAGES_DATA[0];
-        const isPreeti = (activeLang.id === 'nepali_preeti' || !!activeLang.isPreeti);
-        if (isPreeti) {
-          const validChars = PREETI_UNICODE_MAP[char] || [char];
-          isMatch = (validChars.includes(targetChar) || (targetChar && char.toLowerCase() === targetChar.toLowerCase()));
-        } else {
-          const info = getCharInfo(targetChar);
-          if (info && info.keyCode && char.toLowerCase() === info.keyCode.toLowerCase()) {
-            isMatch = true;
-          } else if (info && info.fallbackKey && char.toLowerCase() === info.fallbackKey.toLowerCase()) {
-            isMatch = true;
-          }
-          if (!isMatch && (activeLang.id === 'nepali_romanized' || activeLang.id === 'nepali_unicode')) {
-            if (targetChar === 'फ' && (char === 'P' || char === 'p' || char.toLowerCase() === 'f')) isMatch = true;
-            else if (targetChar === 'ी' && (char === 'I' || char.toLowerCase() === 'i')) isMatch = true;
-            else if (targetChar === 'ि' && char.toLowerCase() === 'i') isMatch = true;
-            else if (targetChar === 'ू' && (char === 'U' || char.toLowerCase() === 'u')) isMatch = true;
-            else if (targetChar === 'ु' && char.toLowerCase() === 'u') isMatch = true;
-            else if (targetChar === 'ै' && (char === 'E' || char.toLowerCase() === 'e')) isMatch = true;
-            else if (targetChar === 'े' && char.toLowerCase() === 'e') isMatch = true;
-            else if (targetChar === 'ौ' && (char === 'W' || char.toLowerCase() === 'w')) isMatch = true;
-            else if (targetChar === 'ो' && char.toLowerCase() === 'o') isMatch = true;
-            else if (targetChar === 'आ' && (char === 'A' || char.toLowerCase() === 'a')) isMatch = true;
-            else if (targetChar === 'ा' && char.toLowerCase() === 'a') isMatch = true;
-            else if (targetChar === '्' && (char === '/' || char === '\\' || char.toLowerCase() === 'd')) isMatch = true;
-            else if (targetChar === '।' && (char === '.' || char === '|')) isMatch = true;
-            else if (targetChar === '॥' && (char === '.' || char === '>' || char.toLowerCase() === 'l')) isMatch = true;
-            else if (targetChar === 'ङ' && (char === ',' || char === '<' || char.toLowerCase() === 'g' || char.toLowerCase() === 'n')) isMatch = true;
-            else if (targetChar === 'ळ' && (char === 'L' || char.toLowerCase() === 'l')) isMatch = true;
-            else if (targetChar === 'ः' && (char === '\\' || char === '|' || char === ':')) isMatch = true;
-            else if (targetChar === 'ॐ' && (char === '\\' || char.toLowerCase() === 'o')) isMatch = true;
-            else if (targetChar === 'ऽ' && (char === '`' || char === '~' || char === "'")) isMatch = true;
-            else if ((targetChar === 'ऋ' || targetChar === 'ृ') && (char.toLowerCase() === 'z' || char.toLowerCase() === 'r')) isMatch = true;
-            else if (targetChar === 'ख' && (char === 'K' || char.toLowerCase() === 'k')) isMatch = true;
-            else if (targetChar === 'घ' && (char === 'G' || char.toLowerCase() === 'g')) isMatch = true;
-            else if (targetChar === 'छ' && (char === 'C' || char.toLowerCase() === 'c')) isMatch = true;
-            else if (targetChar === 'झ' && (char === 'J' || char.toLowerCase() === 'j')) isMatch = true;
-            else if (targetChar === 'ठ' && (char === 'Q' || char.toLowerCase() === 'q')) isMatch = true;
-            else if (targetChar === 'ढ' && (char === 'X' || char.toLowerCase() === 'x')) isMatch = true;
-            else if (targetChar === 'ण' && (char === 'N' || char.toLowerCase() === 'n')) isMatch = true;
-            else if (targetChar === 'थ' && (char === 'T' || char.toLowerCase() === 't')) isMatch = true;
-            else if (targetChar === 'ध' && (char === 'D' || char.toLowerCase() === 'd')) isMatch = true;
-            else if (targetChar === 'भ' && (char === 'B' || char.toLowerCase() === 'b')) isMatch = true;
-            else if (targetChar === 'श' && (char === 'S' || char.toLowerCase() === 's')) isMatch = true;
-          }
-          if (!isMatch) {
-            try {
-              const normTarget = targetChar.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
-              if (char.toLowerCase() === normTarget) isMatch = true;
-            } catch(e) {}
-          }
-        }
-      }
+      const isMatch = isKeyMatchingTargetChar(char, targetChar, activeLang);
 
       if (isMatch) {
-        if (charEl) charEl.classList.add('char-correct');
+        if (charEl) {
+          charEl.classList.remove('char-wrong');
+          charEl.classList.add('char-correct');
+        }
         sp.correctChars++;
         playSound('keypress');
         sp.charIndex++;
       } else {
-        if (charEl) charEl.classList.add('char-wrong');
+        if (charEl) {
+          charEl.classList.add('char-wrong');
+        }
         sp.wrongChars++;
         sp.secondErrors++;
         playSound('wrongkey');
-        sp.charIndex++;
+        // STRICT HIJAI: Do NOT advance sp.charIndex on error!
+        // The user must type the correct hijai letter/matra to proceed!
         if (sp.masterMode) {
           triggerMasterModeFailure();
           return;
         }
       }
     } else if (sp.charIndex < currentWord.length + 10) {
-      // Extra characters
+      // Extra characters typed beyond word length
       const wordEl = document.getElementById('st-word-' + sp.wordIndex);
       if (wordEl) {
         const extraSpan = document.createElement('span');
@@ -5438,10 +5518,23 @@ input:checked + .slider:before {
 
   function handleBackspace() {
     const sp = state.speedtest;
-    if (sp.charIndex === 0) return;
-
     const currentWord = sp.words[sp.wordIndex];
     if (!currentWord) return;
+
+    // 1. If currently on an un-advanced wrong character, clear its error display
+    if (sp.charIndex < currentWord.length) {
+      const currentCharEl = document.getElementById(`st-char-${sp.wordIndex}-${sp.charIndex}`);
+      if (currentCharEl && currentCharEl.classList.contains('char-wrong')) {
+        currentCharEl.classList.remove('char-wrong');
+        currentCharEl.className = 'st-char';
+        updateCaretPosition();
+        updateLiveMetrics();
+        return;
+      }
+    }
+
+    // 2. If at start of word, cannot backspace further
+    if (sp.charIndex === 0) return;
 
     sp.charIndex--;
     const wordEl = document.getElementById('st-word-' + sp.wordIndex);
@@ -5477,22 +5570,24 @@ input:checked + .slider:before {
       if (!currentWord) return;
     }
 
-    // Mark remaining characters in word as missed
+    // STRICT HIJAI: Incomplete words cannot be skipped with Space!
+    // The user MUST type the hijai for all characters in the word!
     if (cIdx < currentWord.length) {
-      for (let i = cIdx; i < currentWord.length; i++) {
-        const charEl = document.getElementById(`st-char-${wIdx}-${i}`);
-        if (charEl) {
-          charEl.classList.add('char-missed');
-          sp.missedChars++;
-          sp.secondErrors++;
-        }
+      playSound('wrongkey');
+      sp.secondErrors++;
+      const charEl = document.getElementById(`st-char-${wIdx}-${cIdx}`);
+      if (charEl) {
+        charEl.classList.add('char-wrong');
       }
       if (sp.masterMode) {
         triggerMasterModeFailure();
-        return;
       }
+      updateCaretPosition();
+      updateLiveMetrics();
+      return; // DO NOT ADVANCE WORD!
     }
 
+    // Word is fully complete! Advance to next word.
     sp.wordIndex++;
     sp.charIndex = 0;
 
@@ -5504,8 +5599,8 @@ input:checked + .slider:before {
       return;
     }
 
-    scrollWordsIfNeeded();
     updateCaretPosition();
+    updateLiveMetrics();
   }
 
   function updateCaretPosition() {
@@ -6641,7 +6736,7 @@ input:checked + .slider:before {
     }
   }
 
-  function getCharInfo(targetChar) {
+  function getCharInfo(targetChar, langOverride = null) {
     if (!targetChar) return null;
     if (targetChar === '\n' || targetChar === '\r') {
       return {
@@ -6665,15 +6760,17 @@ input:checked + .slider:before {
     }
 
     const cl = state.classic || {};
-    let activeLang = LANGUAGES_DATA[0];
-    if (state.currentView === 'game' && state.game && state.game.activeLang) {
-      activeLang = state.game.activeLang;
-    } else if (state.currentView === 'speedtest' && state.speedtest && state.speedtest.activeLang) {
-      activeLang = state.speedtest.activeLang;
-    } else if (cl && cl.activeLang) {
-      activeLang = cl.activeLang;
-    } else if (state.speedtest && state.speedtest.activeLang) {
-      activeLang = state.speedtest.activeLang;
+    let activeLang = langOverride || LANGUAGES_DATA[0];
+    if (!langOverride) {
+      if (state.currentView === 'game' && state.game && state.game.activeLang) {
+        activeLang = state.game.activeLang;
+      } else if (state.currentView === 'speedtest' && state.speedtest && state.speedtest.activeLang) {
+        activeLang = state.speedtest.activeLang;
+      } else if (cl && cl.activeLang) {
+        activeLang = cl.activeLang;
+      } else if (state.speedtest && state.speedtest.activeLang) {
+        activeLang = state.speedtest.activeLang;
+      }
     }
     const isPreeti = (activeLang && (activeLang.id === 'nepali_preeti' || activeLang.isPreeti));
     const script = (activeLang && activeLang.id && LANG_SCRIPT_MAP[activeLang.id]) || (isPreeti || (cl && cl.layout === 'traditional') ? 'preeti' : 'latin');
@@ -6835,93 +6932,13 @@ input:checked + .slider:before {
     }
 
     const targetChar = cl.lessonText[cl.charIndex];
-    let isCorrect = false;
-
-    if (targetChar === '\\n' || targetChar === '\\r') {
-      isCorrect = (pressedKey === 'Enter' || pressedCode === 'Enter');
-    } else if (cl.layout === 'traditional') {
-      const validChars = PREETI_UNICODE_MAP[pressedKey] || [pressedKey];
-      isCorrect = (pressedKey === targetChar || validChars.includes(targetChar) || (nativeChar && nativeChar === targetChar));
-    } else {
-      const charInfo = getCharInfo(targetChar);
-      const isShiftRequired = (charInfo && charInfo.shift) || 
-                              (targetChar !== targetChar.toLowerCase() && targetChar === targetChar.toUpperCase()) || 
-                              '!@#$%^&*()_+{}|:"<>?~'.includes(targetChar);
-
-      if (isShiftRequired) {
-        // Shifted key matching: accepts native character, shifted keycode, and phonetic fallbacks
-        isCorrect = (
-          pressedKey === targetChar ||
-          (nativeChar && nativeChar === targetChar) ||
-          (charInfo && (
-            (charInfo.keyCode && (
-              pressedKey === charInfo.keyCode.toUpperCase() ||
-              pressedKey === charInfo.keyCode ||
-              pressedCode === 'Key' + charInfo.keyCode.toUpperCase()
-            )) ||
-            (charInfo.fallbackKey && (
-              pressedKey.toLowerCase() === charInfo.fallbackKey.toLowerCase() ||
-              pressedCode === 'Key' + charInfo.fallbackKey.toUpperCase()
-            ))
-          )) ||
-          (targetChar === 'फ' && (pressedKey === 'P' || pressedKey === 'p' || pressedKey.toLowerCase() === 'f')) ||
-          (targetChar === 'ी' && (pressedKey === 'I' || pressedKey.toLowerCase() === 'i')) ||
-          (targetChar === 'ू' && (pressedKey === 'U' || pressedKey.toLowerCase() === 'u')) ||
-          (targetChar === 'ै' && (pressedKey === 'E' || pressedKey.toLowerCase() === 'e')) ||
-          (targetChar === 'ौ' && (pressedKey === 'W' || pressedKey.toLowerCase() === 'w')) ||
-          (targetChar === 'आ' && (pressedKey === 'A' || pressedKey.toLowerCase() === 'a')) ||
-          (targetChar === 'ख' && (pressedKey === 'K' || pressedKey.toLowerCase() === 'k')) ||
-          (targetChar === 'घ' && (pressedKey === 'G' || pressedKey.toLowerCase() === 'g')) ||
-          (targetChar === 'छ' && (pressedKey === 'C' || pressedKey.toLowerCase() === 'c')) ||
-          (targetChar === 'झ' && (pressedKey === 'J' || pressedKey.toLowerCase() === 'j')) ||
-          (targetChar === 'ठ' && (pressedKey === 'Q' || pressedKey.toLowerCase() === 'q')) ||
-          (targetChar === 'ढ' && (pressedKey === 'X' || pressedKey.toLowerCase() === 'x')) ||
-          (targetChar === 'थ' && (pressedKey === 'T' || pressedKey.toLowerCase() === 't')) ||
-          (targetChar === 'ध' && (pressedKey === 'D' || pressedKey.toLowerCase() === 'd')) ||
-          (targetChar === 'भ' && (pressedKey === 'B' || pressedKey.toLowerCase() === 'b')) ||
-          (targetChar === 'श' && (pressedKey === 'S' || pressedKey.toLowerCase() === 's')) ||
-          (targetChar === 'ङ' && (pressedKey === ',' || pressedKey === '<' || pressedKey.toLowerCase() === 'g' || pressedKey.toLowerCase() === 'n')) ||
-          (targetChar === 'ळ' && (pressedKey === 'L' || pressedKey.toLowerCase() === 'l')) ||
-          (targetChar === '॥' && (pressedKey === '.' || pressedKey === '>' || pressedKey.toLowerCase() === 'l')) ||
-          (targetChar === 'ः' && (pressedKey === '\\' || pressedKey === '|' || pressedKey === ':')) ||
-          (targetChar === 'ऋ' && (pressedKey === 'Z' || pressedKey.toLowerCase() === 'z' || pressedKey.toLowerCase() === 'r'))
-        );
-      } else {
-        if (targetChar >= 'a' && targetChar <= 'z') {
-          // Lowercase Latin requires EXACT lowercase key (no Shift!)
-          isCorrect = (pressedKey === targetChar);
-        } else {
-          isCorrect = (
-            pressedKey === targetChar ||
-            (nativeChar && nativeChar === targetChar) ||
-            (targetChar === ' ' && (pressedKey === ' ' || pressedCode === 'Space')) ||
-            (charInfo && (
-              (charInfo.keyCode && (
-                pressedKey === charInfo.keyCode ||
-                pressedKey.toLowerCase() === charInfo.keyCode.toLowerCase() ||
-                pressedCode === 'Key' + charInfo.keyCode.toUpperCase()
-              )) ||
-              (charInfo.fallbackKey && (
-                pressedKey.toLowerCase() === charInfo.fallbackKey.toLowerCase()
-              ))
-            )) ||
-            (targetChar === 'फ' && (pressedKey.toLowerCase() === 'p' || pressedKey.toLowerCase() === 'f')) ||
-            (targetChar === 'ी' && pressedKey.toLowerCase() === 'i') ||
-            (targetChar === 'ि' && pressedKey.toLowerCase() === 'i') ||
-            (targetChar === '्' && (pressedKey === '/' || pressedKey === '\\' || pressedKey.toLowerCase() === 'd')) ||
-            (targetChar === '।' && (pressedKey === '.' || pressedKey === '|')) ||
-            (targetChar === 'ॐ' && (pressedKey === '\\' || pressedKey.toLowerCase() === 'o')) ||
-            (targetChar === 'ऽ' && (pressedKey === '`' || pressedKey === '~' || pressedKey === "'"))
-          );
-        }
-      }
-    }
+    const isCorrect = isKeyMatchingTargetChar(pressedKey, targetChar, cl.activeLang, pressedCode, nativeChar);
 
     if (isCorrect) {
       cl.correctCount++;
       cl.charIndex++;
       playSound('keypress');
-    } else if (!['Shift', 'Control', 'Alt', 'Meta', 'CapsLock'].includes(pressedKey)) {
+    } else {
       cl.errorCount++;
       playSound('wrongkey');
     }
@@ -7617,77 +7634,8 @@ input:checked + .slider:before {
 
     const arrow = demonArrows[0];
     const targetChar = arrow.word[arrow.typed];
-    let isMatch = false;
-    const gLang = state.game.activeLang;
-    const isPreeti = (gLang && (gLang.id === 'nepali_preeti' || gLang.isPreeti));
-
-    if (isPreeti) {
-      const validChars = PREETI_UNICODE_MAP[key] || [key];
-      isMatch = (
-        key === targetChar || 
-        validChars.includes(targetChar) || 
-        (targetChar && key.toLowerCase() === targetChar.toLowerCase())
-      );
-    } else {
-      // 1. Direct match
-      if (key === targetChar || (targetChar && key.toLowerCase() === targetChar.toLowerCase())) {
-        isMatch = true;
-      } else {
-        // 2. Phonetic / Virtual keyboard resolution
-        const info = getCharInfo(targetChar);
-        if (info && info.keyCode) {
-          if (key.toLowerCase() === info.keyCode.toLowerCase()) {
-            isMatch = true;
-          }
-        }
-        if (!isMatch && info && info.fallbackKey) {
-          if (key.toLowerCase() === info.fallbackKey.toLowerCase()) {
-            isMatch = true;
-          }
-        }
-        // Specific character fallbacks for Nepali Romanized & Indic scripts
-        if (!isMatch && (gLang && (gLang.id === 'nepali_romanized' || gLang.id === 'nepali_unicode'))) {
-          if (targetChar === 'फ' && (key === 'P' || key === 'p' || key.toLowerCase() === 'f')) isMatch = true;
-          else if (targetChar === 'ी' && (key === 'I' || key.toLowerCase() === 'i')) isMatch = true;
-          else if (targetChar === 'ि' && key.toLowerCase() === 'i') isMatch = true;
-          else if (targetChar === 'ू' && (key === 'U' || key.toLowerCase() === 'u')) isMatch = true;
-          else if (targetChar === 'ु' && key.toLowerCase() === 'u') isMatch = true;
-          else if (targetChar === 'ै' && (key === 'E' || key.toLowerCase() === 'e')) isMatch = true;
-          else if (targetChar === 'े' && key.toLowerCase() === 'e') isMatch = true;
-          else if (targetChar === 'ौ' && (key === 'W' || key.toLowerCase() === 'w')) isMatch = true;
-          else if (targetChar === 'ो' && key.toLowerCase() === 'o') isMatch = true;
-          else if (targetChar === 'आ' && (key === 'A' || key.toLowerCase() === 'a')) isMatch = true;
-          else if (targetChar === 'ा' && key.toLowerCase() === 'a') isMatch = true;
-          else if (targetChar === '्' && (key === '/' || key === '\\' || key.toLowerCase() === 'd')) isMatch = true;
-          else if (targetChar === '।' && (key === '.' || key === '|')) isMatch = true;
-          else if (targetChar === '॥' && (key === '.' || key === '>' || key.toLowerCase() === 'l')) isMatch = true;
-          else if (targetChar === 'ङ' && (key === ',' || key === '<' || key.toLowerCase() === 'g' || key.toLowerCase() === 'n')) isMatch = true;
-          else if (targetChar === 'ळ' && (key === 'L' || key.toLowerCase() === 'l')) isMatch = true;
-          else if (targetChar === 'ः' && (key === '\\' || key === '|' || key === ':')) isMatch = true;
-          else if (targetChar === 'ॐ' && (key === '\\' || key.toLowerCase() === 'o')) isMatch = true;
-          else if (targetChar === 'ऽ' && (key === '`' || key === '~' || key === "'")) isMatch = true;
-          else if ((targetChar === 'ऋ' || targetChar === 'ृ') && (key.toLowerCase() === 'z' || key.toLowerCase() === 'r')) isMatch = true;
-          else if (targetChar === 'ख' && (key === 'K' || key.toLowerCase() === 'k')) isMatch = true;
-          else if (targetChar === 'घ' && (key === 'G' || key.toLowerCase() === 'g')) isMatch = true;
-          else if (targetChar === 'छ' && (key === 'C' || key.toLowerCase() === 'c')) isMatch = true;
-          else if (targetChar === 'झ' && (key === 'J' || key.toLowerCase() === 'j')) isMatch = true;
-          else if (targetChar === 'ठ' && (key === 'Q' || key.toLowerCase() === 'q')) isMatch = true;
-          else if (targetChar === 'ढ' && (key === 'X' || key.toLowerCase() === 'x')) isMatch = true;
-          else if (targetChar === 'ण' && (key === 'N' || key.toLowerCase() === 'n')) isMatch = true;
-          else if (targetChar === 'थ' && (key === 'T' || key.toLowerCase() === 't')) isMatch = true;
-          else if (targetChar === 'ध' && (key === 'D' || key.toLowerCase() === 'd')) isMatch = true;
-          else if (targetChar === 'भ' && (key === 'B' || key.toLowerCase() === 'b')) isMatch = true;
-          else if (targetChar === 'श' && (key === 'S' || key.toLowerCase() === 's')) isMatch = true;
-        }
-        // 3. Diacritic normalization
-        try {
-          const normTarget = targetChar.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
-          if (key.toLowerCase() === normTarget) {
-            isMatch = true;
-          }
-        } catch (err) {}
-      }
-    }
+    const gLang = state.game.activeLang || LANGUAGES_DATA[0];
+    const isMatch = isKeyMatchingTargetChar(key, targetChar, gLang);
 
     if (!['Shift', 'Control', 'Alt', 'Meta', 'Tab', 'CapsLock'].includes(key)) {
       gameTotalKeys++;
