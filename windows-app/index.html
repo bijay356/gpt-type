@@ -767,11 +767,6 @@ html, body {
   border-bottom: 2.5px solid var(--char-cursor, #eab308);
   box-shadow: 0 3px 8px -1px rgba(234, 179, 8, 0.55);
 }
-  20% { transform: translate(calc(-50% - 5px), -100%); }
-  40% { transform: translate(calc(-50% + 5px), -100%); }
-  60% { transform: translate(calc(-50% - 3px), -100%); }
-  80% { transform: translate(calc(-50% + 3px), -100%); }
-}
 
 .st-caret {
   position: absolute;
@@ -4763,7 +4758,6 @@ input:checked + .slider:before {
       });
       
       hiddenInput.addEventListener('input', handleSpeedtestInput);
-      hiddenInput.addEventListener('keydown', handleSpeedtestKeydown);
       hiddenInput.addEventListener('paste', (e) => e.preventDefault());
       
       hiddenInput.addEventListener('blur', () => {
@@ -4778,13 +4772,8 @@ input:checked + .slider:before {
     }
 
     window.addEventListener('resize', () => { if (state.currentView === 'speedtest') updateCaretPosition(); });
-    window.addEventListener('keydown', (e) => {
-      if (state.currentView === 'speedtest' && !isAnyModalOpen()) {
-        if (e.target.tagName !== 'INPUT' && e.target.tagName !== 'TEXTAREA') {
-          focusSpeedtestInput();
-        }
-      }
-    });
+    // Global keydown listener for Speed Test (identical architecture to Ramayan Game & Classic Tutor)
+    window.addEventListener('keydown', handleSpeedtestKeydown);
   }
 
   function focusSpeedtestInput() {
@@ -5264,7 +5253,12 @@ input:checked + .slider:before {
   }
 
   function handleSpeedtestKeydown(e) {
-    if (state.currentView !== 'speedtest') return;
+    if (state.currentView !== 'speedtest' || isAnyModalOpen()) return;
+
+    // Allow normal typing in search inputs, modal inputs, etc.
+    if (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') && e.target.id !== 'stHiddenInput') {
+      return;
+    }
 
     if (e.key === 'Tab') {
       e.preventDefault();
@@ -5273,6 +5267,7 @@ input:checked + .slider:before {
     }
 
     if (e.key === 'Backspace') {
+      e.preventDefault();
       handleBackspace();
       return;
     }
@@ -5280,6 +5275,20 @@ input:checked + .slider:before {
     if (e.key === ' ' || e.code === 'Space') {
       e.preventDefault();
       handleSpace();
+      return;
+    }
+
+    // Direct synchronous key handling (identical to Ramayan Game & Classic Tutor)
+    // Intercepts character keys directly, preventing browser IME double-composition or skipped hijai!
+    const isModifier = e.ctrlKey || e.altKey || e.metaKey;
+    const isFunctionKey = /^F\d+$/.test(e.key);
+    if (!isModifier && !isFunctionKey && e.key && e.key.length === 1 && !e.isComposing && e.key !== 'Process') {
+      e.preventDefault();
+      if (state.speedtest.status === 'finished') return;
+      if (state.speedtest.status === 'ready') {
+        startSpeedtest();
+      }
+      processSpeedtestChar(e.key);
       return;
     }
   }
@@ -5336,29 +5345,42 @@ input:checked + .slider:before {
       // Specific Indic Romanized shifted keystroke mappings
       const langId = activeLang ? activeLang.id : '';
       if (langId === 'nepali_romanized' || langId === 'nepali_unicode' || /^(hindi|sanskrit|marathi|maithili|bhojpuri|newari|tharu|tamang|gurung|magar|sherpa|rai|limbu)$/.test(langId)) {
-        if (targetChar === 'ख' && pressedKey === 'K') return true;
-        if (targetChar === 'घ' && pressedKey === 'G') return true;
-        if (targetChar === 'छ' && pressedKey === 'C') return true;
-        if (targetChar === 'झ' && pressedKey === 'J') return true;
-        if (targetChar === 'ठ' && pressedKey === 'Q') return true;
-        if (targetChar === 'ढ' && pressedKey === 'X') return true;
-        if (targetChar === 'ण' && pressedKey === 'N') return true;
-        if (targetChar === 'थ' && pressedKey === 'T') return true;
-        if (targetChar === 'ध' && pressedKey === 'D') return true;
-        if (targetChar === 'फ' && (pressedKey === 'P' || pressedKey === 'F')) return true;
-        if (targetChar === 'भ' && pressedKey === 'B') return true;
-        if (targetChar === 'श' && pressedKey === 'S') return true;
-        if (targetChar === 'ष' && pressedKey === 'R') return true;
-        if (targetChar === 'ी' && pressedKey === 'I') return true;
-        if (targetChar === 'ू' && pressedKey === 'U') return true;
-        if (targetChar === 'ै' && pressedKey === 'E') return true;
-        if (targetChar === 'ौ' && pressedKey === 'W') return true;
-        if (targetChar === 'आ' && pressedKey === 'A') return true;
-        if (targetChar === '॥' && (pressedKey === '>' || pressedKey === '|')) return true;
-        if (targetChar === 'ङ' && (pressedKey === '<' || pressedKey === 'G')) return true;
-        if (targetChar === 'ळ' && pressedKey === 'L') return true;
-        if (targetChar === 'ः' && (pressedKey === ':' || pressedKey === '|')) return true;
+        if (targetChar === 'ख' && (pressedKey === 'K' || pressedKey === 'k')) return true;
+        if (targetChar === 'घ' && (pressedKey === 'G' || pressedKey === 'g')) return true;
+        if (targetChar === 'छ' && (pressedKey === 'C' || pressedKey === 'c')) return true;
+        if (targetChar === 'झ' && (pressedKey === 'J' || pressedKey === 'j')) return true;
+        if (targetChar === 'ठ' && (pressedKey === 'Q' || pressedKey === 'q')) return true;
+        if (targetChar === 'ढ' && (pressedKey === 'X' || pressedKey === 'x')) return true;
+        if (targetChar === 'ण' && (pressedKey === 'N' || pressedKey === 'n')) return true;
+        if (targetChar === 'थ' && (pressedKey === 'T' || pressedKey === 't')) return true;
+        if (targetChar === 'ध' && (pressedKey === 'D' || pressedKey === 'd')) return true;
+        if (targetChar === 'फ' && (pressedKey === 'P' || pressedKey === 'F' || pressedKey === 'p' || pressedKey === 'f')) return true;
+        if (targetChar === 'भ' && (pressedKey === 'B' || pressedKey === 'b')) return true;
+        if (targetChar === 'श' && (pressedKey === 'S' || pressedKey === 's')) return true;
+        if (targetChar === 'ष' && (pressedKey === 'R' || pressedKey === 'r' || pressedKey === 'Z' || pressedKey === 'z')) return true;
+        if (targetChar === 'ी' && (pressedKey === 'I' || pressedKey === 'i')) return true;
+        if (targetChar === 'ू' && (pressedKey === 'U' || pressedKey === 'u')) return true;
+        if (targetChar === 'ै' && (pressedKey === 'E' || pressedKey === 'e')) return true;
+        if (targetChar === 'ौ' && (pressedKey === 'W' || pressedKey === 'w')) return true;
+        if (targetChar === 'आ' && (pressedKey === 'A' || pressedKey === 'a')) return true;
+        if (targetChar === 'अ' && (pressedKey === 'H' || pressedKey === 'h' || pressedKey === 'a')) return true;
+        if (targetChar === 'इ' && (pressedKey === '[' || pressedKey === 'i')) return true;
+        if (targetChar === 'ई' && (pressedKey === '{' || pressedKey === 'I')) return true;
+        if (targetChar === 'उ' && (pressedKey === 'f' || pressedKey === 'u')) return true;
+        if (targetChar === 'ऊ' && (pressedKey === 'F' || pressedKey === 'U')) return true;
+        if (targetChar === 'ए' && (pressedKey === ']' || pressedKey === 'e')) return true;
+        if (targetChar === 'ऐ' && (pressedKey === '}' || pressedKey === 'E')) return true;
+        if (targetChar === 'ओ' && (pressedKey === 'O' || pressedKey === 'o')) return true;
+        if (targetChar === 'औ' && (pressedKey === 'W' || pressedKey === 'w')) return true;
+        if (targetChar === 'ञ' && (pressedKey === 'Y' || pressedKey === 'y')) return true;
+        if (targetChar === 'ँ' && (pressedKey === 'V' || pressedKey === 'v' || pressedKey === '~')) return true;
+        if (targetChar === 'ं' && (pressedKey === 'M' || pressedKey === 'm')) return true;
+        if (targetChar === '॥' && (pressedKey === '>' || pressedKey === '|' || pressedKey === '.')) return true;
+        if (targetChar === 'ङ' && (pressedKey === '<' || pressedKey === 'G' || pressedKey === 'g' || pressedKey === ',')) return true;
+        if (targetChar === 'ळ' && (pressedKey === 'L' || pressedKey === 'l')) return true;
+        if (targetChar === 'ः' && (pressedKey === ':' || pressedKey === '|' || pressedKey === '\\')) return true;
         if (targetChar === '़' && (pressedKey === '~' || pressedKey === '`')) return true;
+        if ((targetChar === 'ऋ' || targetChar === 'ृ') && (pressedKey === 'Z' || pressedKey === 'z' || pressedKey === 'R' || pressedKey === 'r')) return true;
       }
       return false;
     } else {
@@ -5367,7 +5389,7 @@ input:checked + .slider:before {
       if (targetLower && targetUpper !== targetLower) {
         if (pressedKey === targetLower) return true;
       } else {
-        // Unshifted symbol (e.g. '.', ',', '/', '\\', etc.)
+        // Unshifted symbol (e.g. '.', ',', '/', '\', etc.)
         if (charInfo.keyCode && pressedKey === charInfo.keyCode) return true;
       }
       if (charInfo.fallbackKey && pressedKey.toLowerCase() === charInfo.fallbackKey.toLowerCase()) return true;
@@ -5375,67 +5397,59 @@ input:checked + .slider:before {
       // Specific Indic Romanized unshifted keystroke mappings
       const langId = activeLang ? activeLang.id : '';
       if (langId === 'nepali_romanized' || langId === 'nepali_unicode' || /^(hindi|sanskrit|marathi|maithili|bhojpuri|newari|tharu|tamang|gurung|magar|sherpa|rai|limbu)$/.test(langId)) {
-        if (targetChar === 'क' && pressedKey === 'k') return true;
-        if (targetChar === 'ग' && pressedKey === 'g') return true;
-        if (targetChar === 'च' && pressedKey === 'c') return true;
-        if (targetChar === 'ज' && pressedKey === 'j') return true;
-        if (targetChar === 'ट' && pressedKey === 'q') return true;
-        if (targetChar === 'ड' && pressedKey === 'x') return true;
-        if (targetChar === 'त' && pressedKey === 't') return true;
-        if (targetChar === 'द' && pressedKey === 'd') return true;
-        if (targetChar === 'न' && pressedKey === 'n') return true;
-        if (targetChar === 'प' && pressedKey === 'p') return true;
-        if (targetChar === 'ब' && pressedKey === 'b') return true;
-        if (targetChar === 'म' && pressedKey === 'm') return true;
-        if (targetChar === 'य' && pressedKey === 'y') return true;
-        if (targetChar === 'र' && pressedKey === 'r') return true;
-        if (targetChar === 'ल' && pressedKey === 'l') return true;
-        if (targetChar === 'व' && pressedKey === 'v') return true;
-        if (targetChar === 'स' && pressedKey === 's') return true;
-        if (targetChar === 'ह' && pressedKey === 'h') return true;
-        if (targetChar === 'ि' && pressedKey === 'i') return true;
-        if (targetChar === 'ु' && pressedKey === 'u') return true;
-        if (targetChar === 'े' && pressedKey === 'e') return true;
-        if (targetChar === 'ो' && pressedKey === 'o') return true;
-        if (targetChar === 'ा' && pressedKey === 'a') return true;
-        if (targetChar === '्' && (pressedKey === '/' || pressedKey === 'd')) return true;
-        if (targetChar === '।' && pressedKey === '.') return true;
+        if (targetChar === 'क' && (pressedKey === 'k' || pressedKey === 'K')) return true;
+        if (targetChar === 'ग' && (pressedKey === 'g' || pressedKey === 'G')) return true;
+        if (targetChar === 'च' && (pressedKey === 'c' || pressedKey === 'C')) return true;
+        if (targetChar === 'ज' && (pressedKey === 'j' || pressedKey === 'J')) return true;
+        if (targetChar === 'ट' && (pressedKey === 'q' || pressedKey === 'Q')) return true;
+        if (targetChar === 'ड' && (pressedKey === 'x' || pressedKey === 'X' || pressedKey === 'd')) return true;
+        if (targetChar === 'त' && (pressedKey === 't' || pressedKey === 'T')) return true;
+        if (targetChar === 'द' && (pressedKey === 'd' || pressedKey === 'D')) return true;
+        if (targetChar === 'न' && (pressedKey === 'n' || pressedKey === 'N')) return true;
+        if (targetChar === 'प' && (pressedKey === 'p' || pressedKey === 'P')) return true;
+        if (targetChar === 'ब' && (pressedKey === 'b' || pressedKey === 'B')) return true;
+        if (targetChar === 'म' && (pressedKey === 'm' || pressedKey === 'M')) return true;
+        if (targetChar === 'य' && (pressedKey === 'y' || pressedKey === 'Y')) return true;
+        if (targetChar === 'र' && (pressedKey === 'r' || pressedKey === 'R')) return true;
+        if (targetChar === 'ल' && (pressedKey === 'l' || pressedKey === 'L')) return true;
+        if (targetChar === 'व' && (pressedKey === 'v' || pressedKey === 'V')) return true;
+        if (targetChar === 'स' && (pressedKey === 's' || pressedKey === 'S')) return true;
+        if (targetChar === 'ह' && (pressedKey === 'h' || pressedKey === 'H')) return true;
+        if (targetChar === 'ि' && (pressedKey === 'i' || pressedKey === 'I')) return true;
+        if (targetChar === 'ु' && (pressedKey === 'u' || pressedKey === 'U')) return true;
+        if (targetChar === 'े' && (pressedKey === 'e' || pressedKey === 'E')) return true;
+        if (targetChar === 'ो' && (pressedKey === 'o' || pressedKey === 'O')) return true;
+        if (targetChar === 'ा' && (pressedKey === 'a' || pressedKey === 'A')) return true;
+        if (targetChar === '्' && (pressedKey === '/' || pressedKey === 'd' || pressedKey === '\\')) return true;
+        if (targetChar === '।' && (pressedKey === '.' || pressedKey === '|')) return true;
         if (targetChar === ',' && pressedKey === ',') return true;
-        if (targetChar === 'ॐ' && (pressedKey === '\\' || pressedKey === 'o')) return true;
+        if (targetChar === 'ॐ' && (pressedKey === '\\' || pressedKey === 'o' || pressedKey === 'O')) return true;
         if (targetChar === 'ऽ' && (pressedKey === '`' || pressedKey === "'")) return true;
-        if ((targetChar === 'ऋ' || targetChar === 'ृ') && (pressedKey === 'z' || pressedKey === 'r')) return true;
+        if ((targetChar === 'ऋ' || targetChar === 'ृ') && (pressedKey === 'z' || pressedKey === 'r' || pressedKey === 'Z' || pressedKey === 'R')) return true;
       }
       return false;
     }
   }
-
   function handleSpeedtestInput(e) {
     const sp = state.speedtest;
     if (sp.status === 'finished') return;
-    if (sp.status === 'ready') {
-      startSpeedtest();
-    }
 
     const input = e.target;
     const val = input.value;
     input.value = ''; // keep cleared
 
     if (!val) return;
-
-    // Handle space characters smoothly (supports mobile keyboards, IMEs & touch)
-    if (val === ' ' || val === '\u00A0') {
-      handleSpace();
-      return;
+    if (sp.status === 'ready') {
+      startSpeedtest();
     }
 
-    // Direct word prevention: each keystroke must type one hijai character
-    // If a multi-character string was entered at once (e.g. from transliteration autocomplete or paste),
-    // only take the first character so the user must type each hijai letter/matra!
-    const char = val[0];
-    if (char === ' ' || char === '\u00A0') {
-      handleSpace();
-    } else {
-      processSpeedtestChar(char);
+    // Process each character sequentially (essential for mobile touch keyboards & IMEs)
+    for (const char of val) {
+      if (char === ' ' || char === '\u00A0') {
+        handleSpace();
+      } else {
+        processSpeedtestChar(char);
+      }
     }
   }
 
