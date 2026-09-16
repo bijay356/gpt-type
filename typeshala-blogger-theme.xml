@@ -401,7 +401,6 @@
         <input type="text" id="stHiddenInput" class="st-hidden-input" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" />
         <div class="st-words-wrapper" id="stWordsWrapper">
           <div class="st-caret" id="stCaret"></div>
-          <div class="st-key-hint" id="stKeyHint"></div>
           <div class="st-words-content" id="stWordsContent">
             <!-- Dynamic words rendered by JS -->
           </div>
@@ -2278,8 +2277,6 @@
         sp.correctChars++;
         playSound('keypress');
         sp.charIndex++;
-        const keyHint = document.getElementById('stKeyHint');
-        if (keyHint) keyHint.classList.remove('hint-error');
       } else {
         if (charEl) {
           charEl.classList.add('char-wrong');
@@ -2287,20 +2284,6 @@
         sp.wrongChars++;
         sp.secondErrors++;
         playSound('wrongkey');
-
-        const keyHint = document.getElementById('stKeyHint');
-        if (keyHint) {
-          keyHint.classList.remove('hint-error');
-          void keyHint.offsetWidth;
-          keyHint.classList.add('hint-error');
-          const info = getCharInfo(targetChar, activeLang);
-          let label = targetChar;
-          if (info) {
-            label = info.label || info.keyCode;
-            if (info.shift && !label.includes('Shift')) label = 'Shift + ' + label.toUpperCase();
-          }
-          keyHint.textContent = 'Type: ' + label;
-        }
 
         // STRICT HIJAI: Do NOT advance sp.charIndex on error!
         // The user must type the correct hijai letter/matra to proceed!
@@ -2422,20 +2405,15 @@
   function updateCaretPosition() {
     scrollWordsIfNeeded();
     const caret = document.getElementById('stCaret');
-    const keyHint = document.getElementById('stKeyHint');
     const wIdx = state.speedtest.wordIndex;
     const cIdx = state.speedtest.charIndex;
     if (!caret) return;
 
     const wordEl = document.getElementById('st-word-' + wIdx);
-    if (!wordEl) {
-      if (keyHint) keyHint.classList.remove('visible');
-      return;
-    }
+    if (!wordEl) return;
 
     const wrapper = document.getElementById('stWordsWrapper');
     const wrapRect = wrapper ? wrapper.getBoundingClientRect() : { left: 0, top: 0 };
-    const activeLang = state.speedtest.activeLang || LANGUAGES_DATA[0];
 
     // Remove char-current from active word children
     for (let i = 0; i < wordEl.children.length; i++) {
@@ -2445,44 +2423,19 @@
     if (cIdx < wordEl.children.length) {
       const targetSpan = wordEl.children[cIdx];
       targetSpan.classList.add('char-current');
-      const targetChar = targetSpan.textContent;
       const charRect = targetSpan.getBoundingClientRect();
 
       caret.style.left = (charRect.left - wrapRect.left) + 'px';
       caret.style.top = (charRect.top - wrapRect.top + 4) + 'px';
-
-      if (keyHint) {
-        const info = getCharInfo(targetChar, activeLang);
-        let label = targetChar;
-        if (info) {
-          label = info.label || info.keyCode;
-          if (info.shift && !label.includes('Shift')) {
-            label = 'Shift + ' + label.toUpperCase();
-          }
-        }
-        keyHint.textContent = label;
-        const centerX = charRect.left - wrapRect.left + (charRect.width > 0 ? charRect.width / 2 : 0);
-        keyHint.style.left = Math.max(30, centerX) + 'px';
-        keyHint.style.top = (charRect.top - wrapRect.top - 6) + 'px';
-        keyHint.classList.add('visible');
-      }
     } else if (wordEl.children.length > 0) {
       const lastChar = wordEl.children[wordEl.children.length - 1];
       const lastRect = lastChar.getBoundingClientRect();
       caret.style.left = (lastRect.right - wrapRect.left) + 'px';
       caret.style.top = (lastRect.top - wrapRect.top + 4) + 'px';
-
-      if (keyHint) {
-        keyHint.textContent = 'Space ␣';
-        keyHint.style.left = (lastRect.right - wrapRect.left + 15) + 'px';
-        keyHint.style.top = (lastRect.top - wrapRect.top - 6) + 'px';
-        keyHint.classList.add('visible');
-      }
     } else {
       const wordRect = wordEl.getBoundingClientRect();
       caret.style.left = (wordRect.left - wrapRect.left) + 'px';
       caret.style.top = (wordRect.top - wrapRect.top + 4) + 'px';
-      if (keyHint) keyHint.classList.remove('visible');
     }
   }
 
@@ -2516,7 +2469,7 @@
   }
 
   function finishSpeedtest(isSuddenDeath = false) {
-    const kh = document.getElementById('stKeyHint'); if (kh) kh.classList.remove('visible', 'hint-error');
+    
     clearInterval(state.speedtest.timer);
     state.speedtest.status = 'finished';
 
@@ -2981,7 +2934,7 @@
   }
 
   function resetSpeedtest() {
-    const kh = document.getElementById('stKeyHint'); if (kh) kh.classList.remove('visible', 'hint-error');
+    
     clearInterval(state.speedtest.timer);
     generateSpeedtestWords();
     renderSpeedtestWords();
