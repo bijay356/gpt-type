@@ -772,41 +772,53 @@ html, body {
 /* Smooth Caret */
 
 /* Active Character Symbol Hint: Glowing Vertical Red Marker Above Active Letter (No Underline) */
-.st-char.char-current {
-  position: relative;
-  border-bottom: none !important;
-  box-shadow: none !important;
+/* Active Character Symbol Hint: Glowing Standalone Vertical Red Marker Above Active Letter */
+.st-char {
+  display: inline;
+  color: var(--char-pending);
+  transition: color var(--transition-fast);
 }
 
-.st-char.char-current::before {
-  content: '';
+.st-char.char-correct {
+  color: var(--char-correct);
+}
+
+.st-char.char-wrong {
+  color: var(--char-wrong);
+}
+
+.st-char.char-missed {
+  color: var(--char-wrong);
+  opacity: 0.5;
+}
+
+.st-char.char-current {
+  /* Pure inline, no position:relative or pseudo-elements to preserve 100% Devanagari OpenType shaping */
+}
+
+.st-caret {
+  display: block !important;
   position: absolute;
-  top: -14px;
-  left: 50%;
-  transform: translateX(-50%);
   width: 3.5px;
-  height: 13px;
+  height: 14px;
   background: #ef4444;
   border-radius: 2px;
   box-shadow: 0 0 8px rgba(239, 68, 68, 0.9), 0 0 16px rgba(239, 68, 68, 0.6);
   pointer-events: none;
-  z-index: 20;
+  z-index: 25;
+  transition: left 0.08s ease-out, top 0.08s ease-out;
   animation: redMarkerPulse 1.1s ease-in-out infinite alternate;
 }
 
 @keyframes redMarkerPulse {
   0% {
-    opacity: 0.82;
-    transform: translateX(-50%) scaleY(0.92);
+    opacity: 0.85;
+    transform: scaleY(0.92);
   }
   100% {
     opacity: 1;
-    transform: translateX(-50%) scaleY(1.08);
+    transform: scaleY(1.08);
   }
-}
-
-.st-caret {
-  display: none !important;
 }
 
 /* Classic Tutor Level Jump Box */
@@ -4901,9 +4913,19 @@ input:checked + .slider:before {
   }
 
   function focusSpeedtestInput() {
-    const input = document.getElementById('stHiddenInput');
-    if (input && typeof input.focus === 'function') {
-      input.focus();
+    const isTouch = ('ontouchstart' in window) || (typeof navigator !== 'undefined' && navigator.maxTouchPoints > 0);
+    if (isTouch) {
+      const input = document.getElementById('stHiddenInput');
+      if (input && typeof input.focus === 'function') {
+        input.focus();
+        const notice = document.getElementById('stFocusNotice');
+        if (notice) notice.classList.remove('visible');
+      }
+    } else {
+      // On desktop, keep inputs blurred (identical to Ramayan Game & Classic Tutor)
+      if (document.activeElement && document.activeElement !== document.body && !isAnyModalOpen()) {
+        if (document.activeElement.id !== 'inputLevelJump') document.activeElement.blur();
+      }
       const notice = document.getElementById('stFocusNotice');
       if (notice) notice.classList.remove('visible');
     }
@@ -5412,13 +5434,17 @@ input:checked + .slider:before {
     // Intercepts character keys directly, preventing browser IME double-composition or skipped hijai!
     const isModifier = e.ctrlKey || e.altKey || e.metaKey;
     const isFunctionKey = /^F\d+$/.test(e.key);
-    if (!isModifier && !isFunctionKey && e.key && e.key.length === 1 && !e.isComposing && e.key !== 'Process') {
-      e.preventDefault();
+    if (!isModifier && !isFunctionKey && e.key && (e.key.length === 1 || e.code === 'Space' || e.key === ' ')) {
+      if (typeof e.preventDefault === 'function') e.preventDefault();
       if (state.speedtest.status === 'finished') return;
       if (state.speedtest.status === 'ready') {
         startSpeedtest();
       }
-      processSpeedtestChar(e.key);
+      if (e.key === ' ' || e.code === 'Space') {
+        handleSpace();
+      } else {
+        processSpeedtestChar(e.key);
+      }
       return;
     }
   }
@@ -5640,19 +5666,13 @@ input:checked + .slider:before {
           return;
         }
       }
-    } else if (sp.charIndex < currentWord.length + 10) {
-      // Extra characters typed beyond word length
-      const wordEl = document.getElementById('st-word-' + sp.wordIndex);
-      if (wordEl) {
-        const extraSpan = document.createElement('span');
-        extraSpan.className = 'st-char char-extra';
-        extraSpan.textContent = char;
-        wordEl.appendChild(extraSpan);
-      }
-      sp.extraChars++;
+    } else {
+      // Word is already completely typed!
+      // User must press Space to advance to the next word.
+      // Do NOT append extra spans to the DOM (prevents overlapping and broken ligatures!)
+      sp.wrongChars++;
       sp.secondErrors++;
       playSound('wrongkey');
-      sp.charIndex++;
       if (sp.masterMode) {
         triggerMasterModeFailure();
         return;
@@ -5773,17 +5793,21 @@ input:checked + .slider:before {
       targetSpan.classList.add('char-current');
       const charRect = targetSpan.getBoundingClientRect();
 
-      caret.style.left = (charRect.left - wrapRect.left) + 'px';
-      caret.style.top = (charRect.top - wrapRect.top + 4) + 'px';
+      const charCenter = (charRect.width > 0) ? (charRect.left - wrapRect.left + (charRect.width / 2) - 1.75) : (charRect.left - wrapRect.left);
+      caret.style.left = Math.round(charCenter) + 'px';
+      caret.style.top = Math.round(charRect.top - wrapRect.top - 14) + 'px';
+      caret.style.display = 'block';
     } else if (wordEl.children.length > 0) {
       const lastChar = wordEl.children[wordEl.children.length - 1];
       const lastRect = lastChar.getBoundingClientRect();
-      caret.style.left = (lastRect.right - wrapRect.left) + 'px';
-      caret.style.top = (lastRect.top - wrapRect.top + 4) + 'px';
+      caret.style.left = Math.round(lastRect.right - wrapRect.left + 2) + 'px';
+      caret.style.top = Math.round(lastRect.top - wrapRect.top - 14) + 'px';
+      caret.style.display = 'block';
     } else {
       const wordRect = wordEl.getBoundingClientRect();
-      caret.style.left = (wordRect.left - wrapRect.left) + 'px';
-      caret.style.top = (wordRect.top - wrapRect.top + 4) + 'px';
+      caret.style.left = Math.round(wordRect.left - wrapRect.left) + 'px';
+      caret.style.top = Math.round(wordRect.top - wrapRect.top - 14) + 'px';
+      caret.style.display = 'block';
     }
   }
 
