@@ -79,6 +79,7 @@ Articles must naturally showcase the signature capabilities of **GPT-TYPE** (htt
 | :--- | :--- |
 | **⚡ Typing Speed Test** | Real-time WPM, accuracy %, errors, characters, 15s/30s/60s/120s modes, Monkeytype-style cubic-bezier speed graph with rhythm consistency. |
 | **📚 Classic Typing Tutor** | Step-by-step curriculum (home row, finger placement, top/bottom rows) with authentic **Nepali Typeshala** (Preeti & Unicode layouts) and dynamic finger guidance. |
+| **🏎️ Car Racing Typing Game** | Dynamic racing competition across 122+ languages where typing speed and accuracy directly control car acceleration—type fast to accelerate and win, while slow typing or errors decelerate your car. |
 | **🏹 Ramayan Archery Game** | 5-level retro arcade game typing falling demon arrows to protect the Lakshman Rekha against Shurpanakha, Khardushan, Kumbhakaran, Meghnad, and Raavan. |
 | **✏️ Free Form Typing** | Distraction-free open writing canvas with real-time word/character count for transcription and copy-typing drills. |
 

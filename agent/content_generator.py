@@ -95,11 +95,12 @@ OFFICIAL BRAND IDENTITY, MISSION & CORE PILLARS OF GPT-TYPE ({BLOG_URL}):
 ═══════════════════════════════════════════════════════════════════════════════
 MISSION: Make typing practice accessible, useful, and enjoyable for everyone (students, teachers, office workers, writers, freelancers, job seekers, competitive-exam candidates, and professional typists) without requiring complicated registration or accounts.
 
-THE 4 SIGNATURE PILLARS OF GPT-TYPE:
+THE 5 SIGNATURE PILLARS OF GPT-TYPE:
 1. ⚡ Typing Speed Test: Real-time benchmarking tracking WPM, accuracy, errors, characters typed, test duration, and personal bests across custom timed modes (15s, 30s, 60s, custom).
 2. 📚 Classic Typing Tutor: Systematic step-by-step curriculum (home-row, finger-placement exercises, individual keys, words, sentences) with dynamic visual keyboard and interactive finger guidance (including authentic Nepali Typeshala with Preeti & Unicode layouts).
-3. 🏹 Ramayan Typing Archery Game: Thrilling 5-level retro arcade combat game where typing falling demon arrows defends the sacred Lakshman Rekha against Shurpanakha, Khardushan, Kumbhakaran, Meghnad, and 10-Headed King Raavan.
-4. ✏️ Free Form Typing: Frictionless open writing environment with live word and character counters for transcription, copy typing, and keyboard testing.
+3. 🏎️ Multilingual Typing Car Racing Game: Real-time dynamic racing competition across 122+ languages where typing speed and accuracy directly control car acceleration. Fast, flawless typing unleashes turbo acceleration to overtake opponent cars and secure victory, while slow typing or keystroke errors decelerate your car and cause you to fall behind.
+4. 🏹 Ramayan Typing Archery Game: Thrilling 5-level retro arcade combat game where typing falling demon arrows defends the sacred Lakshman Rekha against Shurpanakha, Khardushan, Kumbhakaran, Meghnad, and 10-Headed King Raavan.
+5. ✏️ Free Form Typing: Frictionless open writing environment with live word and character counters for transcription, copy typing, and keyboard testing.
 
 SIGNATURE PLATFORM CAPABILITIES:
 - 🌍 Deep Multilingual Engine: Native support for 122+ languages and regional scripts:
@@ -123,7 +124,7 @@ TARGET DETAILS:
 - CTA Text: {cta_text}
 
 STRICT GOOGLE ADSENSE & MONETIZATION POLICIES TO FOLLOW:
-1. VALUABLE INVENTORY (NO THIN CONTENT): Word count MUST be between 1,200 and 1,800 words. Provide deep, educational, step-by-step guidance with real benchmarks, exact finger placement coordinates, ergonomic degree angles, and muscle memory science. Naturally recommend trying GPT-TYPE's 4 core tools (Speed Test, Classic Tutor, Ramayan Archery Game, Free Form Typing), 7 mechanical sound options, or 7 themes to build deliberate practice habits.
+1. VALUABLE INVENTORY (NO THIN CONTENT): Word count MUST be between 1,200 and 1,800 words. Provide deep, educational, step-by-step guidance with real benchmarks, exact finger placement coordinates, ergonomic degree angles, and muscle memory science. Naturally recommend trying GPT-TYPE's 5 core tools (Speed Test, Classic Tutor, Car Racing Game, Ramayan Archery Game, Free Form Typing), 7 mechanical sound options, or 7 themes to build deliberate practice habits.
 2. E-E-A-T (EXPERIENCE, EXPERTISE, AUTHORITATIVENESS, TRUST): Write in an authoritative, encouraging human educator voice. Never sound robotic or generic. Avoid cliché AI openings like "In today's fast-paced digital world...".
 3. CLEAN PERMALINK TITLE: The title must be clean, punchy (50-60 chars), and contain NO colons (:), NO question marks (?), NO quotes, and NO emojis. (Clean alphanumeric titles ensure Blogger generates a beautiful, SEO-friendly permalink).
 4. SEARCH DESCRIPTION: Provide a crisp, high-CTR 145-155 character Search Description for search engine snippet display.
@@ -221,7 +222,7 @@ HTML BODY FORMATTING SPECIFICATIONS:
 6. Editorial Transparency & Community Feedback (E-E-A-T):
    End with a professional note linking to the official contact form (Dark Theme):
    <div style="margin-top: 40px; padding: 20px; background: #1e293b; border-radius: 8px; border: 1px solid #334155; font-size: 0.95rem; color: #94a3b8; line-height: 1.6;">
-     <strong style="color: #38bdf8;">About the GPT-TYPE Research Team:</strong> Published by the educators and developers behind GPT-TYPE. We build accessible, privacy-friendly typing speed tests, classic typing tutors, and multilingual drills across 122+ languages with zero registration required. Have feedback or want to request a new language? Reach us via our <a href="https://docs.google.com/forms/d/e/1FAIpQLSfm_Aj4LAzlewK3C-cJ6e8SPoUofwsonO-qRpwXP0nR0y_luw/viewform?usp=header" style="color: #38bdf8; text-decoration: underline;" target="_blank" rel="noopener">Official Feedback Form</a>.
+      <strong style="color: #38bdf8;">About the GPT-TYPE Research Team:</strong> Published by the educators and developers behind GPT-TYPE. We build accessible, privacy-friendly typing speed tests, classic typing tutors, dynamic car racing games, and multilingual drills across 122+ languages with zero registration required. Have feedback or want to request a new language? Reach us via our <a href="https://docs.google.com/forms/d/e/1FAIpQLSfm_Aj4LAzlewK3C-cJ6e8SPoUofwsonO-qRpwXP0nR0y_luw/viewform?usp=header" style="color: #38bdf8; text-decoration: underline;" target="_blank" rel="noopener">Official Feedback Form</a>.
    </div>
 
 """

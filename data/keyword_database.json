@@ -267,6 +267,11 @@
           "secondary": ["ramayan archery typing game", "retro typing arcade game", "speed typing shooter game"]
         },
         {
+          "primary": "online typing car racing game across 122 languages",
+          "intent": "gamified speed racing",
+          "secondary": ["typing car game with speed acceleration", "type fast to drive car game", "multilingual keyboard racing game"]
+        },
+        {
           "primary": "typing speed test with mechanical switch clicking sounds",
           "intent": "interactive tool",
           "secondary": ["mechanical keyboard sound simulator", "typing test with thock and click sounds", "auditory feedback typing practice"]
@@ -317,6 +322,11 @@
           "primary": "free typing games to increase typing speed fast",
           "intent": "gamified free",
           "secondary": ["speed typing arcade game free", "fun free typing practice", "ramayan archery typing game"]
+        },
+        {
+          "primary": "free typing race car game to test typing speed",
+          "intent": "gamified free racing",
+          "secondary": ["fast typing accelerate car game", "free online typing car race", "typing speed multiplayer car racing"]
         },
         {
           "primary": "free multilingual typing test supporting 124 languages",
