@@ -287,6 +287,53 @@
           "secondary": ["clean typing speed test", "minimalist typing tutor online", "fastest browser typing test"]
         }
       ]
+    },
+    {
+      "id": "free_typing_domination",
+      "name": "Free Typing Tools & Global Tutors",
+      "target_test_mode": "60s",
+      "keywords": [
+        {
+          "primary": "free online typing speed test without ads",
+          "intent": "free tool high intent",
+          "secondary": ["free typing test zero ads", "clean typing speed test", "free typing benchmark"]
+        },
+        {
+          "primary": "free touch typing tutor with finger placement guide",
+          "intent": "free education",
+          "secondary": ["learn touch typing free", "free interactive typing tutor", "free typing lessons with hands"]
+        },
+        {
+          "primary": "free offline typing software download for windows 11",
+          "intent": "software download",
+          "secondary": ["offline typing tutor free download", "typing test without internet", "portable typing test pc"]
+        },
+        {
+          "primary": "free typeshala download for nepali and english typing",
+          "intent": "nepali free typing",
+          "secondary": ["typeshala free windows 10 11", "nepali preeti typing free download", "authentic typeshala offline free"]
+        },
+        {
+          "primary": "free typing games to increase typing speed fast",
+          "intent": "gamified free",
+          "secondary": ["speed typing arcade game free", "fun free typing practice", "ramayan archery typing game"]
+        },
+        {
+          "primary": "free multilingual typing test supporting 124 languages",
+          "intent": "global free typing",
+          "secondary": ["typing test in any language free", "free international typing practice", "world languages typing tutor"]
+        },
+        {
+          "primary": "free hindi typing speed test online mangal and inscript",
+          "intent": "indic free typing",
+          "secondary": ["hindi typing tutor free", "mangal typing test online free", "hindi typing speed practice without login"]
+        },
+        {
+          "primary": "aprender mecanografia gratis online sin registro",
+          "intent": "spanish free typing",
+          "secondary": ["curso de mecanografia gratis", "test de velocidad de mecanografia gratis", "mecanografia 10 dedos gratis"]
+        }
+      ]
     }
   ]
 }
