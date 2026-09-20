@@ -8805,12 +8805,15 @@ body.is-app .main-content {
     initClassicTutor();
 
     // If viewing a Blogger Article or Page, initialize related articles & theme toggle
-    const isArticleView = window.location.pathname.includes('/202') || 
-                          window.location.pathname.includes('/p/') || 
-                          document.body.classList.contains('is-blogger-post') || 
-                          document.body.classList.contains('is-blogger-page') || 
-                          document.getElementById('serverArticleWrap') !== null ||
-                          document.getElementById('postRelatedSection') !== null;
+    const path = (window.location.pathname || '').toLowerCase();
+    const isHomePage = path === '' || path === '/' || path === '/index.html';
+    const isArticleView = !isHomePage && (
+      path.includes('/202') || 
+      path.includes('/p/') || 
+      document.body.classList.contains('is-blogger-post') || 
+      document.body.classList.contains('is-blogger-page')
+    );
+
     if (isArticleView) {
       document.body.classList.add('is-blogger-post');
       document.body.classList.remove('is-app');

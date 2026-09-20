@@ -516,16 +516,18 @@ body.is-app .main-content {
   <b:section id='main' name='Main Content' showaddelement='yes'>
     <b:widget id='Blog1' locked='true' title='Blog Posts' type='Blog' version='2'>
       <b:includable id='main'>
-        <b:loop values='data:posts' var='post'>
-          <div class='blogger-article-wrap' id='serverArticleWrap'>
-            <article class='blogger-page-card' id='articleCard'>
-              <h1 class='blogger-page-title'><data:post.title/></h1>
-              <div class='blogger-page-body'>
-                <data:post.body/>
-              </div>
-            </article>
-          </div>
-        </b:loop>
+        <b:if cond='data:view.isSingleItem'>
+          <b:loop values='data:posts' var='post'>
+            <div class='blogger-article-wrap' id='serverArticleWrap'>
+              <article class='blogger-page-card' id='articleCard'>
+                <h1 class='blogger-page-title'><data:post.title/></h1>
+                <div class='blogger-page-body'>
+                  <data:post.body/>
+                </div>
+              </article>
+            </div>
+          </b:loop>
+        </b:if>
       </b:includable>
     </b:widget>
   </b:section>
@@ -8630,10 +8632,13 @@ body.is-app .main-content {
 
 
   async function handleBloggerArticleView() {
+    const p = (window.location.pathname || '').toLowerCase();
+    if (p === '' || p === '/' || p === '/index.html') {
+      return; // Do NOT run article view on homepage!
+    }
     // 1. Cleanly hide app-only interface so only article and headers are active
     document.querySelectorAll('.app-wrapper, .app-header, #topHeader, #navTabs, .main-content, .app-footer, .st-toolbar').forEach(el => {
       el.style.display = 'none';
-      if (el.parentNode) el.parentNode.removeChild(el);
     });
 
     const topNavHtml = `
@@ -8816,25 +8821,32 @@ body.is-app .main-content {
     initLanguageModal();
     initClassicTutor();
 
-    // If viewing a Blogger Article or Page, initialize related articles & theme toggle
-    const isArticleView = window.location.pathname.includes('/202') || 
-                          window.location.pathname.includes('/p/') || 
-                          document.body.classList.contains('is-blogger-post') || 
-                          document.body.classList.contains('is-blogger-page') || 
-                          document.getElementById('serverArticleWrap') !== null ||
-                          document.getElementById('postRelatedSection') !== null;
+    // If viewing an actual Blogger Article or Page (/202... or /p/...), initialize article viewer
+    const path = (window.location.pathname || '').toLowerCase();
+    const isHomePage = path === '' || path === '/' || path === '/index.html';
+    const isArticleView = !isHomePage && (
+      path.includes('/202') || 
+      path.includes('/p/') || 
+      document.body.classList.contains('is-blogger-post') || 
+      document.body.classList.contains('is-blogger-page')
+    );
+
     if (isArticleView) {
       document.body.classList.add('is-blogger-post');
       document.body.classList.remove('is-app');
       handleBloggerArticleView();
       return;
     } else {
+      document.body.classList.add('is-app');
+      document.body.classList.remove('is-blogger-post', 'is-blogger-page');
       if (window.location.hash === '#blog' || window.location.hash === '#viewBlog') {
         switchView('blog');
       } else if (window.location.hash === '#car' || window.location.hash === '#viewCar') {
         switchView('car');
       } else if (window.location.hash === '#game' || window.location.hash === '#viewGame') {
         switchView('game');
+      } else if (window.location.hash === '#tutor' || window.location.hash === '#viewClassic') {
+        switchView('classic');
       } else {
         setTimeout(focusSpeedtestInput, 100);
       }
