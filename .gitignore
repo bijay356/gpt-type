@@ -52,4 +52,5 @@ windows-app/dist/
 .DS_Store
 Thumbs.db
 desktop.ini
-
+# Local Scratch Files
+scratch/
