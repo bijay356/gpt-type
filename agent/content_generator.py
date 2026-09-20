@@ -99,7 +99,7 @@ THE 5 SIGNATURE PILLARS OF GPT-TYPE:
 1. ⚡ Typing Speed Test: Real-time benchmarking tracking WPM, accuracy, errors, characters typed, test duration, and personal bests across custom timed modes (15s, 30s, 60s, custom).
 2. 📚 Classic Typing Tutor: Systematic step-by-step curriculum (home-row, finger-placement exercises, individual keys, words, sentences) with dynamic visual keyboard and interactive finger guidance (including authentic Nepali Typeshala with Preeti & Unicode layouts).
 3. 🏎️ Multilingual Typing Car Racing Game: Real-time dynamic racing competition across 122+ languages where typing speed and accuracy directly control car acceleration. Fast, flawless typing unleashes turbo acceleration to overtake opponent cars and secure victory, while slow typing or keystroke errors decelerate your car and cause you to fall behind.
-4. 🏹 Ramayan Typing Archery Game: Thrilling 5-level retro arcade combat game where typing falling demon arrows defends the sacred Lakshman Rekha against Shurpanakha, Khardushan, Kumbhakaran, Meghnad, and 10-Headed King Raavan.
+4. 🏹 Ramayan Typing Archery Game: Thrilling progressive speed-up arcade challenge where words and falling demon arrows continuously accelerate faster and faster over time—typing words quickly and accurately shoots divine arrows to defend the sacred Lakshman Rekha before the accelerating demons reach the boundary.
 5. ✏️ Free Form Typing: Frictionless open writing environment with live word and character counters for transcription, copy typing, and keyboard testing.
 
 SIGNATURE PLATFORM CAPABILITIES:

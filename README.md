@@ -39,8 +39,8 @@
 - **Interactive Dual-Hand Guide**: Glowing SVG hands dynamically show you the exact finger to press for every character, fostering correct touch-typing muscle memory.
 - **5 Practice Tiers**: Home Row, Top Row, Bottom Row, Number Row, and Full Complex Sentences.
 
-### 🏹 3. 5-Level Ramayan Archery Battle (Arcade Game)
-Defend the sacred *Lakshman Rekha* by typing falling demon arrows before they breach your defenses!
+### 🏹 3. Progressive Speed-Up Ramayan Archery Battle (Arcade Game)
+Defend the sacred *Lakshman Rekha* by typing falling demon arrows as words continuously accelerate faster and faster over time!
 - **Level 1**: Shurpanakha's Enchanted Jungle (Speed: 1.0x)
 - **Level 2**: Khardushan's Asura Garrison (Speed: 1.25x)
 - **Level 3**: Kumbhakaran's Colossal Awakening (Speed: 1.55x)
