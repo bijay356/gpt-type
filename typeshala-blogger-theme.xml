@@ -23,6 +23,15 @@
   </b:template-skin>
   <b:skin><![CDATA[
     /* Reset all Blogger wrapper margins */
+    body.is-app #serverArticleWrap,
+    body.is-app .blogger-article-wrap {
+      display: none !important;
+      visibility: hidden !important;
+      height: 0 !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      overflow: hidden !important;
+    }
     html, body {
       margin: 0 !important;
       padding: 0 !important;
@@ -501,11 +510,11 @@ body.is-app .main-content {
 </head>
 <body expr:class='data:view.isPage ? "is-blogger-page" : (data:view.isPost ? "is-blogger-post" : "is-app")'>
   <!-- Blogger AdSense Header Layout Section (Configure in Blogger Dashboard -> Layout) -->
-  <b:section id='header-ads-section' name='Header Advertisement (AdSense 728x90 / Responsive)' showaddelement='no' maxwidgets='0'>
+  <b:section id='header-ads-section' name='Header Advertisement (AdSense 728x90 / Responsive)' showaddelement='yes' maxwidgets='2'>
   </b:section>
   <!-- Blogger Section with Layout Widget support enabled -->
-  <b:section class='main' id='main' name='Main Content' showaddelement='yes'>
-    <b:widget id='Blog1' locked='true' title='Blog Posts' type='Blog'>
+  <b:section id='main' name='Main Content' showaddelement='yes'>
+    <b:widget id='Blog1' locked='true' title='Blog Posts' type='Blog' version='2'>
       <b:includable id='main'>
         <b:loop values='data:posts' var='post'>
           <div class='blogger-article-wrap' id='serverArticleWrap'>
@@ -8808,13 +8817,15 @@ body.is-app .main-content {
     initClassicTutor();
 
     // If viewing a Blogger Article or Page, initialize related articles & theme toggle
-    const isArticleView = !document.body.classList.contains('is-app') && (
+    const isArticleView = window.location.pathname.includes('/202') || 
+                          window.location.pathname.includes('/p/') || 
                           document.body.classList.contains('is-blogger-post') || 
                           document.body.classList.contains('is-blogger-page') || 
-                          window.location.pathname.includes('/202') || 
-                          window.location.pathname.includes('/p/') || 
-                          document.getElementById('postRelatedSection'));
+                          document.getElementById('serverArticleWrap') !== null ||
+                          document.getElementById('postRelatedSection') !== null;
     if (isArticleView) {
+      document.body.classList.add('is-blogger-post');
+      document.body.classList.remove('is-app');
       handleBloggerArticleView();
       return;
     } else {
