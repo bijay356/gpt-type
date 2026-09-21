@@ -67,8 +67,16 @@ def main():
         client_id = flow.client_config.get("client_id", "")
         client_secret = flow.client_config.get("client_secret", "")
     else:
-        client_id = input("\nEnter your OAuth Client ID (paste here): ").strip()
-        client_secret = input("Enter your OAuth Client Secret (paste here): ").strip()
+        env_client_id = os.getenv("BLOGGER_CLIENT_ID", "").strip()
+        env_client_secret = os.getenv("BLOGGER_CLIENT_SECRET", "").strip()
+
+        if env_client_id and env_client_secret:
+            print("✅ Loaded existing BLOGGER_CLIENT_ID and BLOGGER_CLIENT_SECRET from .env")
+            client_id = env_client_id
+            client_secret = env_client_secret
+        else:
+            client_id = input("\nEnter your OAuth Client ID (paste here): ").strip()
+            client_secret = input("Enter your OAuth Client Secret (paste here): ").strip()
 
         if not client_id or not client_secret:
             print("❌ Error: Client ID and Client Secret are required!")

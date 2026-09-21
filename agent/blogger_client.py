@@ -47,6 +47,24 @@ class BloggerClient:
             raise e
 
 
+    def _diagnose_error(self, e, action="communicating with Blogger API"):
+        err_msg = str(e).lower()
+        if "invalid_grant" in err_msg or "expired or revoked" in err_msg:
+            logger.error(
+                "\n" + "=" * 70 + "\n"
+                "🚨 CRITICAL GOOGLE OAUTH ERROR: BLOGGER_REFRESH_TOKEN has expired or been revoked!\n"
+                "👉 Why this happens: If your Google Cloud OAuth Consent Screen is set to 'Testing', "
+                "Google automatically invalidates refresh tokens after exactly 7 days.\n"
+                "👉 How to fix permanently:\n"
+                "   1. Go to Google Cloud Console > APIs & Services > OAuth consent screen\n"
+                "   2. Click 'PUBLISH APP' to switch status from 'Testing' to 'In Production'\n"
+                "   3. Run 'python setup_blogger_auth.py' locally to generate a permanent refresh token\n"
+                "   4. Update BLOGGER_REFRESH_TOKEN in GitHub Secrets and local .env\n"
+                + "=" * 70
+            )
+        else:
+            logger.error(f"Error {action}: {e}")
+
     def get_blog_info(self):
         if self.dry_run:
             return {"id": "dry-run-id", "name": "GPT-TYPE (Dry Run)", "url": BLOG_URL}
@@ -60,7 +78,7 @@ class BloggerClient:
                 "total_posts": blog.get("posts", {}).get("totalItems", 0)
             }
         except Exception as e:
-            logger.error(f"Error fetching blog info for {BLOG_ID}: {e}")
+            self._diagnose_error(e, f"fetching blog info for {BLOG_ID}")
             raise e
 
     def publish_post(self, title, html_content, labels=None, is_draft=False):
@@ -122,5 +140,5 @@ class BloggerClient:
                 "status": "DRAFT" if draft_flag else "LIVE"
             }
         except Exception as e:
-            logger.error(f"Failed to publish post '{title}' to Blogger: {e}")
+            self._diagnose_error(e, f"publishing post '{title}' to Blogger")
             raise e
