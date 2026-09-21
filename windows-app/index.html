@@ -554,9 +554,9 @@ body.is-app .main-content {
           <div class="dropdown-menu" id="pagesDropdownMenu" role="menu">
             <a href="https://gpttype.blogspot.com/#blog" class="dropdown-item" role="menuitem" data-view="blog" id="menuItemBlog" style="color:var(--accent); font-weight:700;"><span>📰</span> Blog / Articles</a>
             <a href="https://gpttype.blogspot.com/p/about-us.html" class="dropdown-item" role="menuitem" data-page="about"><span>ℹ️</span> About Us</a>
+            <a href="https://gpttype.blogspot.com/p/contact-us.html" class="dropdown-item" role="menuitem" data-page="contact"><span>✉️</span> Contact Us</a>
             <a href="https://gpttype.blogspot.com/p/privacy-policy.html" class="dropdown-item" role="menuitem" data-page="privacy"><span>🔒</span> Privacy Policy</a>
             <a href="https://gpttype.blogspot.com/p/disclamer.html" class="dropdown-item" role="menuitem" data-page="disclaimer"><span>⚠️</span> Disclaimer</a>
-            <a href="https://gpttype.blogspot.com/p/contact-us.html" class="dropdown-item" role="menuitem" data-page="contact"><span>✉️</span> Contact Us</a>
             <a href="https://gpttype.blogspot.com/2026/09/download.html" class="dropdown-item" role="menuitem" style="color:var(--accent); font-weight:700;"><span>📥</span> Download Windows App</a>
           </div>
         </div>
@@ -1074,6 +1074,17 @@ body.is-app .main-content {
   <!-- Universal App Footer -->
   <footer class="app-footer">
     <div class="footer-inner">
+      <div class="footer-links">
+        <a href="https://gpttype.blogspot.com/p/about-us.html" class="footer-link-btn" data-page="about">ℹ️ About Us</a>
+        <span class="footer-sep">•</span>
+        <a href="https://gpttype.blogspot.com/p/contact-us.html" class="footer-link-btn" data-page="contact">✉️ Contact Us</a>
+        <span class="footer-sep">•</span>
+        <a href="https://gpttype.blogspot.com/p/privacy-policy.html" class="footer-link-btn" data-page="privacy">🔒 Privacy Policy</a>
+        <span class="footer-sep">•</span>
+        <a href="https://gpttype.blogspot.com/p/disclamer.html" class="footer-link-btn" data-page="disclaimer">⚠️ Disclaimer</a>
+        <span class="footer-sep">•</span>
+        <a href="https://gpttype.blogspot.com/2026/09/download.html" class="footer-link-btn" style="color:var(--accent);font-weight:700;">📥 Download PC App</a>
+      </div>
       <div class="footer-copy">
         &#169; 2026 <strong>GPT-TYPE</strong>. 123+ Languages Speed Test &amp; Tutor. All rights reserved.
       </div>
@@ -7838,8 +7849,8 @@ body.is-app .main-content {
       }
     });
 
-    // Dropdown page links: direct, reliable navigation
-    document.querySelectorAll('#pagesDropdownMenu .dropdown-item').forEach(link => {
+    // Dropdown page links & footer links: direct, reliable navigation
+    document.querySelectorAll('#pagesDropdownMenu .dropdown-item, .footer-link-btn').forEach(link => {
       link.addEventListener('click', (e) => {
         if (e.ctrlKey || e.metaKey || e.shiftKey) return;
         const href = link.getAttribute('href');
@@ -7853,17 +7864,15 @@ body.is-app .main-content {
           return;
         }
 
+        const isOffline = (window.location.protocol === 'file:' || window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
         const pageKey = link.dataset.page;
-        if (pageKey) {
+        if (isOffline && pageKey) {
           e.preventDefault();
           openPageView(pageKey);
           return;
         }
 
-        if (href) {
-          e.preventDefault();
-          window.open(href, '_blank');
-        }
+        // On live web, allow normal browser navigation to the page URL!
       });
     });
 

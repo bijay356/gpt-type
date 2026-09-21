@@ -568,9 +568,9 @@ body.is-app .main-content {
           <div class="dropdown-menu" id="pagesDropdownMenu" role="menu">
             <a href="https://gpttype.blogspot.com/#blog" class="dropdown-item" role="menuitem" data-view="blog" id="menuItemBlog" style="color:var(--accent); font-weight:700;"><span>📰</span> Blog / Articles</a>
             <a href="https://gpttype.blogspot.com/p/about-us.html" class="dropdown-item" role="menuitem" data-page="about"><span>ℹ️</span> About Us</a>
+            <a href="https://gpttype.blogspot.com/p/contact-us.html" class="dropdown-item" role="menuitem" data-page="contact"><span>✉️</span> Contact Us</a>
             <a href="https://gpttype.blogspot.com/p/privacy-policy.html" class="dropdown-item" role="menuitem" data-page="privacy"><span>🔒</span> Privacy Policy</a>
             <a href="https://gpttype.blogspot.com/p/disclamer.html" class="dropdown-item" role="menuitem" data-page="disclaimer"><span>⚠️</span> Disclaimer</a>
-            <a href="https://gpttype.blogspot.com/p/contact-us.html" class="dropdown-item" role="menuitem" data-page="contact"><span>✉️</span> Contact Us</a>
             <a href="https://gpttype.blogspot.com/2026/09/download.html" class="dropdown-item" role="menuitem" style="color:var(--accent); font-weight:700;"><span>📥</span> Download Windows App</a>
           </div>
         </div>
@@ -1088,6 +1088,17 @@ body.is-app .main-content {
   <!-- Universal App Footer -->
   <footer class="app-footer">
     <div class="footer-inner">
+      <div class="footer-links">
+        <a href="https://gpttype.blogspot.com/p/about-us.html" class="footer-link-btn">ℹ️ About Us</a>
+        <span class="footer-sep">•</span>
+        <a href="https://gpttype.blogspot.com/p/contact-us.html" class="footer-link-btn">✉️ Contact Us</a>
+        <span class="footer-sep">•</span>
+        <a href="https://gpttype.blogspot.com/p/privacy-policy.html" class="footer-link-btn">🔒 Privacy Policy</a>
+        <span class="footer-sep">•</span>
+        <a href="https://gpttype.blogspot.com/p/disclamer.html" class="footer-link-btn">⚠️ Disclaimer</a>
+        <span class="footer-sep">•</span>
+        <a href="https://gpttype.blogspot.com/2026/09/download.html" class="footer-link-btn" style="color:var(--accent);font-weight:700;">📥 Download PC App</a>
+      </div>
       <div class="footer-copy">
         &#169; 2026 <strong>GPT-TYPE</strong>. 123+ Languages Speed Test &amp; Tutor. All rights reserved.
       </div>
@@ -7852,8 +7863,8 @@ body.is-app .main-content {
       }
     });
 
-    // Dropdown page links: direct, reliable navigation
-    document.querySelectorAll('#pagesDropdownMenu .dropdown-item').forEach(link => {
+    // Dropdown page links & footer links: direct, reliable navigation
+    document.querySelectorAll('#pagesDropdownMenu .dropdown-item, .footer-link-btn').forEach(link => {
       link.addEventListener('click', (e) => {
         if (e.ctrlKey || e.metaKey || e.shiftKey) return;
         const href = link.getAttribute('href');
@@ -7867,17 +7878,15 @@ body.is-app .main-content {
           return;
         }
 
+        const isOffline = (window.location.protocol === 'file:' || window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
         const pageKey = link.dataset.page;
-        if (pageKey) {
+        if (isOffline && pageKey) {
           e.preventDefault();
           openPageView(pageKey);
           return;
         }
 
-        if (href) {
-          e.preventDefault();
-          window.open(href, '_blank');
-        }
+        // On live web, allow normal browser navigation to the page URL!
       });
     });
 
@@ -8675,11 +8684,30 @@ body.is-app .main-content {
       </section>
     `;
 
-    // 2. Check if Blogger already rendered the article on server
+    // 2. Check if Blogger already rendered the article or static page on server
     const serverWrap = document.getElementById('serverArticleWrap') || document.querySelector('.blogger-article-wrap');
     const existingBody = serverWrap ? serverWrap.querySelector('.blogger-page-body') : null;
+    const isStaticPage = window.location.pathname.includes('/p/');
+
+    const pageFooterHtml = `
+      <footer class="article-page-footer" style="background:var(--bg-card);border:1px solid var(--border-color);border-radius:var(--radius-md);padding:1.25rem 1.75rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;margin-top:2.5rem;font-size:0.85rem;color:var(--text-muted);box-shadow:var(--shadow-sm);">
+        <div style="font-weight:600;">&#169; 2026 <strong>GPT-TYPE</strong>. 123+ Languages Speed Test &amp; Tutor.</div>
+        <div style="display:flex;align-items:center;gap:1rem;flex-wrap:wrap;">
+          <a href="/" style="color:var(--text-muted);text-decoration:none;">⚡ Home</a>
+          <a href="https://gpttype.blogspot.com/p/about-us.html" style="color:var(--text-muted);text-decoration:none;">About Us</a>
+          <a href="https://gpttype.blogspot.com/p/contact-us.html" style="color:var(--text-muted);text-decoration:none;">Contact Us</a>
+          <a href="https://gpttype.blogspot.com/p/privacy-policy.html" style="color:var(--text-muted);text-decoration:none;">Privacy Policy</a>
+          <a href="https://gpttype.blogspot.com/p/disclamer.html" style="color:var(--text-muted);text-decoration:none;">Disclaimer</a>
+        </div>
+      </footer>
+    `;
     
-    if (serverWrap && existingBody && existingBody.textContent.trim().length > 30) {
+    const hasExistingContent = serverWrap && existingBody && (
+      existingBody.textContent.trim().length > 10 || 
+      existingBody.querySelector('iframe, form, p, div, input, table, section, article') !== null
+    );
+
+    if (hasExistingContent) {
       serverWrap.style.display = 'block';
       serverWrap.style.maxWidth = '880px';
       serverWrap.style.margin = '2rem auto';
@@ -8688,11 +8716,20 @@ body.is-app .main-content {
       if (!serverWrap.querySelector('.article-top-nav')) {
         serverWrap.insertAdjacentHTML('afterbegin', topNavHtml);
       }
-      if (!serverWrap.querySelector('.post-related-section')) {
-        serverWrap.insertAdjacentHTML('beforeend', relatedSectionHtml);
+      
+      // On blog posts (/202...), attach related articles grid
+      if (!isStaticPage) {
+        if (!serverWrap.querySelector('.post-related-section')) {
+          serverWrap.insertAdjacentHTML('beforeend', relatedSectionHtml);
+        }
+        renderRelatedArticles();
       }
       
-      renderRelatedArticles();
+      // On all pages, attach clean footer
+      if (!serverWrap.querySelector('.article-page-footer')) {
+        serverWrap.insertAdjacentHTML('beforeend', pageFooterHtml);
+      }
+      
       bindArticleNavControls();
       return;
     }
