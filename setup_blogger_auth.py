@@ -146,7 +146,7 @@ def main():
 
         local_server.timeout = 2
         start_time = time.time()
-        max_wait = 900  # 15 minutes
+        max_wait = 7200  # 2 hours
         while time.time() - start_time < max_wait:
             local_server.handle_request()
             if wsgi_app.last_request_uri and ("code=" in wsgi_app.last_request_uri or "error=" in wsgi_app.last_request_uri):
