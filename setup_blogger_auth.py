@@ -11,10 +11,10 @@ import glob
 from pathlib import Path
 from dotenv import load_dotenv
 
-# Ensure UTF-8 console
+# Ensure UTF-8 console with line buffering
 if hasattr(sys.stdout, "reconfigure"):
     try:
-        sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+        sys.stdout.reconfigure(encoding="utf-8", errors="replace", line_buffering=True)
     except Exception:
         pass
 
@@ -93,9 +93,41 @@ def main():
         }
         flow = InstalledAppFlow.from_client_config(client_config, scopes=SCOPES)
 
+    class AuthUrlPrompt:
+        def __init__(self, base_dir):
+            self.base_dir = base_dir
+
+        def format(self, **kwargs):
+            url = kwargs.get("url", "")
+            scratch_dir = self.base_dir / "scratch"
+            scratch_dir.mkdir(parents=True, exist_ok=True)
+            with open(scratch_dir / "auth_url.txt", "w", encoding="utf-8") as f:
+                f.write(url.strip())
+            with open(scratch_dir / "auth.html", "w", encoding="utf-8") as f:
+                f.write(f'<!DOCTYPE html><html><head><meta http-equiv="refresh" content="0; url={url}"></head><body><h2>Connecting to Google Sign-In...</h2><p><a href="{url}">Click here if not redirected automatically</a></p></body></html>')
+
+            import subprocess
+            try:
+                subprocess.Popen(f'start "" "{url}"', shell=True)
+            except Exception:
+                pass
+
+            output = (
+                "\n" + "=" * 70 + "\n"
+                "👉 GOOGLE SIGN-IN URL:\n"
+                f"{url}\n"
+                + "=" * 70 + "\n"
+            )
+            return output
+
     try:
-        print("\n🌐 Opening your browser for Google sign-in...")
-        creds = flow.run_local_server(port=8080, prompt="consent", access_type="offline")
+        print("\n🌐 Starting local authorization server...")
+        creds = flow.run_local_server(
+            port=8080,
+            prompt="consent",
+            access_type="offline",
+            authorization_prompt_message=AuthUrlPrompt(BASE_DIR)
+        )
 
         refresh_token = creds.refresh_token
         print("\n🎉 AUTHENTICATION SUCCESSFUL!\n")
