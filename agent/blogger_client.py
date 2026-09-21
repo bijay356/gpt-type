@@ -65,6 +65,19 @@ class BloggerClient:
         else:
             logger.error(f"Error {action}: {e}")
 
+    def verify_credentials(self):
+        """Pre-flight check to verify Blogger credentials before content generation."""
+        if self.dry_run:
+            logger.info("[DRY-RUN] Skipping Blogger API credential verification.")
+            return True
+        try:
+            self.service.blogs().get(blogId=BLOG_ID).execute()
+            logger.info("✅ Blogger API credentials and OAuth refresh token verified successfully.")
+            return True
+        except Exception as e:
+            self._diagnose_error(e, "verifying Blogger credentials in preflight check")
+            raise e
+
     def get_blog_info(self):
         if self.dry_run:
             return {"id": "dry-run-id", "name": "GPT-TYPE (Dry Run)", "url": BLOG_URL}

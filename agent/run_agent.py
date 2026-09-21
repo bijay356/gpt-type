@@ -36,11 +36,26 @@ logging.basicConfig(
 logger = logging.getLogger("GPTTypeAgent.Main")
 
 
+def write_github_step_summary(markdown_text):
+    import os
+    summary_path = os.getenv("GITHUB_STEP_SUMMARY")
+    if summary_path:
+        try:
+            with open(summary_path, "a", encoding="utf-8") as f:
+                f.write(markdown_text + "\n")
+        except Exception:
+            pass
+
 def run(dry_run=False, cluster_id=None, draft=False):
     logger.info("=" * 60)
     logger.info("🚀 STARTING 24/7 AUTONOMOUS AGENT FOR GPT-TYPE")
     logger.info(f"Mode: {'DRY RUN' if dry_run else 'PRODUCTION'} | Force Draft: {draft}")
     logger.info("=" * 60)
+
+    # Step 0: Pre-flight Verification
+    logger.info("\n--- [Pre-flight] Verifying Blogger API Connection & Token ---")
+    blogger = BloggerClient(dry_run=dry_run)
+    blogger.verify_credentials()
 
     # Step 1: Select Topic & Keyword
     logger.info("\n--- [1/5] Selecting Target SEO Keyword & Cluster ---")
@@ -62,7 +77,6 @@ def run(dry_run=False, cluster_id=None, draft=False):
 
     # Step 3: Publish to Blogger.com
     logger.info("\n--- [3/5] Publishing to Blogger (gpttype.blogspot.com) ---")
-    blogger = BloggerClient(dry_run=dry_run)
     post_meta = blogger.publish_post(
         title=article_data["title"],
         html_content=article_data["html_content"],
@@ -83,6 +97,21 @@ def run(dry_run=False, cluster_id=None, draft=False):
     record = reporter.record_publication(topic, post_meta, social_results)
     logger.info(f"Saved to post_history.json. Total posts published: {reporter.history.get('total_posts_published', 0)}")
 
+    # GitHub Actions Step Summary
+    summary = f"""### 🚀 GPT-TYPE Autonomous Agent Execution Report
+
+| Property | Value |
+| :--- | :--- |
+| **Article Title** | **{article_data['title']}** |
+| **Status** | `{post_meta['status']}` |
+| **Live Article URL** | [{post_meta['url']}]({post_meta['url']}) |
+| **Primary Keyword** | `{topic['primary_keyword']}` |
+| **Topic Cluster** | {topic['cluster_name']} (`{topic['cluster_id']}`) |
+| **Target Test Mode** | `{topic['target_test_mode']}` |
+| **Social Media** | Telegram: `{social_results.get('telegram', {}).get('status', 'n/a')}` | LinkedIn: `{social_results.get('linkedin', {}).get('status', 'n/a')}` |
+"""
+    write_github_step_summary(summary)
+
     logger.info("=" * 60)
     logger.info("✅ AUTONOMOUS CYCLE COMPLETED SUCCESSFULLY!")
     logger.info("=" * 60)
@@ -99,4 +128,21 @@ if __name__ == "__main__":
         run(dry_run=args.dry_run, cluster_id=args.cluster, draft=args.draft)
     except Exception as e:
         logger.exception(f"Fatal error during agent execution: {e}")
+        err_text = str(e)
+        troubleshoot = ""
+        if "invalid_grant" in err_text.lower() or "expired or revoked" in err_text.lower():
+            troubleshoot = """
+> [!CAUTION]
+> **Google Blogger Refresh Token Expired (`invalid_grant`)**
+>
+> 1. Set OAuth Consent Screen to **"In Production"** in [Google Cloud Console](https://console.cloud.google.com/apis/credentials/consent).
+> 2. Run `python setup_blogger_auth.py` locally to generate a permanent refresh token.
+> 3. Update the `BLOGGER_REFRESH_TOKEN` secret in GitHub Repository Settings.
+"""
+        fail_summary = f"""### ❌ GPT-TYPE Autonomous Agent Run Failed
+
+> **Error**: `{err_text}`
+{troubleshoot}
+"""
+        write_github_step_summary(fail_summary)
         sys.exit(1)
