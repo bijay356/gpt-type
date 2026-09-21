@@ -1,6 +1,6 @@
 {
-  "total_posts_published": 19,
-  "last_run_timestamp": "2026-09-21T15:38:00.238329+00:00",
+  "total_posts_published": 20,
+  "last_run_timestamp": "2026-09-21T21:42:09.391612+00:00",
   "published_posts": [
     {
       "id": "6385972940209506963",
@@ -711,7 +711,45 @@
           "reason": "No webhook URL configured"
         }
       }
+    },
+    {
+      "id": "4445677931535795770",
+      "title": "Mastering Speed With A Free Online Typing Speed Test Without Ads",
+      "url": "https://gpttype.blogspot.com/2026/09/mastering-speed-with-free-online-typing.html",
+      "status": "LIVE",
+      "primary_keyword": "free online typing speed test without ads",
+      "cluster_id": "free_typing_domination",
+      "cluster_name": "Free Typing Tools & Global Tutors",
+      "published_at": "2026-09-21T21:42:09.391612+00:00",
+      "social_broadcast": {
+        "telegram": {
+          "status": "success"
+        },
+        "twitter": {
+          "status": "skipped",
+          "reason": "Credentials missing"
+        },
+        "facebook": {
+          "status": "skipped",
+          "reason": "Credentials missing"
+        },
+        "linkedin": {
+          "status": "success"
+        },
+        "reddit": {
+          "status": "skipped",
+          "reason": "Credentials missing"
+        },
+        "instagram": {
+          "status": "skipped",
+          "reason": "Credentials missing"
+        },
+        "universal_webhook": {
+          "status": "skipped",
+          "reason": "No webhook URL configured"
+        }
+      }
     }
   ],
-  "cluster_rotation_index": 6
+  "cluster_rotation_index": 0
 }
