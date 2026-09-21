@@ -122,12 +122,44 @@ def main():
 
     try:
         print("\n🌐 Starting local authorization server...")
-        creds = flow.run_local_server(
-            port=8080,
-            prompt="consent",
-            access_type="offline",
-            authorization_prompt_message=AuthUrlPrompt(BASE_DIR)
+        import time
+        import wsgiref.simple_server
+        import wsgiref.util
+        from google_auth_oauthlib.flow import _ExclusiveWSGIServer, _WSGIRequestHandler, _RedirectWSGIApp
+
+        success_html = """<!DOCTYPE html><html><head><title>Authorization Successful</title><style>body{font-family:sans-serif;text-align:center;padding:50px;background:#0f172a;color:#f8fafc;}h1{color:#38bdf8;}p{color:#94a3b8;font-size:18px;}</style></head><body><h1>🎉 Authentication Successful!</h1><p>You may now close this window and return to your terminal.</p></body></html>"""
+        wsgi_app = _RedirectWSGIApp(success_html)
+        local_server = wsgiref.simple_server.make_server(
+            "localhost",
+            8080,
+            wsgi_app,
+            server_class=_ExclusiveWSGIServer,
+            handler_class=_WSGIRequestHandler,
         )
+
+        flow.redirect_uri = "http://localhost:8080/"
+        auth_url, _ = flow.authorization_url(prompt="consent", access_type="offline")
+
+        prompt_msg = AuthUrlPrompt(BASE_DIR).format(url=auth_url)
+        print(prompt_msg)
+        sys.stdout.flush()
+
+        local_server.timeout = 2
+        start_time = time.time()
+        max_wait = 900  # 15 minutes
+        while time.time() - start_time < max_wait:
+            local_server.handle_request()
+            if wsgi_app.last_request_uri and ("code=" in wsgi_app.last_request_uri or "error=" in wsgi_app.last_request_uri):
+                break
+
+        local_server.server_close()
+
+        if not wsgi_app.last_request_uri or "code=" not in wsgi_app.last_request_uri:
+            raise TimeoutError("Timed out or cancelled waiting for Google login.")
+
+        authorization_response = wsgi_app.last_request_uri.replace("http://", "https://")
+        flow.fetch_token(authorization_response=authorization_response)
+        creds = flow.credentials
 
         refresh_token = creds.refresh_token
         print("\n🎉 AUTHENTICATION SUCCESSFUL!\n")
