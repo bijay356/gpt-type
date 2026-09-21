@@ -2605,170 +2605,36 @@ body.is-app .main-content {
   }
 
   // ============================================================================
-  // ROMANIZED NEPALI TRANSLITERATION & HIJAI (हिज्जे) ENGINE
-  // Covers all 70 Vocabulary Words, 32 Quote Words, plus colloquial variations.
+  // OFFICIAL NEPALI UNICODE (ROMANIZED) KEYBOARD ENGINE (MPP / GOVT OF NEPAL)
+  // Strict 1-to-1 physical layout mapping with case-sensitivity and exact halant
   // ============================================================================
-  const ROMAN_CONSONANTS = {
-    'क': 'k', 'ख': 'kh', 'ग': 'g', 'घ': 'gh', 'ङ': 'ng',
-    'च': 'ch', 'छ': 'chh', 'ज': 'j', 'झ': 'jh', 'ञ': 'yn',
-    'ट': 't', 'ठ': 'th', 'ड': 'd', 'ढ': 'dh', 'ण': 'n',
-    'त': 't', 'थ': 'th', 'द': 'd', 'ध': 'dh', 'न': 'n',
-    'प': 'p', 'फ': 'ph', 'ब': 'b', 'भ': 'bh', 'म': 'm',
-    'य': 'y', 'र': 'r', 'ल': 'l', 'व': 'w',
-    'श': 'sh', 'ष': 'sh', 'स': 's', 'ह': 'h',
-    'क्ष': 'chhya', 'त्र': 'tra', 'ज्ञ': 'gyan'
-  };
-  const ROMAN_VOWELS = {
-    'अ': 'a', 'आ': 'aa', 'इ': 'i', 'ई': 'ee', 'उ': 'u', 'ऊ': 'oo',
-    'ऋ': 'ri', 'ए': 'e', 'ऐ': 'ai', 'ओ': 'o', 'औ': 'au',
-    'ा': 'a', 'ि': 'i', 'ी': 'i', 'ु': 'u', 'ू': 'u',
-    'ृ': 'ri', 'े': 'e', 'ै': 'ai', 'ो': 'o', 'ौ': 'au',
-    'ं': 'n', 'ँ': 'n', 'ः': 'h'
-  };
+  const NEPALI_ROMANIZED_KEY_MAP = {
+    // Consonants (व्यञ्जन)
+    'क': 'k', 'ख': 'K', 'ग': 'g', 'घ': 'G', 'ङ': '<',
+    'च': 'c', 'छ': 'C', 'ज': 'j', 'झ': 'J', 'ञ': 'Y',
+    'ट': 'q', 'ठ': 'Q', 'ड': 'x', 'ढ': 'X', 'ण': 'N',
+    'त': 't', 'थ': 'T', 'द': 'd', 'ध': 'D', 'न': 'n',
+    'प': 'p', 'फ': 'P', 'ब': 'b', 'भ': 'B', 'म': 'm',
+    'य': 'y', 'र': 'r', 'ल': 'l', 'व': 'v', 'श': 'S',
+    'ष': 'z', 'स': 's', 'ह': 'h', 'ळ': 'L',
 
-  function devanagariToRomanPhonetic(word) {
-    if (!word) return '';
-    let res = '';
-    const n = word.length;
-    for (let i = 0; i < n; i++) {
-      const c = word[i];
-      if (ROMAN_CONSONANTS[c]) {
-        const cons = ROMAN_CONSONANTS[c];
-        if (i + 1 < n) {
-          const nxt = word[i + 1];
-          if (nxt === '्') {
-            res += cons;
-            i++;
-          } else if (ROMAN_VOWELS[nxt]) {
-            res += cons + ROMAN_VOWELS[nxt];
-            i++;
-          } else {
-            res += cons + 'a';
-          }
-        } else {
-          res += cons;
-        }
-      } else if (ROMAN_VOWELS[c]) {
-        res += ROMAN_VOWELS[c];
-      } else if (c === '्') {
-        // standalone halant skip
-      } else {
-        res += c;
-      }
-    }
-    return res;
-  }
+    // Matras (मात्रा)
+    'ा': 'a', 'ि': 'i', 'ी': 'I', 'ु': 'u', 'ू': 'U',
+    'ृ': 'R', 'े': 'e', 'ै': 'E', 'ो': 'o', 'ौ': 'w',
+    '्': '/', 'ं': 'M', 'ँ': 'V', 'ः': '|', '़': '~',
 
-  const ROMANIZED_WORD_MAP = {
-    "नेपाल": ["nepal"],
-    "नमस्ते": ["namaste", "namaskar"],
-    "सञ्चै": ["sanchai", "sancai", "sanjhai"],
-    "घर": ["ghar"],
-    "पानी": ["pani", "paani"],
-    "आमा": ["aama", "ama"],
-    "बुवा": ["buwa", "buba"],
-    "साथी": ["sathi", "saathi"],
-    "माया": ["maya"],
-    "देश": ["desh", "des"],
-    "शान्ति": ["shanti", "santi"],
-    "हिमाल": ["himal"],
-    "पहाड": ["pahad", "pahar"],
-    "तराई": ["tarai"],
-    "काठमाडौँ": ["kathmandu", "kathmandau", "katmandu", "kathmando"],
-    "पोखरा": ["pokhara", "pokhra"],
-    "भाषा": ["bhasha", "bhasa"],
-    "संस्कृति": ["sanskriti", "sangskriti"],
-    "संसार": ["sansar"],
-    "जीवन": ["jeevan", "jiwan", "jivan"],
-    "समय": ["samay", "samaya"],
-    "काम": ["kam", "kaam"],
-    "मन": ["man", "mana"],
-    "राम्रो": ["ramro"],
-    "सुन्दर": ["sundar"],
-    "प्रकृति": ["prakriti"],
-    "खुसी": ["khusi", "khushi"],
-    "सपना": ["sapana", "sapna"],
-    "विद्या": ["vidya", "bidya", "viddhya", "biddhya"],
-    "ज्ञान": ["gyan", "gyaan"],
-    "सत्य": ["satya"],
-    "धर्म": ["dharma", "dharm"],
-    "कर्म": ["karma", "karm"],
-    "आकाश": ["aakash", "akash"],
-    "सूर्य": ["surya", "soorya"],
-    "चन्द्र": ["chandra"],
-    "धरती": ["dharti"],
-    "माटो": ["mato"],
-    "रुख": ["rukh"],
-    "फूल": ["phool", "phul", "ful", "fool"],
-    "फल": ["fal", "phal"],
-    "नदी": ["nadi"],
-    "ताल": ["tal", "taal"],
-    "खोला": ["khola"],
-    "झरना": ["jharna"],
-    "मेहनत": ["mehanat", "mehnat"],
-    "सफलता": ["safalta", "saphalta"],
-    "आनन्द": ["aanand", "anand", "ananda"],
-    "स्वाभिमान": ["swabhiman", "svabhiman"],
-    "स्वतन्त्रता": ["swatantrata", "svatantrata"],
-    "शुभकामना": ["shubhakamana", "subhakamana"],
-    "धन्यवाद": ["dhanyabad", "dhanyavad", "dhanyabaad"],
-    "परिवार": ["pariwar", "parivar"],
-    "दाजु": ["daju"],
-    "भाइ": ["bhai"],
-    "दिदी": ["didi"],
-    "बहिनी": ["bahini"],
-    "सहर": ["sahar"],
-    "गाउँ": ["gaun", "gau", "gaau", "gaanw"],
-    "विश्वास": ["biswas", "bishwas", "vishwas", "viswas"],
-    "अधिकार": ["adhikar"],
-    "कर्तव्य": ["kartabya", "kartavya"],
-    "समाज": ["samaj", "samaja"],
-    "राष्ट्र": ["rastra", "rashtra"],
-    "इतिहास": ["itihas"],
-    "भविष्य": ["bhavishya", "bhawishya"],
-    "वर्तमान": ["bartaman", "vartaman"],
-    "सङ्गीत": ["sangeet", "sangit"],
-    "कला": ["kala"],
-    "विज्ञान": ["vigyan", "bigyan", "bijnyan"],
-    "अगाडि": ["agadi", "agaadi"],
-    "असत्यको": ["asatyako", "asatyko"],
-    "कहिल्यै": ["kahilyai", "kahilye"],
-    "गरीयसी": ["gariyasi", "gariyashi"],
-    "जननी": ["janani"],
-    "जन्मभूमिश्च": ["janmabhumishcha", "janmabhumisca", "janmabhumischa"],
-    "ठूलो": ["thulo"],
-    "नै": ["nai"],
-    "परिश्रम": ["parishram", "parisram"],
-    "बढौँ": ["badhau", "badhaun", "badhou"],
-    "बनेको": ["baneko"],
-    "बाटोमा": ["batoma", "baatoma"],
-    "मिलेर": ["milera"],
-    "र": ["ra"],
-    "विजय": ["bijay", "vijay", "bijaya", "vijaya"],
-    "सत्यको": ["satyako", "satyko"],
-    "सधैँ": ["sadhai", "sadhaie"],
-    "सफलताको": ["safaltako", "saphaltako"],
-    "सबै": ["sabai"],
-    "सबैभन्दा": ["sabaibhanda"],
-    "समृद्धिको": ["samriddhiko", "samriddiko"],
-    "साँचो": ["sancho", "saacho"],
-    "स्वर्गादपि": ["swargadapi", "svargadapi"],
-    "हुन्छ": ["hunchha", "huncha"],
-    "हो": ["ho"],
-    "होइन": ["hoina", "hoin"]
+    // Independent Vowels (स्वर वर्ण)
+    'अ': 'H', 'आ': 'A', 'इ': '[', 'ई': '{', 'उ': 'f',
+    'ऊ': 'F', 'ऋ': 'Z', 'ए': ']', 'ऐ': '}', 'ओ': 'O', 'औ': 'W',
+
+    // Numbers (अङ्क)
+    '०': '0', '१': '1', '२': '2', '३': '3', '४': '4',
+    '५': '5', '६': '6', '७': '7', '८': '8', '९': '9',
+
+    // Symbols & Punctuation (चिह्न)
+    '।': '.', '॥': '>', 'ॐ': '\\', 'ऽ': '`'
   };
 
-  function getRomanVariants(devWord) {
-    if (!devWord) return [];
-    const clean = devWord.replace(/[।,.?!]/g, '').trim();
-    if (ROMANIZED_WORD_MAP[clean]) {
-      return ROMANIZED_WORD_MAP[clean];
-    }
-    const phon = devanagariToRomanPhonetic(clean);
-    return phon ? [phon] : [clean];
-  }
-
-  // UNIFIED STRICT HIJAI & CASE-SENSITIVE CHARACTER MATCHER (Speed Test, Ramayan Game & Classic Tutor)
   // UNIFIED STRICT HIJAI & CASE-SENSITIVE CHARACTER MATCHER (Speed Test, Ramayan Game & Classic Tutor)
   function isKeyMatchingTargetChar(pressedKey, targetChar, activeLang, pressedCode, nativeChar) {
     if (!pressedKey || !targetChar) return false;
@@ -2791,7 +2657,15 @@ body.is-app .main-content {
       return (pressedKey === targetChar || validChars.includes(targetChar) || (nativeChar && nativeChar === targetChar));
     }
 
-    // 4. Latin and case-sensitive scripts
+    // 4. Official Nepali Unicode (Romanized) Layout - Strict 1-to-1 Mapping (MPP)
+    if (activeLang && activeLang.id === 'nepali_romanized') {
+      if (NEPALI_ROMANIZED_KEY_MAP[targetChar] !== undefined) {
+        return (pressedKey === NEPALI_ROMANIZED_KEY_MAP[targetChar]);
+      }
+      return (pressedKey === targetChar);
+    }
+
+    // 5. Latin and case-sensitive scripts
     const isLatinChar = /^[a-zA-Z0-9\s.,!?:;'"~@#$%^&*()_+\-=\[\]{}|<>\/\\]$/.test(targetChar);
     if (isLatinChar) {
       if (pressedKey === targetChar) return true;
@@ -2802,93 +2676,92 @@ body.is-app .main-content {
       return false;
     }
 
-    // 5. UNIFIED DEVANAGARI & INDIC ROMANIZED SCRIPT MATCHER (All 70 Words & Full Alphabet)
+    // 6. Other Devanagari & Indic Scripts (Hindi, Sanskrit, Nepali Unicode Traditional, etc.)
     const isDevanagari = (activeLang && (
-      activeLang.id === 'nepali_romanized' ||
       activeLang.id === 'nepali_unicode' ||
       /^(hindi|sanskrit|marathi|maithili|bhojpuri|newari|tharu|tamang|gurung|magar|sherpa|rai|limbu|quotes_nepali|quotes_hindi|quotes_sanskrit)$/.test(activeLang.id)
     )) || /[\u0900-\u097F]/.test(targetChar);
 
     if (isDevanagari) {
       const k = pressedKey;
-      // 5a. Consonants
+      // 6a. Consonants
       if (targetChar === 'क' && (k === 'k' || k === 'K')) return true;
-      if (targetChar === 'ख' && (k === 'K' || k === 'k')) return true;
+      if (targetChar === 'ख' && (k === 'K')) return true;
       if (targetChar === 'ग' && (k === 'g' || k === 'G')) return true;
-      if (targetChar === 'घ' && (k === 'G' || k === 'g')) return true;
-      if (targetChar === 'ङ' && (k === '<' || k === 'G' || k === 'g' || k === ',')) return true;
+      if (targetChar === 'घ' && (k === 'G')) return true;
+      if (targetChar === 'ङ' && (k === '<' || k === 'G' || k === ',')) return true;
       if (targetChar === 'च' && (k === 'c' || k === 'C')) return true;
-      if (targetChar === 'छ' && (k === 'C' || k === 'c')) return true;
-      if (targetChar === 'ज' && (k === 'j' || k === 'J')) return true;
-      if (targetChar === 'झ' && (k === 'J' || k === 'j')) return true;
-      if (targetChar === 'ञ' && (k === 'Y' || k === 'y')) return true;
-      if (targetChar === 'ट' && (k === 'q' || k === 'Q')) return true;
-      if (targetChar === 'ठ' && (k === 'Q' || k === 'q' || k === 'T' || k === 't')) return true;
-      if (targetChar === 'ड' && (k === 'x' || k === 'X' || k === 'd' || k === 'D')) return true;
-      if (targetChar === 'ढ' && (k === 'X' || k === 'x')) return true;
-      if (targetChar === 'ण' && (k === 'N' || k === 'n')) return true;
-      if (targetChar === 'त' && (k === 't' || k === 'T')) return true;
-      if (targetChar === 'थ' && (k === 'T' || k === 't' || k === 'Q' || k === 'q')) return true;
-      if (targetChar === 'द' && (k === 'd' || k === 'D')) return true;
-      if (targetChar === 'ध' && (k === 'D' || k === 'd')) return true;
-      if (targetChar === 'न' && (k === 'n' || k === 'N')) return true;
-      if (targetChar === 'प' && (k === 'p' || k === 'P')) return true;
-      if (targetChar === 'फ' && (k === 'P' || k === 'p' || k === 'F' || k === 'f')) return true;
-      if (targetChar === 'ब' && (k === 'b' || k === 'B' || k === 'v' || k === 'V')) return true;
-      if (targetChar === 'भ' && (k === 'B' || k === 'b')) return true;
-      if (targetChar === 'म' && (k === 'm' || k === 'M')) return true;
-      if (targetChar === 'य' && (k === 'y' || k === 'Y')) return true;
-      if (targetChar === 'र' && (k === 'r' || k === 'R')) return true;
-      if (targetChar === 'ल' && (k === 'l' || k === 'L')) return true;
-      if (targetChar === 'व' && (k === 'v' || k === 'V' || k === 'w' || k === 'W' || k === 'b' || k === 'B')) return true;
-      if (targetChar === 'श' && (k === 'S' || k === 's')) return true;
-      if (targetChar === 'ष' && (k === 'R' || k === 'r' || k === 'Z' || k === 'z' || k === 's' || k === 'S')) return true;
-      if (targetChar === 'स' && (k === 's' || k === 'S')) return true;
-      if (targetChar === 'ह' && (k === 'h' || k === 'H')) return true;
-      if (targetChar === 'ळ' && (k === 'L' || k === 'l')) return true;
+      if (targetChar === 'छ' && (k === 'C')) return true;
+      if (targetChar === 'ज' && (k === 'j')) return true;
+      if (targetChar === 'झ' && (k === 'J')) return true;
+      if (targetChar === 'ञ' && (k === 'Y')) return true;
+      if (targetChar === 'ट' && (k === 'q' || k === 't')) return true;
+      if (targetChar === 'ठ' && (k === 'Q' || k === 'T')) return true;
+      if (targetChar === 'ड' && (k === 'x' || k === 'd')) return true;
+      if (targetChar === 'ढ' && (k === 'X' || k === 'D')) return true;
+      if (targetChar === 'ण' && (k === 'N')) return true;
+      if (targetChar === 'त' && (k === 't' || k === 'l')) return true;
+      if (targetChar === 'थ' && (k === 'T' || k === 'L')) return true;
+      if (targetChar === 'द' && (k === 'd' || k === 'o')) return true;
+      if (targetChar === 'ध' && (k === 'D' || k === 'O')) return true;
+      if (targetChar === 'न' && (k === 'n' || k === 'v')) return true;
+      if (targetChar === 'प' && (k === 'p' || k === 'h')) return true;
+      if (targetChar === 'फ' && (k === 'P' || k === 'H')) return true;
+      if (targetChar === 'ब' && (k === 'b' || k === 'y')) return true;
+      if (targetChar === 'भ' && (k === 'B' || k === 'Y')) return true;
+      if (targetChar === 'म' && (k === 'm' || k === 'c')) return true;
+      if (targetChar === 'य' && (k === 'y' || k === '/')) return true;
+      if (targetChar === 'र' && (k === 'r' || k === 'j')) return true;
+      if (targetChar === 'ल' && (k === 'l' || k === 'n')) return true;
+      if (targetChar === 'व' && (k === 'v' || k === 'w' || k === 'b')) return true;
+      if (targetChar === 'श' && (k === 'S' || k === 'M')) return true;
+      if (targetChar === 'ष' && (k === 'z' || k === '<')) return true;
+      if (targetChar === 'स' && (k === 's' || k === 'm')) return true;
+      if (targetChar === 'ह' && (k === 'h' || k === 'u')) return true;
+      if (targetChar === 'ळ' && (k === 'L')) return true;
 
-      // 5b. Matras (Vowel signs)
-      if (targetChar === 'ा' && (k === 'a' || k === 'A')) return true;
-      if (targetChar === 'ि' && (k === 'i' || k === 'I')) return true;
-      if (targetChar === 'ी' && (k === 'I' || k === 'i')) return true;
-      if (targetChar === 'ु' && (k === 'u' || k === 'U')) return true;
-      if (targetChar === 'ू' && (k === 'U' || k === 'u')) return true;
-      if (targetChar === 'ृ' && (k === 'R' || k === 'r' || k === 'Z' || k === 'z')) return true;
-      if (targetChar === 'े' && (k === 'e' || k === 'E')) return true;
-      if (targetChar === 'ै' && (k === 'E' || k === 'e')) return true;
-      if (targetChar === 'ो' && (k === 'o' || k === 'O')) return true;
-      if (targetChar === 'ौ' && (k === 'W' || k === 'w')) return true;
-      if (targetChar === '्' && (k === '/' || k === 'd' || k === 'D' || k === '\\' || k === ' ' || /^[a-zA-Z]$/.test(k))) return true;
-      if (targetChar === 'ं' && (k === 'M' || k === 'm')) return true;
-      if (targetChar === 'ँ' && (k === 'V' || k === 'v' || k === '~')) return true;
-      if (targetChar === 'ः' && (k === ':' || k === '|' || k === '\\')) return true;
-      if (targetChar === '़' && (k === '~' || k === '`')) return true;
+      // 6b. Matras
+      if (targetChar === 'ा' && (k === 'a' || k === 'e')) return true;
+      if (targetChar === 'ि' && (k === 'i' || k === 'f')) return true;
+      if (targetChar === 'ी' && (k === 'I' || k === 'r')) return true;
+      if (targetChar === 'ु' && (k === 'u' || k === 'g')) return true;
+      if (targetChar === 'ू' && (k === 'U' || k === 't')) return true;
+      if (targetChar === 'ृ' && (k === 'R' || k === 'Z' || k === '+')) return true;
+      if (targetChar === 'े' && (k === 'e' || k === 's')) return true;
+      if (targetChar === 'ै' && (k === 'E' || k === 'w')) return true;
+      if (targetChar === 'ो' && (k === 'o' || k === 'a')) return true;
+      if (targetChar === 'ौ' && (k === 'w' || k === 'q')) return true;
+      if (targetChar === '्' && (k === '/' || k === 'd' || k === 'D')) return true;
+      if (targetChar === 'ं' && (k === 'M' || k === 'x')) return true;
+      if (targetChar === 'ँ' && (k === 'V' || k === 'X')) return true;
+      if (targetChar === 'ः' && (k === ':' || k === '|' || k === '_')) return true;
+      if (targetChar === '़' && (k === '~' || k === ']' || k === '}')) return true;
 
-      // 5c. Independent Vowels
-      if (targetChar === 'अ' && (k === 'H' || k === 'h' || k === 'a' || k === 'A')) return true;
-      if (targetChar === 'आ' && (k === 'A' || k === 'a')) return true;
-      if (targetChar === 'इ' && (k === '[' || k === 'i' || k === 'I')) return true;
-      if (targetChar === 'ई' && (k === '{' || k === 'I' || k === 'i')) return true;
-      if (targetChar === 'उ' && (k === 'f' || k === 'u' || k === 'U')) return true;
-      if (targetChar === 'ऊ' && (k === 'F' || k === 'U' || k === 'u')) return true;
-      if (targetChar === 'ऋ' && (k === 'Z' || k === 'z' || k === 'R' || k === 'r')) return true;
-      if (targetChar === 'ए' && (k === ']' || k === 'e' || k === 'E')) return true;
-      if (targetChar === 'ऐ' && (k === '}' || k === 'E' || k === 'e')) return true;
-      if (targetChar === 'ओ' && (k === 'O' || k === 'o')) return true;
-      if (targetChar === 'औ' && (k === 'W' || k === 'w')) return true;
+      // 6c. Independent Vowels
+      if (targetChar === 'अ' && (k === 'H' || k === 'D')) return true;
+      if (targetChar === 'आ' && (k === 'A' || k === 'E')) return true;
+      if (targetChar === 'इ' && (k === '[' || k === 'F')) return true;
+      if (targetChar === 'ई' && (k === '{' || k === 'R')) return true;
+      if (targetChar === 'उ' && (k === 'f' || k === 'G')) return true;
+      if (targetChar === 'ऊ' && (k === 'F' || k === 'T')) return true;
+      if (targetChar === 'ऋ' && (k === 'Z' || k === '+')) return true;
+      if (targetChar === 'ए' && (k === ']' || k === 'S')) return true;
+      if (targetChar === 'ऐ' && (k === '}' || k === 'W')) return true;
+      if (targetChar === 'ओ' && (k === 'O' || k === 'A')) return true;
+      if (targetChar === 'औ' && (k === 'W' || k === 'Q')) return true;
 
-      // 5d. Punctuation & Symbols
-      if (targetChar === '।' && (k === '.' || k === '|')) return true;
-      if (targetChar === '॥' && (k === '>' || k === '|' || k === '.')) return true;
-      if (targetChar === 'ॐ' && (k === '\\' || k === 'o' || k === 'O')) return true;
-      if (targetChar === 'ऽ' && (k === '`' || k === "'")) return true;
+      // 6d. Punctuation & Symbols
+      if (targetChar === '।' && (k === '.' || k === '|' || k === '>')) return true;
+      if (targetChar === '॥' && (k === '>' || k === '|')) return true;
+      if (targetChar === 'ॐ' && (k === '\\')) return true;
+      if (targetChar === 'ऽ' && (k === '`')) return true;
 
-      // 5e. Devanagari Digits
+      // 6e. Digits
       const devDigits = {'०':'0','१':'1','२':'2','३':'3','४':'4','५':'5','६':'6','७':'7','८':'8','९':'9'};
       if (devDigits[targetChar] && devDigits[targetChar] === k) return true;
     }
 
-    // 6. Script / Layout resolution via getCharInfo (for other languages and scripts)
+    // 7. Fallback to getCharInfo
     const charInfo = getCharInfo(targetChar, activeLang);
     if (!charInfo) return false;
 
@@ -2955,98 +2828,8 @@ body.is-app .main-content {
     }
 
     const activeLang = sp.activeLang || LANGUAGES_DATA[0];
-    const isRomanized = (activeLang.id === 'nepali_romanized');
     const isDevanagari = (['nepali_unicode', 'nepali_romanized', 'hindi', 'sanskrit', 'marathi', 'maithili', 'bhojpuri', 'newari', 'tharu', 'tamang', 'gurung', 'magar', 'sherpa', 'rai', 'limbu', 'quotes_nepali', 'quotes_hindi', 'quotes_sanskrit'].includes(activeLang.id) || (activeLang.words && activeLang.words[0] && /[\u0900-\u097F]/.test(activeLang.words[0])));
 
-    if (isRomanized) {
-      const variants = getRomanVariants(currentWord);
-      const curBuf = (sp.typedBuffer || '');
-      const candidate = curBuf + char.toLowerCase();
-      const matchingVariant = variants.find(v => v.startsWith(candidate));
-
-      // 1. Typing within current word in Romanized mode:
-      if (matchingVariant) {
-        sp.typedBuffer = candidate;
-        sp.correctChars++;
-        playSound('keypress');
-
-        const wordEl = document.getElementById('st-word-' + sp.wordIndex);
-        if (wordEl) wordEl.classList.remove('word-wrong');
-
-        const isExactMatch = variants.includes(candidate);
-        const numChars = isExactMatch 
-          ? currentWord.length 
-          : Math.min(currentWord.length, Math.max(1, Math.round((candidate.length / matchingVariant.length) * currentWord.length)));
-        sp.charIndex = numChars;
-
-        const typedEl = document.getElementById('st-word-typed-' + sp.wordIndex);
-        if (typedEl) typedEl.textContent = currentWord.slice(0, numChars);
-
-        updateCaretPosition();
-        updateLiveMetrics();
-        return;
-      }
-
-      // 2. Fallback: MPP single-key Romanized typing within current word:
-      const targetChar = currentWord[sp.charIndex];
-      if (sp.charIndex < currentWord.length && isKeyMatchingTargetChar(char, targetChar, activeLang)) {
-        sp.correctChars++;
-        playSound('keypress');
-        sp.charIndex++;
-        const wordEl = document.getElementById('st-word-' + sp.wordIndex);
-        if (wordEl) wordEl.classList.remove('word-wrong');
-        const typedEl = document.getElementById('st-word-typed-' + sp.wordIndex);
-        if (typedEl) typedEl.textContent = currentWord.slice(0, sp.charIndex);
-        updateCaretPosition();
-        updateLiveMetrics();
-        return;
-      }
-
-      // 3. If active word is ALREADY completely typed, typing first char of next word advances word immediately:
-      const isWordComplete = variants.includes(curBuf.toLowerCase()) || (sp.charIndex >= currentWord.length);
-      if (isWordComplete) {
-        const nextWord = sp.words[sp.wordIndex + 1];
-        if (nextWord) {
-          const nextVariants = getRomanVariants(nextWord);
-          const nextMatches = nextVariants.some(v => v.startsWith(char.toLowerCase())) || isKeyMatchingTargetChar(char, nextWord[0], activeLang);
-          if (nextMatches) {
-            sp.wordIndex++;
-            sp.charIndex = 1;
-            sp.typedBuffer = char.toLowerCase();
-            sp.correctChars++;
-            playSound('keypress');
-            ensureSpeedtestWordsBuffer();
-
-            const prevWordEl = document.getElementById('st-word-' + (sp.wordIndex - 1));
-            if (prevWordEl) prevWordEl.classList.remove('word-wrong');
-            const newTypedEl = document.getElementById('st-word-typed-' + sp.wordIndex);
-            const bestVar = nextVariants.find(v => v.startsWith(char.toLowerCase())) || nextVariants[0];
-            const numDev = Math.max(1, Math.round((sp.typedBuffer.length / bestVar.length) * nextWord.length));
-            if (newTypedEl) newTypedEl.textContent = nextWord.slice(0, numDev);
-
-            updateCaretPosition();
-            updateLiveMetrics();
-            return;
-          }
-        }
-      }
-
-      // 4. Mismatch / Typo:
-      sp.wrongChars++;
-      sp.secondErrors++;
-      playSound('wrongkey');
-      const wordEl = document.getElementById('st-word-' + sp.wordIndex);
-      if (wordEl) wordEl.classList.add('word-wrong');
-      if (sp.masterMode) {
-        triggerMasterModeFailure();
-        return;
-      }
-      updateCaretPosition();
-      updateLiveMetrics();
-      return;
-    }
-
-    // NON-ROMANIZED LANGUAGES (Devanagari Unicode, English, Spanish, Preeti, etc.)
     // 1. If active word is already completely typed:
     if (sp.charIndex >= currentWord.length) {
       const nextWord = sp.words[sp.wordIndex + 1];
@@ -3140,44 +2923,7 @@ body.is-app .main-content {
     if (!currentWord) return;
 
     const activeLang = sp.activeLang || LANGUAGES_DATA[0];
-    const isRomanized = (activeLang.id === 'nepali_romanized');
     const isDevanagari = (['nepali_unicode', 'nepali_romanized', 'hindi', 'sanskrit', 'marathi', 'maithili', 'bhojpuri', 'newari', 'tharu', 'tamang', 'gurung', 'magar', 'sherpa', 'rai', 'limbu', 'quotes_nepali', 'quotes_hindi', 'quotes_sanskrit'].includes(activeLang.id) || (activeLang.words && activeLang.words[0] && /[\u0900-\u097F]/.test(activeLang.words[0])));
-
-    if (isRomanized) {
-      const wordEl = document.getElementById('st-word-' + sp.wordIndex);
-      if (wordEl && wordEl.classList.contains('word-wrong')) {
-        wordEl.classList.remove('word-wrong');
-        updateCaretPosition();
-        updateLiveMetrics();
-        return;
-      }
-      if (!sp.typedBuffer || sp.typedBuffer.length === 0) {
-        if (sp.charIndex === 0) return;
-        sp.charIndex--;
-        sp.correctChars = Math.max(0, sp.correctChars - 1);
-        const typedEl = document.getElementById('st-word-typed-' + sp.wordIndex);
-        if (typedEl) typedEl.textContent = currentWord.slice(0, sp.charIndex);
-        updateCaretPosition();
-        updateLiveMetrics();
-        return;
-      }
-      sp.typedBuffer = sp.typedBuffer.slice(0, -1);
-      sp.correctChars = Math.max(0, sp.correctChars - 1);
-      const variants = getRomanVariants(currentWord);
-      const matchingVariant = variants.find(v => v.startsWith(sp.typedBuffer)) || variants[0];
-      const typedEl = document.getElementById('st-word-typed-' + sp.wordIndex);
-      if (sp.typedBuffer.length === 0) {
-        sp.charIndex = 0;
-        if (typedEl) typedEl.textContent = '';
-      } else {
-        const numChars = Math.min(currentWord.length, Math.max(0, Math.round((sp.typedBuffer.length / matchingVariant.length) * currentWord.length)));
-        sp.charIndex = numChars;
-        if (typedEl) typedEl.textContent = currentWord.slice(0, numChars);
-      }
-      updateCaretPosition();
-      updateLiveMetrics();
-      return;
-    }
 
     if (isDevanagari) {
       const wordEl = document.getElementById('st-word-' + sp.wordIndex);
@@ -3247,16 +2993,9 @@ body.is-app .main-content {
     }
 
     const activeLang = sp.activeLang || LANGUAGES_DATA[0];
-    const isRomanized = (activeLang.id === 'nepali_romanized');
     const isDevanagari = (['nepali_unicode', 'nepali_romanized', 'hindi', 'sanskrit', 'marathi', 'maithili', 'bhojpuri', 'newari', 'tharu', 'tamang', 'gurung', 'magar', 'sherpa', 'rai', 'limbu', 'quotes_nepali', 'quotes_hindi', 'quotes_sanskrit'].includes(activeLang.id) || (activeLang.words && activeLang.words[0] && /[\u0900-\u097F]/.test(activeLang.words[0])));
 
-    let isComplete = false;
-    if (isRomanized) {
-      const variants = getRomanVariants(currentWord);
-      isComplete = variants.includes((sp.typedBuffer || '').toLowerCase()) || (cIdx >= currentWord.length);
-    } else {
-      isComplete = (cIdx >= currentWord.length);
-    }
+    const isComplete = (cIdx >= currentWord.length);
 
     if (!isComplete) {
       // Incomplete word skipped with Space: count remaining letters as errors & advance smoothly!
