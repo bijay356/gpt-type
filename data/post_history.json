@@ -1,6 +1,6 @@
 {
-  "total_posts_published": 25,
-  "last_run_timestamp": "2026-09-24T11:05:29.689040+00:00",
+  "total_posts_published": 26,
+  "last_run_timestamp": "2026-09-24T21:07:34.190448+00:00",
   "published_posts": [
     {
       "id": "6385972940209506963",
@@ -939,7 +939,45 @@
           "reason": "No webhook URL configured"
         }
       }
+    },
+    {
+      "id": "6454938944736939211",
+      "title": "Mastering Speed And Accuracy Through Interactive Typing Car Racing Games",
+      "url": "https://gpttype.blogspot.com/2026/09/mastering-speed-and-accuracy-through.html",
+      "status": "LIVE",
+      "primary_keyword": "online typing car racing game across 122 languages",
+      "cluster_id": "beginner_and_students",
+      "cluster_name": "Beginners, Kids & Touch Typing Basics",
+      "published_at": "2026-09-24T21:07:34.190448+00:00",
+      "social_broadcast": {
+        "telegram": {
+          "status": "success"
+        },
+        "twitter": {
+          "status": "skipped",
+          "reason": "Credentials missing"
+        },
+        "facebook": {
+          "status": "skipped",
+          "reason": "Credentials missing"
+        },
+        "linkedin": {
+          "status": "success"
+        },
+        "reddit": {
+          "status": "skipped",
+          "reason": "Credentials missing"
+        },
+        "instagram": {
+          "status": "skipped",
+          "reason": "Credentials missing"
+        },
+        "universal_webhook": {
+          "status": "skipped",
+          "reason": "No webhook URL configured"
+        }
+      }
     }
   ],
-  "cluster_rotation_index": 5
+  "cluster_rotation_index": 6
 }
