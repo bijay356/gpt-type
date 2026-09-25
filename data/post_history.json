@@ -1,6 +1,6 @@
 {
-  "total_posts_published": 26,
-  "last_run_timestamp": "2026-09-24T21:07:34.190448+00:00",
+  "total_posts_published": 27,
+  "last_run_timestamp": "2026-09-25T11:06:02.174832+00:00",
   "published_posts": [
     {
       "id": "6385972940209506963",
@@ -977,7 +977,45 @@
           "reason": "No webhook URL configured"
         }
       }
+    },
+    {
+      "id": "88533948138109569",
+      "title": "Mastering The Keyboard With A Free Touch Typing Tutor And Finger Placement Guide",
+      "url": "https://gpttype.blogspot.com/2026/09/mastering-keyboard-with-free-touch.html",
+      "status": "LIVE",
+      "primary_keyword": "free touch typing tutor with finger placement guide",
+      "cluster_id": "free_typing_domination",
+      "cluster_name": "Free Typing Tools & Global Tutors",
+      "published_at": "2026-09-25T11:06:02.174832+00:00",
+      "social_broadcast": {
+        "telegram": {
+          "status": "success"
+        },
+        "twitter": {
+          "status": "skipped",
+          "reason": "Credentials missing"
+        },
+        "facebook": {
+          "status": "skipped",
+          "reason": "Credentials missing"
+        },
+        "linkedin": {
+          "status": "success"
+        },
+        "reddit": {
+          "status": "skipped",
+          "reason": "Credentials missing"
+        },
+        "instagram": {
+          "status": "skipped",
+          "reason": "Credentials missing"
+        },
+        "universal_webhook": {
+          "status": "skipped",
+          "reason": "No webhook URL configured"
+        }
+      }
     }
   ],
-  "cluster_rotation_index": 6
+  "cluster_rotation_index": 0
 }
