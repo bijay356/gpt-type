@@ -1,6 +1,6 @@
 {
-  "total_posts_published": 28,
-  "last_run_timestamp": "2026-09-25T21:04:29.699447+00:00",
+  "total_posts_published": 29,
+  "last_run_timestamp": "2026-09-26T10:47:04.497300+00:00",
   "published_posts": [
     {
       "id": "6385972940209506963",
@@ -1053,7 +1053,45 @@
           "reason": "No webhook URL configured"
         }
       }
+    },
+    {
+      "id": "3768131068206218163",
+      "title": "Mastering Javascript Code Typing Speed Test Benchmarks",
+      "url": "https://gpttype.blogspot.com/2026/09/mastering-javascript-code-typing-speed.html",
+      "status": "LIVE",
+      "primary_keyword": "javascript code typing speed test",
+      "cluster_id": "programming_typing",
+      "cluster_name": "Coding & Developer Typing Skills",
+      "published_at": "2026-09-26T10:47:04.497300+00:00",
+      "social_broadcast": {
+        "telegram": {
+          "status": "success"
+        },
+        "twitter": {
+          "status": "skipped",
+          "reason": "Credentials missing"
+        },
+        "facebook": {
+          "status": "skipped",
+          "reason": "Credentials missing"
+        },
+        "linkedin": {
+          "status": "success"
+        },
+        "reddit": {
+          "status": "skipped",
+          "reason": "Credentials missing"
+        },
+        "instagram": {
+          "status": "skipped",
+          "reason": "Credentials missing"
+        },
+        "universal_webhook": {
+          "status": "skipped",
+          "reason": "No webhook URL configured"
+        }
+      }
     }
   ],
-  "cluster_rotation_index": 1
+  "cluster_rotation_index": 2
 }
