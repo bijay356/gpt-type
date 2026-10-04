@@ -1,6 +1,6 @@
 {
-  "total_posts_published": 44,
-  "last_run_timestamp": "2026-10-03T20:35:00.594148+00:00",
+  "total_posts_published": 45,
+  "last_run_timestamp": "2026-10-04T11:46:52.573789+00:00",
   "published_posts": [
     {
       "id": "6385972940209506963",
@@ -1657,7 +1657,43 @@
           "reason": "No webhook URL configured"
         }
       }
+    },
+    {
+      "id": "5215692247442223907",
+      "title": "Free Typeshala Download For Nepali And English Typing Guide",
+      "url": "https://gpttype.blogspot.com/2026/10/free-typeshala-download-for-nepali-and.html",
+      "status": "LIVE",
+      "primary_keyword": "free typeshala download for nepali and english typing",
+      "cluster_id": "free_typing_domination",
+      "cluster_name": "Free Typing Tools & Global Tutors",
+      "published_at": "2026-10-04T11:46:52.573789+00:00",
+      "social_broadcast": {
+        "telegram": {
+          "status": "skipped",
+          "reason": "No text provided"
+        },
+        "twitter": {
+          "status": "skipped"
+        },
+        "facebook": {
+          "status": "skipped"
+        },
+        "linkedin": {
+          "status": "skipped"
+        },
+        "reddit": {
+          "status": "skipped",
+          "reason": "Credentials missing"
+        },
+        "instagram": {
+          "status": "skipped"
+        },
+        "universal_webhook": {
+          "status": "skipped",
+          "reason": "No webhook URL configured"
+        }
+      }
     }
   ],
-  "cluster_rotation_index": 6
+  "cluster_rotation_index": 0
 }
