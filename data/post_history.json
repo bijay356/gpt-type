@@ -1,6 +1,6 @@
 {
-  "total_posts_published": 48,
-  "last_run_timestamp": "2026-10-05T23:42:36.365395+00:00",
+  "total_posts_published": 49,
+  "last_run_timestamp": "2026-10-06T12:43:36.713475+00:00",
   "published_posts": [
     {
       "id": "6385972940209506963",
@@ -1807,7 +1807,45 @@
           "reason": "No webhook URL configured"
         }
       }
+    },
+    {
+      "id": "4096017121889072583",
+      "title": "Mastering Hindi Typing Speed Test Inscript And Remington Layout",
+      "url": "https://gpttype.blogspot.com/2026/10/mastering-hindi-typing-speed-test.html",
+      "status": "LIVE",
+      "primary_keyword": "hindi typing speed test inscript and remington layout",
+      "cluster_id": "global_multilingual_typing",
+      "cluster_name": "Global Multilingual Typing (122+ Languages)",
+      "published_at": "2026-10-06T12:43:36.713475+00:00",
+      "social_broadcast": {
+        "telegram": {
+          "status": "success"
+        },
+        "twitter": {
+          "status": "skipped",
+          "reason": "Credentials missing"
+        },
+        "facebook": {
+          "status": "skipped",
+          "reason": "Credentials missing"
+        },
+        "linkedin": {
+          "status": "success"
+        },
+        "reddit": {
+          "status": "skipped",
+          "reason": "Credentials missing"
+        },
+        "instagram": {
+          "status": "skipped",
+          "reason": "Credentials missing"
+        },
+        "universal_webhook": {
+          "status": "skipped",
+          "reason": "No webhook URL configured"
+        }
+      }
     }
   ],
-  "cluster_rotation_index": 3
+  "cluster_rotation_index": 4
 }
