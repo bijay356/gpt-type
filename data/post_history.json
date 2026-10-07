@@ -1,6 +1,6 @@
 {
-  "total_posts_published": 50,
-  "last_run_timestamp": "2026-10-06T22:18:37.147784+00:00",
+  "total_posts_published": 51,
+  "last_run_timestamp": "2026-10-07T12:37:41.929667+00:00",
   "published_posts": [
     {
       "id": "6385972940209506963",
@@ -1881,7 +1881,43 @@
           "reason": "No webhook URL configured"
         }
       }
+    },
+    {
+      "id": "6782704606823855920",
+      "title": "Typeshala Nepali Typing Practice with Dynamic Finger Guides",
+      "url": "https://gpttype.blogspot.com/2026/10/typeshala-nepali-typing-practice-with.html",
+      "status": "LIVE",
+      "primary_keyword": "typeshala nepali typing practice with dynamic finger guides",
+      "cluster_id": "beginner_and_students",
+      "cluster_name": "Beginners, Kids & Touch Typing Basics",
+      "published_at": "2026-10-07T12:37:41.929667+00:00",
+      "social_broadcast": {
+        "telegram": {
+          "status": "skipped",
+          "reason": "No text provided"
+        },
+        "twitter": {
+          "status": "skipped"
+        },
+        "facebook": {
+          "status": "skipped"
+        },
+        "linkedin": {
+          "status": "skipped"
+        },
+        "reddit": {
+          "status": "skipped",
+          "reason": "Credentials missing"
+        },
+        "instagram": {
+          "status": "skipped"
+        },
+        "universal_webhook": {
+          "status": "skipped",
+          "reason": "No webhook URL configured"
+        }
+      }
     }
   ],
-  "cluster_rotation_index": 5
+  "cluster_rotation_index": 6
 }
