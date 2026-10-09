@@ -1,6 +1,6 @@
 {
-  "total_posts_published": 54,
-  "last_run_timestamp": "2026-10-08T22:51:42.065930+00:00",
+  "total_posts_published": 55,
+  "last_run_timestamp": "2026-10-09T12:33:17.026068+00:00",
   "published_posts": [
     {
       "id": "6385972940209506963",
@@ -2031,7 +2031,45 @@
           "reason": "No webhook URL configured"
         }
       }
+    },
+    {
+      "id": "2631897562299408258",
+      "title": "Mastering the Typing Speed Test for Government Jobs Preparation",
+      "url": "https://gpttype.blogspot.com/2026/10/mastering-typing-speed-test-for_01938642143.html",
+      "status": "LIVE",
+      "primary_keyword": "typing speed test for government jobs preparation",
+      "cluster_id": "exam_and_job_prep",
+      "cluster_name": "Job & Exam Typing Preparation",
+      "published_at": "2026-10-09T12:33:17.026068+00:00",
+      "social_broadcast": {
+        "telegram": {
+          "status": "success"
+        },
+        "twitter": {
+          "status": "skipped",
+          "reason": "Credentials missing"
+        },
+        "facebook": {
+          "status": "skipped",
+          "reason": "Credentials missing"
+        },
+        "linkedin": {
+          "status": "success"
+        },
+        "reddit": {
+          "status": "skipped",
+          "reason": "Credentials missing"
+        },
+        "instagram": {
+          "status": "skipped",
+          "reason": "Credentials missing"
+        },
+        "universal_webhook": {
+          "status": "skipped",
+          "reason": "No webhook URL configured"
+        }
+      }
     }
   ],
-  "cluster_rotation_index": 2
+  "cluster_rotation_index": 3
 }
