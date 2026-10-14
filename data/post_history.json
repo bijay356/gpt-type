@@ -1,6 +1,6 @@
 {
-  "total_posts_published": 65,
-  "last_run_timestamp": "2026-10-14T11:09:09.770070+00:00",
+  "total_posts_published": 66,
+  "last_run_timestamp": "2026-10-14T21:16:27.708778+00:00",
   "published_posts": [
     {
       "id": "6385972940209506963",
@@ -2449,7 +2449,45 @@
           "reason": "No webhook URL configured"
         }
       }
+    },
+    {
+      "id": "1377288666706308501",
+      "title": "Master Global Keyboards With A Free Multilingual Typing Test",
+      "url": "https://gpttype.blogspot.com/2026/10/master-global-keyboards-with-free.html",
+      "status": "LIVE",
+      "primary_keyword": "free multilingual typing test supporting 124 languages",
+      "cluster_id": "free_typing_domination",
+      "cluster_name": "Free Typing Tools & Global Tutors",
+      "published_at": "2026-10-14T21:16:27.708778+00:00",
+      "social_broadcast": {
+        "telegram": {
+          "status": "success"
+        },
+        "twitter": {
+          "status": "skipped",
+          "reason": "Credentials missing"
+        },
+        "facebook": {
+          "status": "skipped",
+          "reason": "Credentials missing"
+        },
+        "linkedin": {
+          "status": "success"
+        },
+        "reddit": {
+          "status": "skipped",
+          "reason": "Credentials missing"
+        },
+        "instagram": {
+          "status": "skipped",
+          "reason": "Credentials missing"
+        },
+        "universal_webhook": {
+          "status": "skipped",
+          "reason": "No webhook URL configured"
+        }
+      }
     }
   ],
-  "cluster_rotation_index": 6
+  "cluster_rotation_index": 0
 }
