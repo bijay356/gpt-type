@@ -3,6 +3,7 @@ import difflib
 import json
 import logging
 import sys
+import time
 from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -26,33 +27,43 @@ def find_duplicate_posts():
 
     duplicates = []
     for idx, p in enumerate(posts):
-        title = p.get("title", "")
+        title = p.get("title", "").strip()
+        pk = p.get("primary_keyword", "").strip().lower()
+
         for prev_idx, prev_p in enumerate(posts[:idx]):
-            ratio = difflib.SequenceMatcher(None, title.lower(), prev_p.get("title", "").lower()).ratio()
-            if ratio >= 0.75:
+            prev_title = prev_p.get("title", "").strip()
+            prev_pk = prev_p.get("primary_keyword", "").strip().lower()
+
+            same_pk = (pk == prev_pk and bool(pk))
+            ratio = difflib.SequenceMatcher(None, title.lower(), prev_title.lower()).ratio()
+
+            if same_pk or ratio >= 0.82:
                 duplicates.append({
                     "post_index": idx,
                     "post_id": p.get("id"),
                     "current_title": title,
                     "current_url": p.get("url"),
+                    "primary_keyword": pk,
                     "duplicate_of_index": prev_idx + 1,
-                    "duplicate_of_title": prev_p.get("title", ""),
-                    "cluster_id": p.get("cluster_id", "speed_boosters")
+                    "duplicate_of_title": prev_title,
+                    "cluster_id": p.get("cluster_id", "speed_boosters"),
+                    "ratio": ratio,
+                    "same_pk": same_pk
                 })
                 break
     return duplicates
 
 def repurpose_duplicates(dry_run=True, limit=None):
     duplicates = find_duplicate_posts()
-    logger.info(f"Found {len(duplicates)} duplicate / near-duplicate posts.")
+    logger.info(f"Found {len(duplicates)} genuine duplicate posts to clean up.")
 
     if not duplicates:
-        logger.info("No duplicate posts found! Everything is unique.")
+        logger.info("✅ No duplicate posts found! All articles are unique.")
         return
 
     if limit:
         duplicates = duplicates[:limit]
-        logger.info(f"Processing first {limit} duplicate posts...")
+        logger.info(f"Processing batch of {limit} duplicate posts...")
 
     blogger = BloggerClient(dry_run=dry_run)
     generator = ContentGenerator(dry_run=dry_run)
@@ -62,51 +73,62 @@ def repurpose_duplicates(dry_run=True, limit=None):
         history = json.load(f)
 
     updated_count = 0
+    total_to_process = len(duplicates)
+
     for dup in duplicates:
         post_idx = dup["post_index"]
         post_id = dup["post_id"]
         old_title = dup["current_title"]
         cluster_id = dup["cluster_id"]
 
-        logger.info("=" * 60)
-        logger.info(f"Fixing Post #{post_idx + 1} (Blogger ID: {post_id})")
-        logger.info(f"Old Title: '{old_title}' (Duplicate of Post #{dup['duplicate_of_index']})")
+        logger.info("=" * 70)
+        logger.info(f"🔄 Repurposing [{updated_count + 1}/{total_to_process}] Post #{post_idx + 1} (Blogger ID: {post_id})")
+        logger.info(f"   Old Title: '{old_title}'")
+        logger.info(f"   Duplicate Of: Post #{dup['duplicate_of_index']} ('{dup['duplicate_of_title']}')")
 
-        # Select a fresh, unwritten topic in this cluster
+        # Select a fresh, unwritten topic in this cluster from the 209-keyword database
         topic = engine.select_next_topic(force_cluster_id=cluster_id)
-        logger.info(f"New Target Keyword: '{topic['primary_keyword']}'")
+        logger.info(f"   New Target Keyword: '{topic['primary_keyword']}' ({topic['cluster_name']})")
 
-        # Generate unique, in-depth content
+        # Generate unique, in-depth 1,400+ word content meeting Google monetization criteria
         article = generator.generate_article_and_social(topic)
         new_title = article["title"]
         new_html = article["html_content"]
         new_labels = article.get("labels", ["Typing Tutorials", "GPT-TYPE"])
 
-        logger.info(f"New Unique Title: '{new_title}'")
-        logger.info(f"New Content Length: {len(new_html)} characters")
+        logger.info(f"   New Unique Title: '{new_title}'")
+        logger.info(f"   Content Length: {len(new_html)} chars")
 
-        # Update in Blogger
+        # Update post in Blogger
         if not dry_run and post_id:
             try:
                 res = blogger.update_post(post_id, title=new_title, html_content=new_html, labels=new_labels)
-                logger.info(f"✅ Successfully updated Blogger post {post_id} on live site!")
-                
-                # Update record in post_history.json
+                logger.info(f"   ✅ Successfully updated Blogger post {post_id} live!")
+
                 history["published_posts"][post_idx]["title"] = new_title
                 history["published_posts"][post_idx]["primary_keyword"] = topic["primary_keyword"]
                 history["published_posts"][post_idx]["cluster_id"] = topic["cluster_id"]
                 history["published_posts"][post_idx]["cluster_name"] = topic["cluster_name"]
+                engine.history = history
                 updated_count += 1
+
+                # Save history immediately so progress is never lost
+                with open(POST_HISTORY_PATH, "w", encoding="utf-8") as f:
+                    json.dump(history, f, indent=2, ensure_ascii=False)
+                logger.info(f"   💾 Saved post_history.json ({updated_count}/{total_to_process} completed)")
+
+                time.sleep(2)  # Cooldown between API calls
             except Exception as e:
-                logger.error(f"Failed to update Blogger post {post_id}: {e}")
+                logger.error(f"   ❌ Failed to update Blogger post {post_id}: {e}")
         else:
-            logger.info(f"[DRY-RUN] Would update Blogger post {post_id} with new title '{new_title}'")
+            logger.info(f"   [DRY-RUN] Would update Blogger post {post_id} with new title '{new_title}'")
+            history["published_posts"][post_idx]["title"] = new_title
+            history["published_posts"][post_idx]["primary_keyword"] = topic["primary_keyword"]
+            engine.history = history
             updated_count += 1
 
-    if not dry_run and updated_count > 0:
-        with open(POST_HISTORY_PATH, "w", encoding="utf-8") as f:
-            json.dump(history, f, indent=2, ensure_ascii=False)
-        logger.info(f"Updated post_history.json with {updated_count} fresh titles and keywords.")
+    logger.info("=" * 70)
+    logger.info(f"🎉 COMPLETED: Successfully repurposed {updated_count}/{total_to_process} duplicate posts!")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Repurpose duplicate Blogger posts into unique high-ranking articles")
