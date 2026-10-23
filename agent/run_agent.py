@@ -85,6 +85,29 @@ def run(dry_run=False, cluster_id=None, draft=False):
     )
     logger.info(f"Publication Result: Status={post_meta['status']} | URL={post_meta['url']}")
 
+    # Step 3.5: Auto-Ping Search Engines for Instant Discovery
+    logger.info("\n--- [3.5/5] Signaling Search Engines (Google & Bing Pings) ---")
+    ping_results = {}
+    from agent.config import BLOG_URL
+    sitemap_url = f"{BLOG_URL}/sitemap.xml"
+
+    if not dry_run and post_meta.get("status") == "LIVE":
+        import requests
+        for engine, ping_url in [
+            ("Google", f"https://www.google.com/ping?sitemap={sitemap_url}"),
+            ("Bing", f"https://www.bing.com/ping?sitemap={sitemap_url}")
+        ]:
+            try:
+                r = requests.get(ping_url, timeout=10)
+                ping_results[engine] = f"HTTP {r.status_code}"
+                logger.info(f"Signaled {engine} sitemap: {ping_url} -> HTTP {r.status_code}")
+            except Exception as pe:
+                ping_results[engine] = f"error: {pe}"
+                logger.debug(f"{engine} ping skipped: {pe}")
+    else:
+        logger.info("[DRY-RUN] Would ping Google and Bing sitemaps for discovery.")
+        ping_results = {"Google": "dry_run_signaled", "Bing": "dry_run_signaled"}
+
     # Step 4: Broadcast to Social Media Channels
     logger.info("\n--- [4/5] Broadcasting to Social Channels ---")
     social = SocialPublisher(dry_run=dry_run)
@@ -108,6 +131,7 @@ def run(dry_run=False, cluster_id=None, draft=False):
 | **Primary Keyword** | `{topic['primary_keyword']}` |
 | **Topic Cluster** | {topic['cluster_name']} (`{topic['cluster_id']}`) |
 | **Target Test Mode** | `{topic['target_test_mode']}` |
+| **Search Engine Pings** | Google: `{ping_results.get('Google', 'n/a')}` | Bing: `{ping_results.get('Bing', 'n/a')}` |
 | **Social Media** | Telegram: `{social_results.get('telegram', {}).get('status', 'n/a')}` | LinkedIn: `{social_results.get('linkedin', {}).get('status', 'n/a')}` |
 """
     write_github_step_summary(summary)
