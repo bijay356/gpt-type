@@ -46,7 +46,6 @@ class BloggerClient:
             logger.error(f"Failed to authenticate with Blogger API: {e}")
             raise e
 
-
     def _diagnose_error(self, e, action="communicating with Blogger API"):
         err_msg = str(e).lower()
         if "invalid_grant" in err_msg or "expired or revoked" in err_msg:
@@ -134,7 +133,6 @@ class BloggerClient:
                 "labels": clean_labels
             }
 
-
             request = self.service.posts().insert(
                 blogId=BLOG_ID,
                 body=body,
@@ -154,4 +152,42 @@ class BloggerClient:
             }
         except Exception as e:
             self._diagnose_error(e, f"publishing post '{title}' to Blogger")
+            raise e
+
+    def update_post(self, post_id, title=None, html_content=None, labels=None):
+        """
+        Updates an existing Blogger post by ID using the Blogger API v3.
+        Used to fix duplicate titles, upgrade thin content, or refresh SEO metadata.
+        """
+        import re
+        if self.dry_run:
+            logger.info(f"[DRY-RUN] Would update Blogger post {post_id} with title '{title}'")
+            return {"id": post_id, "title": title, "status": "UPDATED_DRY_RUN"}
+
+        body = {}
+        if title:
+            clean_title = re.sub(r'[:?"\'`<>*|#]', '', title).strip()
+            body["title"] = clean_title
+        if html_content:
+            body["content"] = html_content
+        if labels:
+            clean_labels = [str(l).strip() for l in labels if str(l).strip()]
+            if clean_labels:
+                body["labels"] = clean_labels
+
+        try:
+            result = self.service.posts().patch(
+                blogId=BLOG_ID,
+                postId=str(post_id),
+                body=body
+            ).execute()
+            logger.info(f"Successfully updated Blogger post {post_id}: '{result.get('title')}'")
+            return {
+                "id": result.get("id"),
+                "title": result.get("title"),
+                "url": result.get("url"),
+                "status": "LIVE"
+            }
+        except Exception as e:
+            self._diagnose_error(e, f"updating post {post_id}")
             raise e

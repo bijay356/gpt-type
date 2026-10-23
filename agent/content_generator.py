@@ -3,7 +3,8 @@ import logging
 import re
 import time
 import requests
-from agent.config import GEMINI_API_KEY, BLOG_URL
+import difflib
+from agent.config import GEMINI_API_KEY, BLOG_URL, POST_HISTORY_PATH
 
 logger = logging.getLogger("GPTTypeAgent.Generator")
 
@@ -30,6 +31,14 @@ class ContentGenerator:
                 logger.warning(f"AI generation encountered an error after all retries ({e}). Using high-depth structured article generator.")
                 parsed = self._generate_mock_article(topic)
 
+        # Enforce 100% unique title & eliminate repetitive "Mastering" formulas
+        published_titles = self._get_published_titles()
+        parsed["title"] = self._sanitize_and_ensure_unique_title(
+            parsed.get("title", ""),
+            topic,
+            published_titles
+        )
+
         # Enforce unbreakable quality rules (Table contrast, TOC presence, Human voice, SEO Schema)
         parsed["html_content"] = self._enforce_quality_rules(
             parsed.get("html_content", ""),
@@ -40,6 +49,92 @@ class ContentGenerator:
         parsed = self._enforce_human_voice(parsed)
 
         return parsed
+
+    def _get_published_titles(self):
+        """Reads historical post titles from post_history.json."""
+        if POST_HISTORY_PATH.exists():
+            try:
+                import json
+                with open(POST_HISTORY_PATH, "r", encoding="utf-8") as f:
+                    data = json.load(f)
+                    return [p.get("title", "").strip() for p in data.get("published_posts", []) if p.get("title")]
+            except Exception:
+                pass
+        return []
+
+    def _sanitize_and_ensure_unique_title(self, candidate_title, topic, published_titles):
+        """
+        Strips repetitive 'Mastering...' prefixes and guarantees the title has < 0.60
+        similarity with any previously published article.
+        """
+        clean_title = re.sub(r'''[:?"'`<>*|#]''', '', candidate_title).strip()
+
+        # 1. Ban repetitive 'Mastering...' formula
+        if clean_title.lower().startswith("mastering the "):
+            clean_title = "The Complete Guide To " + clean_title[14:]
+        elif clean_title.lower().startswith("mastering "):
+            clean_title = "How To Excel At " + clean_title[10:]
+        elif clean_title.lower().startswith("master "):
+            clean_title = "Practical Guide To " + clean_title[7:]
+
+        # 2. Check title similarity against all published titles in history
+        for pub_title in published_titles:
+            ratio = difflib.SequenceMatcher(None, clean_title.lower(), pub_title.lower()).ratio()
+            if ratio >= 0.58:
+                logger.warning(
+                    f"Generated title '{clean_title}' is too similar ({ratio:.2f}) to existing '{pub_title}'. Diversifying title phrasing..."
+                )
+                kw_title = topic["primary_keyword"].title()
+                tm = topic.get("target_test_mode", "")
+                c_id = topic.get("cluster_id", "")
+
+                if tm == "code" or "program" in c_id:
+                    variants = [
+                        f"{kw_title} Speed Drills And Productivity For Developers",
+                        f"How Developers Can Speed Up {kw_title} Without Errors",
+                        f"{kw_title} Syntax Practice And Keyboard Efficiency",
+                        f"The Programmer Guide To {kw_title} And Clean Keystrokes"
+                    ]
+                elif tm == "300s" or "exam" in c_id:
+                    variants = [
+                        f"{kw_title} Pass Cutoffs Scoring Rules And Drills",
+                        f"How To Pass {kw_title} Without Typing Mistakes",
+                        f"{kw_title} Official Benchmarks And Practice Strategy",
+                        f"Essential Preparation Tips For {kw_title}"
+                    ]
+                elif tm == "multilingual" or "multilingual" in c_id:
+                    variants = [
+                        f"{kw_title} Keyboard Layout Guide And WPM Drills",
+                        f"How To Type Accurately In {kw_title} Practice",
+                        f"{kw_title} Character Placement And Speed Drills",
+                        f"The Complete Walkthrough Of {kw_title}"
+                    ]
+                elif tm == "120s" or "ergo" in c_id:
+                    variants = [
+                        f"{kw_title} Biomechanics Posture And Testing",
+                        f"The Ergonomic Impact Of {kw_title} On Typing Speed",
+                        f"{kw_title} Hands-On Comparison And Benchmark Test",
+                        f"Why {kw_title} Matters For Daily Typing Health"
+                    ]
+                else:
+                    variants = [
+                        f"How To Build Speed In {kw_title} Fast",
+                        f"{kw_title} Breakdown Mistakes To Avoid And Pro Drills",
+                        f"Proven Daily Habits For {kw_title} Success",
+                        f"{kw_title} The Actionable Step By Step Speed Guide"
+                    ]
+
+                best_variant = variants[0]
+                min_max_ratio = 1.0
+                for v in variants:
+                    max_r = max((difflib.SequenceMatcher(None, v.lower(), pt.lower()).ratio() for pt in published_titles), default=0.0)
+                    if max_r < min_max_ratio:
+                        min_max_ratio = max_r
+                        best_variant = v
+                clean_title = best_variant
+                break
+
+        return re.sub(r'''[:?"'`<>*|#]''', '', clean_title).strip()
 
     def _generate_mock_article(self, topic):
         kw = topic["primary_keyword"]
@@ -210,6 +305,9 @@ class ContentGenerator:
         cluster_name = topic["cluster_name"]
         test_mode = topic["target_test_mode"]
 
+        recent_titles = self._get_published_titles()[-35:]
+        recent_titles_str = "\n".join([f"  - {t}" for t in recent_titles]) if recent_titles else "  - None yet"
+
         return f"""
 You are the Senior Touch-Typing Researcher and Global Content Lead for GPT-TYPE ({BLOG_URL}), the world's premier, next-generation multilingual typing platform and educational web suite.
 
@@ -249,7 +347,18 @@ TARGET DETAILS:
 STRICT GOOGLE ADSENSE & MONETIZATION POLICIES TO FOLLOW:
 1. VALUABLE INVENTORY (NO THIN CONTENT): Word count MUST be between 1,200 and 1,800 words. Provide deep, educational, step-by-step guidance with real benchmarks, exact finger placement coordinates, ergonomic degree angles, and muscle memory science. Naturally recommend trying GPT-TYPE's 5 core tools (Speed Test, Classic Tutor, Car Racing Game, Ramayan Archery Game, Free Form Typing), 7 mechanical sound options, or 7 themes to build deliberate practice habits.
 2. E-E-A-T (EXPERIENCE, EXPERTISE, AUTHORITATIVENESS, TRUST): Write in an authoritative, encouraging human educator voice. Never sound robotic or generic. Avoid cliché AI openings like "In today's fast-paced digital world...".
-3. CLEAN PERMALINK TITLE: The title must be clean, punchy (50-60 chars), and contain NO colons (:), NO question marks (?), NO quotes, and NO emojis. (Clean alphanumeric titles ensure Blogger generates a beautiful, SEO-friendly permalink).
+3. UNIQUE & DIVERSE EDITORIAL TITLE (CRITICAL ANTI-DUPLICATION RULE):
+   - ABSOLUTELY NEVER START THE TITLE WITH THE WORD "Mastering"! We have strictly banned "Mastering" because it creates repetitive, low-quality titles.
+   - The title MUST be 100% UNIQUE and distinctly different in phrasing, hook, and keywords from all these previously published articles:
+{recent_titles_str}
+   - Use diverse editorial headline structures:
+     * "How To [Action] Without [Common Mistake]"
+     * "The Complete Guide To [Topic] In 2026"
+     * "[Number] Proven Drills To Improve [Specific Skill]"
+     * "[Topic A] Vs [Topic B]: The Definitive Typing Benchmark"
+     * "Why Your [Metric] Is Stuck And How To Fix It"
+     * "[Topic]: Biomechanics, Posture, And Daily Practice Routine"
+   - Clean permalink title: Clean, punchy (50-65 chars), with NO colons (:), NO question marks (?), NO quotes, NO brackets, and NO emojis.
 4. SEARCH DESCRIPTION: Provide a crisp, high-CTR 145-155 character Search Description for search engine snippet display.
 5. STANDARDIZED BLOGGER LABELS: Provide 3 to 4 clean, capitalized, high-CPC labels (e.g., "Typing Tutorials", "WPM Benchmarks", "GPT-TYPE", "Exam Preparation").
 6. 100% AUTHENTIC HUMAN VOICE (STRICTLY NO BOT / ROBOT / AUTOMATION TALK):
