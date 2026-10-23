@@ -604,16 +604,145 @@ HTML BODY FORMATTING SPECIFICATIONS:
 
         return fallback
 
+    def _generate_featured_visual_banner(self, title, topic):
+        """
+        Generates a 1200x630 Google Discover-compliant high-contrast SVG hero banner
+        with neon glowing typography, technical grid lines, and telemetry badges.
+        """
+        clean_title = re.sub(r'''[:?"'`<>*|#]''', '', title).strip()
+        words = clean_title.split()
+        if len(words) > 6:
+            mid = len(words) // 2
+            line1 = " ".join(words[:mid])
+            line2 = " ".join(words[mid:])
+        else:
+            line1 = clean_title
+            line2 = ""
+
+        c_id = topic.get("cluster_id", "")
+        if "program" in c_id:
+            accent_color = "#38bdf8"
+            accent_label = "💻 DEVELOPER CODING SPEED"
+            metric_1 = "SYNTAX SPEED & ACCURACY"
+            metric_2 = "BRACKET & INDENT FLUENCY"
+        elif "exam" in c_id or "job" in c_id:
+            accent_color = "#fbbf24"
+            accent_label = "📋 EMPLOYMENT & EXAM TEST"
+            metric_1 = "QUALIFYING WPM CUTOFF"
+            metric_2 = "STRICT ERROR PENALTIES"
+        elif "ergo" in c_id:
+            accent_color = "#a855f7"
+            accent_label = "⌨️ HARDWARE & ERGONOMICS"
+            metric_1 = "MECHANICAL THOCK (0MS)"
+            metric_2 = "POSTURE & WRIST HEALTH"
+        else:
+            accent_color = "#0ea5e9"
+            accent_label = "⚡ WPM SPEED BENCHMARK"
+            metric_1 = "DELIBERATE PRACTICE"
+            metric_2 = "REAL-TIME TELEMETRY"
+
+        line2_svg = f'<text x="60" y="325" fill="#ffffff" font-size="44" font-weight="800">{line2}</text>' if line2 else ''
+        title_y = "260" if line2 else "295"
+
+        svg = f"""<figure class="gpttype-featured-visual-hero" style="margin: 0 0 35px 0; border-radius: 14px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border: 1px solid #334155;">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="100%" height="auto" style="display: block; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #0b0f19;">
+    <defs>
+      <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#0b0f19" />
+        <stop offset="60%" stop-color="#0f172a" />
+        <stop offset="100%" stop-color="#1e1b4b" />
+      </linearGradient>
+      <linearGradient id="titleGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%" stop-color="#38bdf8" />
+        <stop offset="50%" stop-color="#818cf8" />
+        <stop offset="100%" stop-color="#c084fc" />
+      </linearGradient>
+      <filter id="glowEffect" x="-20%" y="-20%" width="140%" height="140%">
+        <feGaussianBlur stdDeviation="12" result="blur" />
+        <feComposite in="SourceGraphic" in2="blur" operator="over" />
+      </filter>
+    </defs>
+
+    <!-- Background -->
+    <rect width="1200" height="630" fill="url(#bgGradient)" />
+
+    <!-- Tech Grid Overlay -->
+    <g stroke="#334155" stroke-width="1" opacity="0.22">
+      <line x1="0" y1="126" x2="1200" y2="126" />
+      <line x1="0" y1="252" x2="1200" y2="252" />
+      <line x1="0" y1="378" x2="1200" y2="378" />
+      <line x1="0" y1="504" x2="1200" y2="504" />
+      <line x1="240" y1="0" x2="240" y2="630" />
+      <line x1="480" y1="0" x2="480" y2="630" />
+      <line x1="720" y1="0" x2="720" y2="630" />
+      <line x1="960" y1="0" x2="960" y2="630" />
+    </g>
+
+    <!-- Header Brand Bar -->
+    <g transform="translate(60, 65)">
+      <circle cx="20" cy="20" r="14" fill="{accent_color}" opacity="0.25" filter="url(#glowEffect)" />
+      <circle cx="20" cy="20" r="10" fill="{accent_color}" />
+      <text x="45" y="27" fill="#ffffff" font-size="24" font-weight="900" letter-spacing="1.5">GPT-TYPE</text>
+      <rect x="200" y="4" width="280" height="34" rx="17" fill="#1e293b" stroke="{accent_color}" stroke-width="1.2" />
+      <text x="340" y="26" fill="{accent_color}" font-size="13" font-weight="700" text-anchor="middle" letter-spacing="1">{accent_label}</text>
+    </g>
+
+    <!-- Main Title -->
+    <g>
+      <text x="60" y="{title_y}" fill="url(#titleGrad)" font-size="48" font-weight="900" filter="url(#glowEffect)">{line1}</text>
+      {line2_svg}
+    </g>
+
+    <!-- Bottom Feature Cards -->
+    <g transform="translate(60, 480)">
+      <rect x="0" y="0" width="340" height="85" rx="12" fill="#0f172a" stroke="#334155" stroke-width="1.5" />
+      <text x="25" y="32" fill="#94a3b8" font-size="13" font-weight="700" letter-spacing="0.5">TARGET FOCUS</text>
+      <text x="25" y="65" fill="#38bdf8" font-size="20" font-weight="800">{metric_1}</text>
+
+      <rect x="370" y="0" width="340" height="85" rx="12" fill="#0f172a" stroke="#334155" stroke-width="1.5" />
+      <text x="395" y="32" fill="#94a3b8" font-size="13" font-weight="700" letter-spacing="0.5">CORE DISCIPLINE</text>
+      <text x="395" y="65" fill="#4ade80" font-size="20" font-weight="800">{metric_2}</text>
+
+      <rect x="740" y="0" width="340" height="85" rx="12" fill="#0f172a" stroke="#334155" stroke-width="1.5" />
+      <text x="765" y="32" fill="#94a3b8" font-size="13" font-weight="700" letter-spacing="0.5">INTERACTIVE ENGINE</text>
+      <text x="765" y="65" fill="#c084fc" font-size="20" font-weight="800">5 Pro Practice Modes</text>
+    </g>
+  </svg>
+  <figcaption style="padding: 10px 16px; background: #0f172a; color: #94a3b8; font-size: 0.85rem; text-align: center; border-top: 1px solid #334155;">
+    Official GPT-TYPE Master Guide: <strong style="color: #38bdf8;">{clean_title}</strong>
+  </figcaption>
+</figure>"""
+        return svg
+
     def _enforce_quality_rules(self, html, topic, meta_description="", title=""):
         """
         Guarantees that every article strictly complies with:
-        1. Dark high-contrast styling on all tables (no white-on-white text).
-        2. Fully interactive Table of Contents (TOC) with working anchor IDs.
-        3. High-contrast dark theme typography across all headings and paragraphs.
-        4. Schema.org BlogPosting metadata with explicit search description.
+        1. High-Resolution Featured Visual Hero Banner (1200x630 SVG with glow effects).
+        2. CSS Keyframe Animations (pulsing caret, glowing interactive CTA button).
+        3. Dark high-contrast styling on all tables (no white-on-white text).
+        4. Fully interactive Table of Contents (TOC) with working anchor IDs.
+        5. High-contrast dark theme typography across all headings and paragraphs.
+        6. Schema.org BlogPosting metadata with explicit search description.
         """
         if not html:
             return html
+
+        # 0. Inject High-Definition Featured Visual Hero Banner (SVG)
+        clean_title = re.sub(r'''[:?"'`<>*|#]''', '', title).strip() if title else topic.get("primary_keyword", "").title()
+        if "gpttype-featured-visual-hero" not in html:
+            hero_banner = self._generate_featured_visual_banner(clean_title, topic)
+            html = hero_banner + "\n" + html
+
+        # 0.5. Inject Modern CSS Keyframe Animations & 3D Keycaps
+        if "gpttype-animations" not in html:
+            anim_css = '''<style class="gpttype-animations">
+@keyframes gptBlink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+@keyframes gptGlow { 0%, 100% { box-shadow: 0 4px 15px rgba(14, 165, 233, 0.4); } 50% { box-shadow: 0 6px 25px rgba(99, 102, 241, 0.7); } }
+.gpt-cursor { display: inline-block; width: 2.5px; height: 1.15em; background: #38bdf8; margin-left: 2px; vertical-align: text-bottom; animation: gptBlink 0.9s infinite; }
+.gpt-btn-animated { animation: gptGlow 2.5s infinite ease-in-out !important; }
+.gpt-kbd { background: #1e293b; border: 1px solid #475569; border-bottom: 3px solid #0ea5e9; border-radius: 6px; padding: 3px 8px; font-family: monospace; font-size: 0.95rem; color: #38bdf8; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.3); }
+</style>'''
+            html = anim_css + "\n" + html
 
         # 1. Fix Table Styling: Force dark high-contrast styling and prevent white-on-white text
         def fix_table(match):
