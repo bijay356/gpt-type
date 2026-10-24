@@ -1,6 +1,6 @@
 {
-  "total_posts_published": 85,
-  "last_run_timestamp": "2026-10-24T10:15:57.228972+00:00",
+  "total_posts_published": 86,
+  "last_run_timestamp": "2026-10-24T20:11:26.501308+00:00",
   "published_posts": [
     {
       "id": "6385972940209506963",
@@ -3197,7 +3197,45 @@
           "reason": "No webhook URL configured"
         }
       }
+    },
+    {
+      "id": "4364967065372141015",
+      "title": "Terminal and Bash CLI Command Typing Speed Guide",
+      "url": "https://gpttype.blogspot.com/2026/10/terminal-and-bash-cli-command-typing.html",
+      "status": "LIVE",
+      "primary_keyword": "terminal and bash cli command typing speed guide",
+      "cluster_id": "programming_typing",
+      "cluster_name": "Coding & Developer Typing Skills",
+      "published_at": "2026-10-24T20:11:26.501308+00:00",
+      "social_broadcast": {
+        "telegram": {
+          "status": "success"
+        },
+        "twitter": {
+          "status": "skipped",
+          "reason": "Credentials missing"
+        },
+        "facebook": {
+          "status": "skipped",
+          "reason": "Credentials missing"
+        },
+        "linkedin": {
+          "status": "success"
+        },
+        "reddit": {
+          "status": "skipped",
+          "reason": "Credentials missing"
+        },
+        "instagram": {
+          "status": "skipped",
+          "reason": "Credentials missing"
+        },
+        "universal_webhook": {
+          "status": "skipped",
+          "reason": "No webhook URL configured"
+        }
+      }
     }
   ],
-  "cluster_rotation_index": 1
+  "cluster_rotation_index": 2
 }
