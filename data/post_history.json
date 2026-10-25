@@ -1,6 +1,6 @@
 {
-  "total_posts_published": 86,
-  "last_run_timestamp": "2026-10-24T20:11:26.501308+00:00",
+  "total_posts_published": 87,
+  "last_run_timestamp": "2026-10-25T10:41:27.640095+00:00",
   "published_posts": [
     {
       "id": "6385972940209506963",
@@ -3235,7 +3235,45 @@
           "reason": "No webhook URL configured"
         }
       }
+    },
+    {
+      "id": "3600899198424057870",
+      "title": "Bank Clerk Clerical Aptitude Typing Test Success Guide",
+      "url": "https://gpttype.blogspot.com/2026/10/bank-clerk-clerical-aptitude-typing.html",
+      "status": "LIVE",
+      "primary_keyword": "bank clerk clerical aptitude typing test tips",
+      "cluster_id": "exam_and_job_prep",
+      "cluster_name": "Job & Exam Typing Preparation",
+      "published_at": "2026-10-25T10:41:27.640095+00:00",
+      "social_broadcast": {
+        "telegram": {
+          "status": "success"
+        },
+        "twitter": {
+          "status": "skipped",
+          "reason": "Credentials missing"
+        },
+        "facebook": {
+          "status": "skipped",
+          "reason": "Credentials missing"
+        },
+        "linkedin": {
+          "status": "success"
+        },
+        "reddit": {
+          "status": "skipped",
+          "reason": "Credentials missing"
+        },
+        "instagram": {
+          "status": "skipped",
+          "reason": "Credentials missing"
+        },
+        "universal_webhook": {
+          "status": "skipped",
+          "reason": "No webhook URL configured"
+        }
+      }
     }
   ],
-  "cluster_rotation_index": 2
+  "cluster_rotation_index": 3
 }
