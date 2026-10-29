@@ -1,6 +1,6 @@
 {
-  "total_posts_published": 95,
-  "last_run_timestamp": "2026-10-29T12:15:46.001957+00:00",
+  "total_posts_published": 96,
+  "last_run_timestamp": "2026-10-29T22:25:17.964356+00:00",
   "published_posts": [
     {
       "id": "6385972940209506963",
@@ -3575,7 +3575,45 @@
           "reason": "No webhook URL configured"
         }
       }
+    },
+    {
+      "id": "5113830961558834588",
+      "title": "Keyboard Tenting And Negative Tilt To Prevent Wrist Strain",
+      "url": "https://gpttype.blogspot.com/2026/10/keyboard-tenting-and-negative-tilt-to.html",
+      "status": "LIVE",
+      "primary_keyword": "keyboard tenting and negative tilt to prevent wrist strain",
+      "cluster_id": "ergonomics_and_hardware",
+      "cluster_name": "Ergonomics, Posture & Mechanical Keyboards",
+      "published_at": "2026-10-29T22:25:17.964356+00:00",
+      "social_broadcast": {
+        "telegram": {
+          "status": "success"
+        },
+        "twitter": {
+          "status": "skipped",
+          "reason": "Credentials missing"
+        },
+        "facebook": {
+          "status": "skipped",
+          "reason": "Credentials missing"
+        },
+        "linkedin": {
+          "status": "success"
+        },
+        "reddit": {
+          "status": "skipped",
+          "reason": "Credentials missing"
+        },
+        "instagram": {
+          "status": "skipped",
+          "reason": "Credentials missing"
+        },
+        "universal_webhook": {
+          "status": "skipped",
+          "reason": "No webhook URL configured"
+        }
+      }
     }
   ],
-  "cluster_rotation_index": 4
+  "cluster_rotation_index": 5
 }
