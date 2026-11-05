@@ -1,6 +1,6 @@
 {
-  "total_posts_published": 109,
-  "last_run_timestamp": "2026-11-05T13:57:42.780085+00:00",
+  "total_posts_published": 110,
+  "last_run_timestamp": "2026-11-05T23:14:37.265064+00:00",
   "published_posts": [
     {
       "id": "6385972940209506963",
@@ -4104,7 +4104,45 @@
           "reason": "No webhook URL configured"
         }
       }
+    },
+    {
+      "id": "2095977857076361715",
+      "title": "Scissor Switch Vs Butterfly Keyboard Typing Speed And Reliability",
+      "url": "https://gpttype.blogspot.com/2026/11/scissor-switch-vs-butterfly-keyboard.html",
+      "status": "LIVE",
+      "primary_keyword": "scissor switch vs butterfly keyboard typing speed and reliability",
+      "cluster_id": "ergonomics_and_hardware",
+      "cluster_name": "Ergonomics, Posture & Mechanical Keyboards",
+      "published_at": "2026-11-05T23:14:37.265064+00:00",
+      "social_broadcast": {
+        "telegram": {
+          "status": "success"
+        },
+        "twitter": {
+          "status": "skipped",
+          "reason": "Credentials missing"
+        },
+        "facebook": {
+          "status": "skipped",
+          "reason": "Credentials missing"
+        },
+        "linkedin": {
+          "status": "success"
+        },
+        "reddit": {
+          "status": "skipped",
+          "reason": "Credentials missing"
+        },
+        "instagram": {
+          "status": "skipped",
+          "reason": "Credentials missing"
+        },
+        "universal_webhook": {
+          "status": "skipped",
+          "reason": "No webhook URL configured"
+        }
+      }
     }
   ],
-  "cluster_rotation_index": 4
+  "cluster_rotation_index": 5
 }
