@@ -1,6 +1,6 @@
 {
-  "total_posts_published": 112,
-  "last_run_timestamp": "2026-11-06T22:42:35.823375+00:00",
+  "total_posts_published": 113,
+  "last_run_timestamp": "2026-11-07T12:25:36.227213+00:00",
   "published_posts": [
     {
       "id": "6385972940209506963",
@@ -4214,7 +4214,45 @@
           "reason": "No webhook URL configured"
         }
       }
+    },
+    {
+      "id": "4338964706204012893",
+      "title": "Deliberate Practice Techniques For Professional Typists",
+      "url": "https://gpttype.blogspot.com/2026/11/deliberate-practice-techniques-for.html",
+      "status": "LIVE",
+      "primary_keyword": "deliberate practice techniques for professional typists",
+      "cluster_id": "speed_boosters",
+      "cluster_name": "Speed Boosters & WPM Milestones",
+      "published_at": "2026-11-07T12:25:36.227213+00:00",
+      "social_broadcast": {
+        "telegram": {
+          "status": "success"
+        },
+        "twitter": {
+          "status": "skipped",
+          "reason": "Credentials missing"
+        },
+        "facebook": {
+          "status": "skipped",
+          "reason": "Credentials missing"
+        },
+        "linkedin": {
+          "status": "success"
+        },
+        "reddit": {
+          "status": "skipped",
+          "reason": "Credentials missing"
+        },
+        "instagram": {
+          "status": "skipped",
+          "reason": "Credentials missing"
+        },
+        "universal_webhook": {
+          "status": "skipped",
+          "reason": "No webhook URL configured"
+        }
+      }
     }
   ],
-  "cluster_rotation_index": 0
+  "cluster_rotation_index": 1
 }
