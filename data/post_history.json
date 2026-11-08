@@ -1,6 +1,6 @@
 {
-  "total_posts_published": 114,
-  "last_run_timestamp": "2026-11-07T21:26:21.861145+00:00",
+  "total_posts_published": 115,
+  "last_run_timestamp": "2026-11-08T12:44:12.846790+00:00",
   "published_posts": [
     {
       "id": "6385972940209506963",
@@ -4288,7 +4288,43 @@
           "reason": "No webhook URL configured"
         }
       }
+    },
+    {
+      "id": "4448087331126061565",
+      "title": "How To Pass Government Steno Exam Speed Transcription Tests",
+      "url": "https://gpttype.blogspot.com/2026/11/how-to-pass-government-steno-exam-speed.html",
+      "status": "LIVE",
+      "primary_keyword": "government steno exam speed transcription practice",
+      "cluster_id": "exam_and_job_prep",
+      "cluster_name": "Job & Exam Typing Preparation",
+      "published_at": "2026-11-08T12:44:12.846790+00:00",
+      "social_broadcast": {
+        "telegram": {
+          "status": "skipped",
+          "reason": "No text provided"
+        },
+        "twitter": {
+          "status": "skipped"
+        },
+        "facebook": {
+          "status": "skipped"
+        },
+        "linkedin": {
+          "status": "skipped"
+        },
+        "reddit": {
+          "status": "skipped",
+          "reason": "Credentials missing"
+        },
+        "instagram": {
+          "status": "skipped"
+        },
+        "universal_webhook": {
+          "status": "skipped",
+          "reason": "No webhook URL configured"
+        }
+      }
     }
   ],
-  "cluster_rotation_index": 2
+  "cluster_rotation_index": 3
 }
