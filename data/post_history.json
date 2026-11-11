@@ -1,6 +1,6 @@
 {
-  "total_posts_published": 120,
-  "last_run_timestamp": "2026-11-10T22:49:39.948423+00:00",
+  "total_posts_published": 121,
+  "last_run_timestamp": "2026-11-11T13:31:24.850277+00:00",
   "published_posts": [
     {
       "id": "6385972940209506963",
@@ -4508,7 +4508,45 @@
           "reason": "No webhook URL configured"
         }
       }
+    },
+    {
+      "id": "451846655009866202",
+      "title": "Git Commit And Command Line Terminal Typing Drills For Developers",
+      "url": "https://gpttype.blogspot.com/2026/11/git-commit-and-command-line-terminal.html",
+      "status": "LIVE",
+      "primary_keyword": "git commit and command line terminal typing drills",
+      "cluster_id": "programming_typing",
+      "cluster_name": "Coding & Developer Typing Skills",
+      "published_at": "2026-11-11T13:31:24.850277+00:00",
+      "social_broadcast": {
+        "telegram": {
+          "status": "success"
+        },
+        "twitter": {
+          "status": "skipped",
+          "reason": "Credentials missing"
+        },
+        "facebook": {
+          "status": "skipped",
+          "reason": "Credentials missing"
+        },
+        "linkedin": {
+          "status": "success"
+        },
+        "reddit": {
+          "status": "skipped",
+          "reason": "Credentials missing"
+        },
+        "instagram": {
+          "status": "skipped",
+          "reason": "Credentials missing"
+        },
+        "universal_webhook": {
+          "status": "skipped",
+          "reason": "No webhook URL configured"
+        }
+      }
     }
   ],
-  "cluster_rotation_index": 1
+  "cluster_rotation_index": 2
 }
