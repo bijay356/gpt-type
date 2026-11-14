@@ -1,6 +1,6 @@
 {
-  "total_posts_published": 127,
-  "last_run_timestamp": "2026-11-14T12:56:27.352719+00:00",
+  "total_posts_published": 128,
+  "last_run_timestamp": "2026-11-14T21:57:07.182040+00:00",
   "published_posts": [
     {
       "id": "6385972940209506963",
@@ -4772,7 +4772,46 @@
           "reason": "No webhook URL configured"
         }
       }
+    },
+    {
+      "id": "6737995221282223357",
+      "title": "Json And Yaml Indentation Typing Exercises For Backend Devs Speed Drills And Productivity For Developers",
+      "url": "https://gpttype.blogspot.com/2026/11/json-and-yaml-indentation-typing.html",
+      "status": "LIVE",
+      "primary_keyword": "json and yaml indentation typing exercises for backend devs",
+      "cluster_id": "programming_typing",
+      "cluster_name": "Coding & Developer Typing Skills",
+      "published_at": "2026-11-14T21:57:07.182040+00:00",
+      "social_broadcast": {
+        "telegram": {
+          "status": "success"
+        },
+        "twitter": {
+          "status": "skipped",
+          "reason": "Credentials missing"
+        },
+        "facebook": {
+          "status": "skipped",
+          "reason": "Credentials missing"
+        },
+        "linkedin": {
+          "status": "failed",
+          "error": "{\"status\":401,\"serviceErrorCode\":65602,\"code\":\"EXPIRED_ACCESS_TOKEN\",\"message\":\"The token used in the request has expired\"}"
+        },
+        "reddit": {
+          "status": "skipped",
+          "reason": "Credentials missing"
+        },
+        "instagram": {
+          "status": "skipped",
+          "reason": "Credentials missing"
+        },
+        "universal_webhook": {
+          "status": "skipped",
+          "reason": "No webhook URL configured"
+        }
+      }
     }
   ],
-  "cluster_rotation_index": 1
+  "cluster_rotation_index": 2
 }
