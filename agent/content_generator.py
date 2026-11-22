@@ -16,20 +16,30 @@ class ContentGenerator:
 
     def generate_article_and_social(self, topic):
         """
-        Uses Gemini to generate complete SEO article, JSON-LD schema,
-        practice drills, and social media captions.
+        Uses Gemini to generate complete, publication-grade SEO articles (1,500-2,000 words),
+        internal links, JSON-LD schema, practice drills, and social media captions.
+        NEVER silently publishes mock/template fallback text in production.
         """
         if self.dry_run and not GEMINI_API_KEY:
             logger.info("[DRY-RUN] GEMINI_API_KEY not configured. Generating realistic mock article payload.")
             parsed = self._generate_mock_article(topic)
         else:
             prompt = self._build_prompt(topic)
-            try:
-                raw_response = self._call_gemini(prompt)
+            raw_response = self._call_gemini(prompt)
+            parsed = self._parse_json_response(raw_response)
+
+            # Enforce strict AdSense Valuable Inventory word-count floor (>= 950 prose words)
+            word_count = self._count_prose_words(parsed.get("html_content", ""))
+            logger.info(f"Initial generated prose word count: {word_count} words")
+            if word_count < 950 and not self.dry_run:
+                logger.warning(f"Article too short ({word_count} words < 950 minimum for AdSense). Retrying once for deeper depth...")
+                expanded_prompt = prompt + "\n\nCRITICAL: Your previous draft was too short. Expand every section with deep technical detail, a 7-day training plan, a Mistake-to-Fix diagnosis table, and 4 detailed FAQs so the final article exceeds 1,500 words."
+                raw_response = self._call_gemini(expanded_prompt)
                 parsed = self._parse_json_response(raw_response)
-            except Exception as e:
-                logger.warning(f"AI generation encountered an error after all retries ({e}). Using high-depth structured article generator.")
-                parsed = self._generate_mock_article(topic)
+                word_count = self._count_prose_words(parsed.get("html_content", ""))
+                logger.info(f"Expanded prose word count: {word_count} words")
+                if word_count < 700:
+                    raise RuntimeError(f"Generated article failed AdSense minimum depth check ({word_count} words). Aborting publication to protect site quality.")
 
         # Enforce 100% unique title & eliminate repetitive "Mastering" formulas
         published_titles = self._get_published_titles()
@@ -39,7 +49,7 @@ class ContentGenerator:
             published_titles
         )
 
-        # Enforce unbreakable quality rules (Table contrast, TOC presence, Human voice, SEO Schema)
+        # Enforce unbreakable quality rules (Hero Visual, Internal Links, Table contrast, TOC, Human voice, SEO Schema)
         parsed["html_content"] = self._enforce_quality_rules(
             parsed.get("html_content", ""),
             topic,
@@ -50,14 +60,67 @@ class ContentGenerator:
 
         return parsed
 
+    def _count_prose_words(self, html):
+        """Counts real human-readable prose words, excluding HTML tags, SVG, script, and style blocks."""
+        if not html:
+            return 0
+        cleaned = re.sub(r'<(script|style|svg)[^>]*>[\s\S]*?</\1>', ' ', html, flags=re.IGNORECASE)
+        cleaned = re.sub(r'<[^>]+>', ' ', cleaned)
+        return len(cleaned.split())
+
+    def _get_related_posts(self, topic, count=5):
+        """
+        Selects real LIVE published articles from post_history.json for contextual internal linking,
+        preventing orphan pages and strengthening topical authority.
+        """
+        if not POST_HISTORY_PATH.exists():
+            return []
+        try:
+            with open(POST_HISTORY_PATH, "r", encoding="utf-8") as f:
+                data = json.load(f)
+            posts = data.get("published_posts", [])
+        except Exception:
+            return []
+
+        cluster_id = topic.get("cluster_id", "")
+        current_kw = topic.get("primary_keyword", "").lower().strip()
+
+        same_cluster = []
+        other_clusters = []
+        seen_urls = set()
+
+        for p in reversed(posts):
+            if p.get("status", "LIVE") != "LIVE":
+                continue
+            url = (p.get("url") or "").strip()
+            title = (p.get("title") or "").strip()
+            pk = (p.get("primary_keyword") or "").lower().strip()
+            if not url or not title or "/2026/" not in url or url in seen_urls:
+                continue
+            if pk == current_kw:
+                continue
+            seen_urls.add(url)
+            item = {"title": title, "url": url, "cluster_id": p.get("cluster_id", "")}
+            if p.get("cluster_id") == cluster_id:
+                same_cluster.append(item)
+            else:
+                other_clusters.append(item)
+
+        selected = same_cluster[:3] + other_clusters[:max(0, count - len(same_cluster[:3]))]
+        return selected[:count]
+
     def _get_published_titles(self):
-        """Reads historical post titles from post_history.json."""
+        """Reads historical LIVE post titles from post_history.json."""
         if POST_HISTORY_PATH.exists():
             try:
                 import json
                 with open(POST_HISTORY_PATH, "r", encoding="utf-8") as f:
                     data = json.load(f)
-                    return [p.get("title", "").strip() for p in data.get("published_posts", []) if p.get("title")]
+                    return [
+                        p.get("title", "").strip()
+                        for p in data.get("published_posts", [])
+                        if p.get("title") and p.get("status", "LIVE") == "LIVE"
+                    ]
             except Exception:
                 pass
         return []
@@ -308,33 +371,32 @@ class ContentGenerator:
         recent_titles = self._get_published_titles()[-35:]
         recent_titles_str = "\n".join([f"  - {t}" for t in recent_titles]) if recent_titles else "  - None yet"
 
+        related_posts = self._get_related_posts(topic, count=5)
+        related_links_str = "\n".join([f'  - <a href="{p["url"]}" style="color: #38bdf8; text-decoration: underline;">{p["title"]}</a>' for p in related_posts]) if related_posts else "  - None yet"
+
         return f"""
-You are the Senior Touch-Typing Researcher and Global Content Lead for GPT-TYPE ({BLOG_URL}), the world's premier, next-generation multilingual typing platform and educational web suite.
+You are the Senior Touch-Typing Researcher and Global Content Lead for GPT-TYPE ({BLOG_URL}), the world's premier, next-generation global typing platform and educational web suite for developers, students, professionals, and competitive typists.
 
 ═══════════════════════════════════════════════════════════════════════════════
 OFFICIAL BRAND IDENTITY, MISSION & CORE PILLARS OF GPT-TYPE ({BLOG_URL}):
 ═══════════════════════════════════════════════════════════════════════════════
-MISSION: Make typing practice accessible, useful, and enjoyable for everyone (students, teachers, office workers, writers, freelancers, job seekers, competitive-exam candidates, and professional typists) without requiring complicated registration or accounts.
+MISSION: Make high-speed touch typing, code syntax mastery, and keyboard ergonomics accessible, measurable, and enjoyable for global users (US, UK, Canada, Europe, and worldwide) with zero mandatory signup or privacy compromises.
 
 THE 5 SIGNATURE PILLARS OF GPT-TYPE:
-1. ⚡ Typing Speed Test: Real-time benchmarking tracking WPM, accuracy, errors, characters typed, test duration, and personal bests across custom timed modes (15s, 30s, 60s, custom).
-2. 📚 Classic Typing Tutor: Systematic step-by-step curriculum (home-row, finger-placement exercises, individual keys, words, sentences) with dynamic visual keyboard and interactive finger guidance (including authentic Nepali Typeshala with Preeti & Unicode layouts).
-3. 🏎️ Multilingual Typing Car Racing Game: Real-time dynamic racing competition across 122+ languages where typing speed and accuracy directly control car acceleration. Fast, flawless typing unleashes turbo acceleration to overtake opponent cars and secure victory, while slow typing or keystroke errors decelerate your car and cause you to fall behind.
-4. 🏹 Ramayan Typing Archery Game: Thrilling progressive speed-up arcade challenge where words and falling demon arrows continuously accelerate faster and faster over time—typing words quickly and accurately shoots divine arrows to defend the sacred Lakshman Rekha before the accelerating demons reach the boundary.
+1. ⚡ Typing Speed Test: Real-time benchmarking tracking Net WPM, Raw WPM, accuracy, errors, characters typed, and personal bests across custom timed modes (15s, 30s, 60s, 300s, custom).
+2. 📚 Classic Typing Tutor: Systematic step-by-step curriculum (home-row anchors, finger-placement exercises, individual keys, words, sentences) with dynamic visual keyboard and interactive finger guidance.
+3. 🏎️ Multilingual Typing Car Racing Game: Real-time dynamic racing competition across 122+ languages where typing speed and accuracy directly control car acceleration.
+4. 🏹 Ramayan Typing Archery Game: Progressive speed-up arcade challenge where words accelerate faster over time—typing quickly and accurately sharpens high-pressure reflex speed.
 5. ✏️ Free Form Typing: Frictionless open writing environment with live word and character counters for transcription, copy typing, and keyboard testing.
 
 SIGNATURE PLATFORM CAPABILITIES:
-- 🌍 Deep Multilingual Engine: Native support for 122+ languages and regional scripts:
-  * South Asian / Indic: Nepali, Hindi, Bengali, Gujarati, Punjabi, Marathi, Tamil, Telugu, Malayalam, Kannada, Odia, Sanskrit.
-  * Middle Eastern: Arabic, Persian, Hebrew.
-  * Asian: Thai, Vietnamese, Japanese, Chinese, Korean.
-  * European / Cyrillic: Russian, Ukrainian, Greek, Spanish, French, German, Italian, Portuguese, Dutch, Polish, etc.
+- 🌍 Global Multilingual Engine: Native support for 122+ world languages and programming code syntax modes.
 - 🎨 7 Pro Color Themes: Instant zero-lag theme switcher (Dark Slate, Retro Cyberpunk, Nord Frost, Neon Violet, Emerald Code, Sunset Amber, Paper White) to prevent visual fatigue.
 - 🔊 7 Procedural Mechanical Switch Sounds (0ms Latency): Real-time Web Audio API sound synthesizer: Mechanical Thock (Holy Panda/Gateron Ink), Crisp Click (Cherry MX Blue), Vintage Typewriter, 8-Bit Arcade Blip, Soft Pop, and Mute Toggle.
 - 🔒 Privacy-First Design: 100% client-side in-browser processing, zero keylogging, no signup required, with preferences and scores saved safely in local storage.
 - 📈 Monkeytype-Style Telemetry: Second-by-second cubic bezier WPM/accuracy graph with error scatter markers and Rhythm Consistency Score (%).
 
-Your primary mission is to create a 100% GOOGLE ADSENSE & SEARCH ESSENTIALS COMPLIANT article. It must NEVER trigger penalties for thin content, scraped content, or unhelpful AI generation.
+Your primary mission is to create an **AUTHORITATIVE, PUBLICATION-GRADE, 100% GOOGLE ADSENSE & SEARCH ESSENTIALS COMPLIANT** long-form guide. It must deliver genuine original expertise that beats top-ranking competitors.
 
 TARGET DETAILS:
 - Primary Keyword: "{primary_kw}"
@@ -344,9 +406,23 @@ TARGET DETAILS:
 - Interactive Platform Link: {deep_link}
 - CTA Text: {cta_text}
 
+CONTEXTUAL INTERNAL LINKS (MANDATORY FOR SEO SITE ARCHITECTURE):
+Naturally weave at least 2 to 3 of these related GPT-TYPE articles directly into your body paragraphs using clean descriptive anchor text:
+{related_links_str}
+
 STRICT GOOGLE ADSENSE & MONETIZATION POLICIES TO FOLLOW:
-1. VALUABLE INVENTORY (NO THIN CONTENT): Word count MUST be between 1,200 and 1,800 words. Provide deep, educational, step-by-step guidance with real benchmarks, exact finger placement coordinates, ergonomic degree angles, and muscle memory science. Naturally recommend trying GPT-TYPE's 5 core tools (Speed Test, Classic Tutor, Car Racing Game, Ramayan Archery Game, Free Form Typing), 7 mechanical sound options, or 7 themes to build deliberate practice habits.
-2. E-E-A-T (EXPERIENCE, EXPERTISE, AUTHORITATIVENESS, TRUST): Write in an authoritative, encouraging human educator voice. Never sound robotic or generic. Avoid cliché AI openings like "In today's fast-paced digital world...".
+1. VALUABLE INVENTORY (DEEP ORIGINALITY — 1,500 TO 2,000 WORDS):
+   - Word count MUST be between **1,500 and 2,000 words** of rich, specific, non-repetitive prose.
+   - Include ALL of the following high-value editorial sections tailored specifically to "{primary_kw}":
+     a) **Core Biomechanics & Real-World Context** (concrete numbers, finger reach coordinates, keystroke latency milliseconds, and ergonomic joint angles).
+     b) **Data Benchmark Table** (structured comparison table with specific WPM/accuracy/metric tiers relevant to this exact topic).
+     c) **Common Mistakes & Diagnostic Fix Table** (3 columns: Mistake | Why It Caps Speed | Concrete Correction).
+     d) **Structured 7-Day Deliberate Practice Plan** (exact day-by-day 15-minute drill schedule tailored to "{primary_kw}").
+     e) **Interactive Practice Drill Card** with a custom 60-80 word passage tailored to the topic.
+     f) **4 to 5 Deep, Specific FAQs** + valid Schema.org `FAQPage` JSON-LD.
+2. E-E-A-T (EXPERIENCE, EXPERTISE, AUTHORITATIVENESS, TRUST):
+   - Write in an authoritative, specific, first-hand educator voice ("When coaching learners who hit a wall at 65 WPM...", "Notice what happens to your right pinky on the semicolon key...").
+   - STRICTLY BAN cliché filler phrases: NEVER write "In today's fast-paced digital world", "In the ever-evolving landscape", "Delve into", "Unlock the power of", "Game-changer", or "In conclusion".
 3. UNIQUE & DIVERSE EDITORIAL TITLE (CRITICAL ANTI-DUPLICATION RULE):
    - ABSOLUTELY NEVER START THE TITLE WITH THE WORD "Mastering"! We have strictly banned "Mastering" because it creates repetitive, low-quality titles.
    - The title MUST be 100% UNIQUE and distinctly different in phrasing, hook, and keywords from all these previously published articles:
@@ -519,9 +595,17 @@ HTML BODY FORMATTING SPECIFICATIONS:
                         text_out = data["candidates"][0]["content"]["parts"][0]["text"]
                         logger.info(f"Successfully generated content using model: {model}")
                         return text_out
+                    elif response.status_code == 402:
+                        raise RuntimeError(
+                            f"Gemini API prepayment credits depleted (HTTP 402 on {model}). "
+                            "Please refill credits or update GEMINI_API_KEY at https://ai.studio/projects. "
+                            "Aborting publication to prevent publishing low-quality fallback content."
+                        )
                     else:
                         last_error = f"{model} returned {response.status_code}: {response.text[:300]}"
                         logger.warning(last_error)
+                except RuntimeError:
+                    raise
                 except Exception as e:
                     last_error = str(e)
                     logger.warning(f"Error calling {model}: {e}")
@@ -868,6 +952,29 @@ HTML BODY FORMATTING SPECIFICATIONS:
             html,
             flags=re.IGNORECASE
         )
+
+        # 3.5. Inject Contextual Internal Links Card ("Related Typing Guides") to eliminate orphan pages
+        if 'gpttype-related-guides' not in html:
+            related_posts = self._get_related_posts(topic, count=5)
+            if related_posts:
+                links_html = "\n".join(
+                    f'    <li style="margin-bottom: 8px;"><a href="{p["url"]}" style="color: #38bdf8; text-decoration: underline; font-weight: 600;">{p["title"]}</a></li>'
+                    for p in related_posts
+                )
+                related_box = f'''<div class="gpttype-related-guides" style="margin: 35px 0; padding: 22px 24px; background: #1e293b; border-radius: 10px; border: 1px solid #334155; border-left: 5px solid #38bdf8;">
+  <h3 style="color: #38bdf8; margin-top: 0; margin-bottom: 12px; font-size: 1.2rem;">📚 Recommended Typing Guides on GPT-TYPE</h3>
+  <ul style="margin: 0; padding-left: 20px; color: #e2e8f0; line-height: 1.8; font-size: 1rem;">
+{links_html}
+  </ul>
+</div>'''
+                if 'About the GPT-TYPE Research Team' in html:
+                    idx_about = html.rfind('<div', 0, html.find('About the GPT-TYPE Research Team'))
+                    if idx_about != -1:
+                        html = html[:idx_about] + related_box + "\n" + html[idx_about:]
+                    else:
+                        html = html + "\n" + related_box
+                else:
+                    html = html + "\n" + related_box
 
         # Wrap in high-contrast styling container if not already present
         if 'gpttype-article-container' not in html:

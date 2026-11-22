@@ -2,8 +2,8 @@ name: GPT-TYPE 24/7 Autonomous SEO Agent
 
 on:
   schedule:
-    # Runs twice every day at 06:00 UTC and 18:00 UTC (100% Free on GitHub Actions)
-    - cron: '0 6,18 * * *'
+    # Runs 4 times per week on alternating days (Mon, Wed, Fri, Sun at 12:00 UTC) for maximum Google AdSense & SEO quality
+    - cron: '0 12 * * 1,3,5,0'
   workflow_dispatch:
     inputs:
       dry_run:
@@ -105,5 +105,5 @@ jobs:
             curl -s -X POST "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage" \
               -d chat_id="${TELEGRAM_CHAT_ID}" \
               -d parse_mode="HTML" \
-              -d text="🚨 <b>GPT-TYPE Autonomous Agent Alert:</b>%0AYour GitHub Actions SEO run encountered an issue.%0A%0A👉 <a href=\"https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}\">View Workflow Logs</a>%0A👉 Check the step logs for API timeout or token details." || true
+              -d text="🚨 <b>GPT-TYPE SEO Agent Paused Safely:</b>%0AThe scheduled run stopped before publishing to protect your site quality.%0A%0A👉 <a href=\"https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}\">View Workflow Logs</a>%0A👉 If logs show <code>HTTP 402</code>, refill/update your <code>GEMINI_API_KEY</code> at https://ai.studio/projects." || true
           fi

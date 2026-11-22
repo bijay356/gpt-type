@@ -42,19 +42,19 @@ class KeywordEngine:
             logger.error(f"Failed to save keyword database: {e}")
 
     def get_published_keywords(self):
-        """Returns normalized set of all published primary keywords."""
+        """Returns normalized set of all LIVE published primary keywords."""
         return {
             p.get("primary_keyword", "").lower().strip()
             for p in self.history.get("published_posts", [])
-            if p.get("primary_keyword")
+            if p.get("primary_keyword") and p.get("status", "LIVE") == "LIVE"
         }
 
     def get_published_titles(self):
-        """Returns normalized list of all published post titles."""
+        """Returns normalized list of all LIVE published post titles."""
         return [
             p.get("title", "").strip()
             for p in self.history.get("published_posts", [])
-            if p.get("title")
+            if p.get("title") and p.get("status", "LIVE") == "LIVE"
         ]
 
     def is_keyword_too_similar(self, candidate_kw, published_keywords, published_titles, threshold=0.65):

@@ -191,3 +191,27 @@ class BloggerClient:
         except Exception as e:
             self._diagnose_error(e, f"updating post {post_id}")
             raise e
+
+    def revert_to_draft(self, post_id):
+        """
+        Reverts a published Blogger post back to DRAFT status via Blogger API v3.
+        Removes thin/duplicate pages from public sitemap without permanently deleting them.
+        """
+        if self.dry_run:
+            logger.info(f"[DRY-RUN] Would revert Blogger post {post_id} to DRAFT")
+            return {"id": post_id, "status": "DRAFT_DRY_RUN"}
+
+        try:
+            result = self.service.posts().revert(
+                blogId=BLOG_ID,
+                postId=str(post_id)
+            ).execute()
+            logger.info(f"Reverted Blogger post {post_id} ('{result.get('title')}') to DRAFT.")
+            return {
+                "id": result.get("id"),
+                "title": result.get("title"),
+                "status": "DRAFT"
+            }
+        except Exception as e:
+            self._diagnose_error(e, f"reverting post {post_id} to draft")
+            raise e
