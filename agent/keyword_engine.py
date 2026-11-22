@@ -4,7 +4,7 @@ import logging
 import re
 import requests
 from datetime import datetime
-from agent.config import KEYWORD_DB_PATH, POST_HISTORY_PATH, BLOG_URL, GEMINI_API_KEY
+from agent.config import KEYWORD_DB_PATH, POST_HISTORY_PATH, BLOG_URL, GROQ_API_KEY, GEMINI_API_KEY
 
 logger = logging.getLogger("GPTTypeAgent.Keywords")
 
@@ -80,10 +80,10 @@ class KeywordEngine:
 
     def _generate_fresh_cluster_keywords_with_gemini(self, cluster, published_keywords):
         """
-        Uses Gemini to dynamically generate 5 brand new, non-repeating, high-intent SEO keywords
-        for a cluster when static keywords run low.
+        Uses Groq (primary) or Gemini (backup) to dynamically generate 5 brand new,
+        non-repeating, high-intent SEO keywords for a cluster when static keywords run low.
         """
-        if not GEMINI_API_KEY:
+        if not GROQ_API_KEY and not GEMINI_API_KEY:
             return []
 
         c_name = cluster.get("name", "Typing")
@@ -99,14 +99,62 @@ We have already published articles targeting these keywords (DO NOT REPEAT OR CL
 Generate 5 brand new, highly specific, long-tail search keywords that real learners, students, coders, or exam takers search for on Google.
 Focus on high search intent, specific niches, real tools, techniques, benchmarks, or languages.
 
-Respond ONLY with a valid JSON array of objects:
-[
-  {{
-    "primary": "clean lowercase long-tail keyword between 4 to 8 words",
-    "intent": "guide/informational/benchmark",
-    "secondary": ["secondary keyword 1", "secondary keyword 2", "secondary keyword 3"]
-  }}
-]"""
+Respond ONLY with a valid JSON object containing a "keywords" array:
+{{
+  "keywords": [
+    {{
+      "primary": "clean lowercase long-tail keyword between 4 to 8 words",
+      "intent": "guide/informational/benchmark",
+      "secondary": ["secondary keyword 1", "secondary keyword 2", "secondary keyword 3"]
+    }}
+  ]
+}}"""
+
+        def _extract_valid(raw_text):
+            clean_text = raw_text.strip()
+            if clean_text.startswith("```"):
+                clean_text = re.sub(r"^```(?:json)?\n?", "", clean_text)
+                clean_text = re.sub(r"\n?```$", "", clean_text)
+            parsed = json.loads(clean_text)
+            items = parsed.get("keywords", []) if isinstance(parsed, dict) else (parsed if isinstance(parsed, list) else [])
+            valid_items = []
+            for it in items:
+                pk = it.get("primary", "").strip().lower()
+                if pk and pk not in published_keywords:
+                    valid_items.append({
+                        "primary": pk,
+                        "intent": it.get("intent", "guide"),
+                        "secondary": it.get("secondary", [])
+                    })
+            return valid_items
+
+        # 1. Try Groq Free Tier first
+        if GROQ_API_KEY:
+            g_headers = {"Authorization": f"Bearer {GROQ_API_KEY}", "Content-Type": "application/json"}
+            for model in ["openai/gpt-oss-120b", "qwen/qwen3.8-27b", "openai/gpt-oss-20b"]:
+                try:
+                    res = requests.post(
+                        "https://api.groq.com/openai/v1/chat/completions",
+                        headers=g_headers,
+                        json={
+                            "model": model,
+                            "messages": [{"role": "user", "content": prompt}],
+                            "temperature": 0.85,
+                            "response_format": {"type": "json_object"}
+                        },
+                        timeout=30
+                    )
+                    if res.status_code == 200:
+                        valid = _extract_valid(res.json()["choices"][0]["message"]["content"])
+                        if valid:
+                            logger.info(f"Groq ({model}) dynamically generated {len(valid)} new keywords for cluster '{c_name}'")
+                            return valid
+                except Exception as e:
+                    logger.debug(f"Groq dynamic keyword generation with {model} failed: {e}")
+
+        # 2. Fallback to Gemini if configured
+        if not GEMINI_API_KEY:
+            return []
 
         headers = {"Content-Type": "application/json"}
         payload = {
@@ -129,25 +177,10 @@ Respond ONLY with a valid JSON array of objects:
             try:
                 res = requests.post(url, headers=headers, json=payload, timeout=30)
                 if res.status_code == 200:
-                    text = res.json()["candidates"][0]["content"]["parts"][0]["text"]
-                    clean_text = text.strip()
-                    if clean_text.startswith("```"):
-                        clean_text = re.sub(r"^```(?:json)?\n?", "", clean_text)
-                        clean_text = re.sub(r"\n?```$", "", clean_text)
-                    items = json.loads(clean_text)
-                    if isinstance(items, list):
-                        valid_items = []
-                        for it in items:
-                            pk = it.get("primary", "").strip().lower()
-                            if pk and pk not in published_keywords:
-                                valid_items.append({
-                                    "primary": pk,
-                                    "intent": it.get("intent", "guide"),
-                                    "secondary": it.get("secondary", [])
-                                })
-                        if valid_items:
-                            logger.info(f"Gemini dynamically generated {len(valid_items)} new keywords for cluster '{c_name}'")
-                            return valid_items
+                    valid_items = _extract_valid(res.json()["candidates"][0]["content"]["parts"][0]["text"])
+                    if valid_items:
+                        logger.info(f"Gemini dynamically generated {len(valid_items)} new keywords for cluster '{c_name}'")
+                        return valid_items
             except Exception as e:
                 logger.debug(f"Dynamic keyword generation with {model} failed: {e}")
 

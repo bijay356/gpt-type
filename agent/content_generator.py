@@ -4,28 +4,28 @@ import re
 import time
 import requests
 import difflib
-from agent.config import GEMINI_API_KEY, BLOG_URL, POST_HISTORY_PATH
+from agent.config import GROQ_API_KEY, GEMINI_API_KEY, BLOG_URL, POST_HISTORY_PATH
 
 logger = logging.getLogger("GPTTypeAgent.Generator")
 
 class ContentGenerator:
     def __init__(self, dry_run=False):
         self.dry_run = dry_run
-        if not GEMINI_API_KEY and not dry_run:
-            logger.warning("GEMINI_API_KEY is not set. Generator will fail if called without an API key.")
+        if not GROQ_API_KEY and not GEMINI_API_KEY and not dry_run:
+            logger.warning("Neither GROQ_API_KEY nor GEMINI_API_KEY is set. Generator will fail if called without an API key.")
 
     def generate_article_and_social(self, topic):
         """
-        Uses Gemini to generate complete, publication-grade SEO articles (1,500-2,000 words),
-        internal links, JSON-LD schema, practice drills, and social media captions.
+        Uses Groq (free tier primary) or Gemini (backup) to generate complete, publication-grade SEO articles
+        (1,500-2,000 words), internal links, JSON-LD schema, practice drills, and social media captions.
         NEVER silently publishes mock/template fallback text in production.
         """
-        if self.dry_run and not GEMINI_API_KEY:
-            logger.info("[DRY-RUN] GEMINI_API_KEY not configured. Generating realistic mock article payload.")
+        if self.dry_run and not GROQ_API_KEY and not GEMINI_API_KEY:
+            logger.info("[DRY-RUN] No AI API key configured. Generating realistic mock article payload.")
             parsed = self._generate_mock_article(topic)
         else:
             prompt = self._build_prompt(topic)
-            raw_response = self._call_gemini(prompt)
+            raw_response = self._call_ai(prompt)
             parsed = self._parse_json_response(raw_response)
 
             # Enforce strict AdSense Valuable Inventory word-count floor (>= 950 prose words)
@@ -34,7 +34,7 @@ class ContentGenerator:
             if word_count < 950 and not self.dry_run:
                 logger.warning(f"Article too short ({word_count} words < 950 minimum for AdSense). Retrying once for deeper depth...")
                 expanded_prompt = prompt + "\n\nCRITICAL: Your previous draft was too short. Expand every section with deep technical detail, a 7-day training plan, a Mistake-to-Fix diagnosis table, and 4 detailed FAQs so the final article exceeds 1,500 words."
-                raw_response = self._call_gemini(expanded_prompt)
+                raw_response = self._call_ai(expanded_prompt)
                 parsed = self._parse_json_response(raw_response)
                 word_count = self._count_prose_words(parsed.get("html_content", ""))
                 logger.info(f"Expanded prose word count: {word_count} words")
@@ -535,6 +535,114 @@ HTML BODY FORMATTING SPECIFICATIONS:
 
 """
 
+
+    def _call_ai(self, prompt):
+        """
+        Unified AI Router: tries Groq Free Tier first (fast, high-capacity 120B/27B models),
+        then automatically falls back to Google Gemini if configured.
+        """
+        errors = []
+        if GROQ_API_KEY:
+            try:
+                return self._call_groq(prompt)
+            except Exception as e:
+                logger.warning(f"Groq engine failed: {e}")
+                errors.append(f"Groq: {e}")
+
+        if GEMINI_API_KEY:
+            try:
+                return self._call_gemini(prompt)
+            except Exception as e:
+                logger.warning(f"Gemini backup engine failed: {e}")
+                errors.append(f"Gemini: {e}")
+
+        raise RuntimeError("All configured AI providers failed. " + " | ".join(errors))
+
+    def _call_groq(self, prompt):
+        if not GROQ_API_KEY:
+            raise ValueError("GROQ_API_KEY environment variable is required.")
+
+        headers = {
+            "Authorization": f"Bearer {GROQ_API_KEY}",
+            "Content-Type": "application/json"
+        }
+
+        models_to_try = [
+            "openai/gpt-oss-120b",
+            "qwen/qwen3.8-27b",
+            "openai/gpt-oss-20b",
+            "llama-3.3-70b-versatile"
+        ]
+
+        # Dynamically discover active Groq chat models so future model swaps never break the agent
+        try:
+            r_list = requests.get("https://api.groq.com/openai/v1/models", headers=headers, timeout=15)
+            if r_list.status_code == 200:
+                skip_terms = ("whisper", "guard", "safeguard", "orpheus", "tts", "audio", "playai", "embed")
+                discovered = []
+                for m in r_list.json().get("data", []):
+                    m_id = m.get("id", "")
+                    if m_id and not any(st in m_id.lower() for st in skip_terms):
+                        discovered.append(m_id)
+                # Keep preferred models that are active first, then append any newly discovered models
+                active_preferred = [m for m in models_to_try if m in discovered]
+                extras = [m for m in discovered if m not in active_preferred]
+                if active_preferred or extras:
+                    models_to_try = active_preferred + extras
+        except Exception as e:
+            logger.debug(f"Groq dynamic model discovery skipped: {e}")
+
+        last_error = ""
+        for attempt in range(2):
+            for model in models_to_try:
+                payload = {
+                    "model": model,
+                    "messages": [
+                        {
+                            "role": "system",
+                            "content": "You are an expert human typing coach and technical editor. Always respond with a single strictly valid JSON object matching the requested schema."
+                        },
+                        {
+                            "role": "user",
+                            "content": prompt
+                        }
+                    ],
+                    "temperature": 0.7,
+                    "top_p": 0.95,
+                    "max_tokens": 8192,
+                    "response_format": {"type": "json_object"}
+                }
+                try:
+                    response = requests.post(
+                        "https://api.groq.com/openai/v1/chat/completions",
+                        headers=headers,
+                        json=payload,
+                        timeout=120
+                    )
+                    if response.status_code == 200:
+                        data = response.json()
+                        text_out = data["choices"][0]["message"]["content"]
+                        if text_out and len(text_out.strip()) > 200:
+                            logger.info(f"Successfully generated content using Groq model: {model}")
+                            return text_out
+                        last_error = f"Groq {model} returned empty/short output"
+                        logger.warning(last_error)
+                    elif response.status_code == 401:
+                        raise RuntimeError("Groq API key is invalid or revoked (HTTP 401).")
+                    else:
+                        last_error = f"Groq {model} returned {response.status_code}: {response.text[:300]}"
+                        logger.warning(last_error)
+                except RuntimeError:
+                    raise
+                except Exception as e:
+                    last_error = str(e)
+                    logger.warning(f"Error calling Groq {model}: {e}")
+
+            if attempt == 0:
+                logger.info("Retrying Groq model cascade after 5s cooldown...")
+                time.sleep(5)
+
+        raise RuntimeError(f"All Groq models failed. Last error: {last_error}")
 
     def _call_gemini(self, prompt):
         if not GEMINI_API_KEY:

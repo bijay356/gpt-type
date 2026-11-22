@@ -6,7 +6,8 @@ from dotenv import load_dotenv
 BASE_DIR = Path(__file__).resolve().parent.parent
 load_dotenv(BASE_DIR / ".env")
 
-# 1. Gemini AI Settings
+# 1. AI Engine Settings (Groq Free Tier Primary + Gemini Backup)
+GROQ_API_KEY = os.getenv("GROQ_API_KEY", "").strip()
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "").strip()
 
 # 2. Google Blogger API v3 Settings
