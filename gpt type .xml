@@ -17,6 +17,7 @@
   <meta charset='utf-8'/>
   <meta content='width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no' name='viewport'/>
   <title><data:blog.pageTitle/></title>
+  <link expr:href='data:blog.canonicalUrl' rel='canonical'/>
   <meta content='GPT-TYPE: Free Typing Tutor with 123+ Languages Speed Test &amp; Tutor' name='description'/>
   <meta content='typing speed test, touch typing tutor, nepali typeshala, nepali typing test, ramayan typing game, car racing typing, wpm test online, free typing practice, 122 languages typing' name='keywords'/>
   <meta content='#0f172a' name='theme-color'/>
