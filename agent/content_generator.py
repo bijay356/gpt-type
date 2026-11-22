@@ -148,43 +148,44 @@ class ContentGenerator:
                     f"Generated title '{clean_title}' is too similar ({ratio:.2f}) to existing '{pub_title}'. Diversifying title phrasing..."
                 )
                 kw_title = topic["primary_keyword"].title()
+                kw_core = re.sub(r'^(?:How To |The |Best )', '', kw_title, flags=re.IGNORECASE).strip()
                 tm = topic.get("target_test_mode", "")
                 c_id = topic.get("cluster_id", "")
 
                 if tm == "code" or "program" in c_id:
                     variants = [
-                        f"{kw_title} Speed Drills And Productivity For Developers",
-                        f"How Developers Can Speed Up {kw_title} Without Errors",
-                        f"{kw_title} Syntax Practice And Keyboard Efficiency",
-                        f"The Programmer Guide To {kw_title} And Clean Keystrokes"
+                        f"{kw_core} Speed Drills And Productivity For Developers",
+                        f"Developer Guide To {kw_core} Without Syntax Errors",
+                        f"{kw_core} Practice Routines And Keyboard Efficiency",
+                        f"Faster Coding With {kw_core} Clean Keystroke Habits"
                     ]
                 elif tm == "300s" or "exam" in c_id:
                     variants = [
-                        f"{kw_title} Pass Cutoffs Scoring Rules And Drills",
-                        f"How To Pass {kw_title} Without Typing Mistakes",
-                        f"{kw_title} Official Benchmarks And Practice Strategy",
-                        f"Essential Preparation Tips For {kw_title}"
+                        f"{kw_core} Pass Cutoffs Scoring Rules And Drills",
+                        f"Preparation Strategy For {kw_core} Without Mistakes",
+                        f"{kw_core} Official Benchmarks And Endurance Practice",
+                        f"Practical Guide To Passing {kw_core}"
                     ]
                 elif tm == "multilingual" or "multilingual" in c_id:
                     variants = [
-                        f"{kw_title} Keyboard Layout Guide And WPM Drills",
-                        f"How To Type Accurately In {kw_title} Practice",
-                        f"{kw_title} Character Placement And Speed Drills",
-                        f"The Complete Walkthrough Of {kw_title}"
+                        f"{kw_core} Keyboard Layout Guide And WPM Drills",
+                        f"Accurate Touch Typing For {kw_core} Learners",
+                        f"{kw_core} Finger Placement And Speed Benchmarks",
+                        f"Complete Walkthrough Of {kw_core}"
                     ]
                 elif tm == "120s" or "ergo" in c_id:
                     variants = [
-                        f"{kw_title} Biomechanics Posture And Testing",
-                        f"The Ergonomic Impact Of {kw_title} On Typing Speed",
-                        f"{kw_title} Hands-On Comparison And Benchmark Test",
-                        f"Why {kw_title} Matters For Daily Typing Health"
+                        f"{kw_core} Biomechanics Posture And Speed Testing",
+                        f"Ergonomic Impact Of {kw_core} On Daily Typing",
+                        f"{kw_core} Comparison And Real World Benchmark",
+                        f"Why {kw_core} Matters For Typing Comfort And Speed"
                     ]
                 else:
                     variants = [
-                        f"How To Build Speed In {kw_title} Fast",
-                        f"{kw_title} Breakdown Mistakes To Avoid And Pro Drills",
-                        f"Proven Daily Habits For {kw_title} Success",
-                        f"{kw_title} The Actionable Step By Step Speed Guide"
+                        f"How To Improve {kw_core} With Daily Practice",
+                        f"{kw_core} Mistakes To Avoid And Pro Speed Drills",
+                        f"Proven Daily Habits For {kw_core}",
+                        f"{kw_core} Actionable Step By Step Speed Guide"
                     ]
 
                 best_variant = variants[0]

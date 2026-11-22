@@ -75,6 +75,28 @@ def run(dry_run=False, cluster_id=None, draft=False):
     logger.info(f"Labels: {', '.join(article_data['labels'])}")
     logger.info(f"HTML Content Length: {len(article_data['html_content'])} characters")
 
+    # Step 2.5: Hard Pre-Publish SEO & Anti-Duplication Gate
+    if not dry_run:
+        import difflib
+        live_titles = engine.get_published_titles()
+        live_kws = engine.get_published_keywords()
+        cand_title = article_data["title"].strip().lower()
+        cand_kw = topic["primary_keyword"].strip().lower()
+        cand_html = article_data["html_content"]
+
+        if cand_kw in live_kws:
+            raise RuntimeError(f"SEO Gate blocked duplicate primary keyword: '{cand_kw}'")
+        for pt in live_titles:
+            sim = difflib.SequenceMatcher(None, cand_title, pt.lower()).ratio()
+            if cand_title == pt.lower() or sim >= 0.78:
+                raise RuntimeError(f"SEO Gate blocked duplicate/too-similar title '{article_data['title']}' (sim={sim:.2f} vs '{pt}')")
+        if "The Core Biomechanics of" in cand_html and "Anchor on the Tactile Home Row" in cand_html:
+            raise RuntimeError("SEO Gate blocked fallback mock template from publishing to live blog.")
+        prose_words = generator._count_prose_words(cand_html)
+        if prose_words < 800:
+            raise RuntimeError(f"SEO Gate blocked thin article ({prose_words} prose words < 800 minimum).")
+        logger.info(f"✅ Pre-Publish SEO Gate PASSED (Unique Title, Unique Keyword, {prose_words} real prose words, 0 mock markers).")
+
     # Step 3: Publish to Blogger.com
     logger.info("\n--- [3/5] Publishing to Blogger (gpttype.blogspot.com) ---")
     post_meta = blogger.publish_post(

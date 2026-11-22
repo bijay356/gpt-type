@@ -226,15 +226,24 @@ Respond ONLY with a valid JSON object containing a "keywords" array:
                     self._save_db()
                     break
 
-        # 4. Ultimate Fallback (guarantees non-duplicate unique long-tail topic)
+        # 4. Cross-Cluster Search before ever failing (never invent generic "part N" topics)
         if not chosen_keyword:
-            counter = len(published_keywords) + 1
-            unique_kw = f"advanced touch typing drills and speed secrets part {counter}"
-            chosen_keyword = {
-                "primary": unique_kw,
-                "intent": "guide/advanced",
-                "secondary": ["wpm improvement drills", "typing accuracy benchmarks", "touch typing technique"]
-            }
+            for alt_cluster in clusters:
+                if alt_cluster.get("id") == cluster.get("id"):
+                    continue
+                for kw in alt_cluster.get("keywords", []):
+                    pk = kw.get("primary", "").strip()
+                    too_sim, _ = self.is_keyword_too_similar(pk, published_keywords, published_titles, threshold=0.65)
+                    if not too_sim:
+                        cluster = alt_cluster
+                        chosen_keyword = kw
+                        logger.info(f"Switched to cluster '{cluster.get('name')}' for guaranteed unique keyword: '{pk}'")
+                        break
+                if chosen_keyword:
+                    break
+
+        if not chosen_keyword:
+            raise RuntimeError("No unused unique keywords available and dynamic AI keyword generation failed. Aborting to prevent duplicates.")
 
         # 5. Formulate deep-link for GPT-TYPE
         test_mode = cluster.get("target_test_mode", "60s")
