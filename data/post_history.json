@@ -1,6 +1,6 @@
 {
-  "total_posts_published": 128,
-  "last_run_timestamp": "2026-11-25T20:47:10.801073+00:00",
+  "total_posts_published": 129,
+  "last_run_timestamp": "2026-11-27T20:26:14.494468+00:00",
   "published_posts": [
     {
       "id": "6385972940209506963",
@@ -4811,7 +4811,46 @@
           "reason": "No webhook URL configured"
         }
       }
+    },
+    {
+      "id": "278854409792787236",
+      "title": "Standing Desk Ergonomics Optimal Keyboard Tray Height Guide",
+      "url": "https://gpttype.blogspot.com/2026/11/standing-desk-ergonomics-optimal_01737380031.html",
+      "status": "LIVE",
+      "primary_keyword": "standing desk ergonomics optimal keyboard tray height",
+      "cluster_id": "ergonomics_and_hardware",
+      "cluster_name": "Ergonomics, Posture & Mechanical Keyboards",
+      "published_at": "2026-11-27T20:26:14.494468+00:00",
+      "social_broadcast": {
+        "telegram": {
+          "status": "success"
+        },
+        "twitter": {
+          "status": "skipped",
+          "reason": "Credentials missing"
+        },
+        "facebook": {
+          "status": "skipped",
+          "reason": "Credentials missing"
+        },
+        "linkedin": {
+          "status": "failed",
+          "error": "{\"status\":401,\"serviceErrorCode\":65602,\"code\":\"EXPIRED_ACCESS_TOKEN\",\"message\":\"The token used in the request has expired\"}"
+        },
+        "reddit": {
+          "status": "skipped",
+          "reason": "Credentials missing"
+        },
+        "instagram": {
+          "status": "skipped",
+          "reason": "Credentials missing"
+        },
+        "universal_webhook": {
+          "status": "skipped",
+          "reason": "No webhook URL configured"
+        }
+      }
     }
   ],
-  "cluster_rotation_index": 4
+  "cluster_rotation_index": 5
 }
